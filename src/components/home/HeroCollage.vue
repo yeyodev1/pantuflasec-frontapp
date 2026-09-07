@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
 import { productService } from '@/services/product.service'
+import { galleryService } from '@/services/gallery.service'
 import { mainImage } from '@/utils/product'
 import type { Product } from '@/types'
 
@@ -8,7 +9,12 @@ import type { Product } from '@/types'
  * Nube de fotos del catálogo flotando detrás del hero. Cada foto tiene su
  * propio ritmo de flotación y se desplaza apenas con el mouse (parallax).
  */
-const items = ref<Product[]>([])
+interface Card {
+  key: string
+  url: string
+  to: string
+}
+const items = ref<Card[]>([])
 const tilt = ref({ x: 0, y: 0 })
 
 function onMove(e: MouseEvent) {
@@ -18,8 +24,15 @@ function onMove(e: MouseEvent) {
 
 onMounted(async () => {
   try {
-    const r = await productService.list({ featured: true, limit: 6 })
-    items.value = r.items.length >= 4 ? r.items : (await productService.list({ sort: 'recent', limit: 6 })).items
+    // Manda la galería del admin; si no hay suficientes fotos, los destacados.
+    const g = await galleryService.list()
+    if (g.length >= 4) {
+      items.value = g.slice(0, 6).map((i) => ({ key: i._id, url: i.image.url, to: i.link || '/tienda' }))
+    } else {
+      const r = await productService.list({ featured: true, limit: 6 })
+      const src: Product[] = r.items.length >= 4 ? r.items : (await productService.list({ sort: 'recent', limit: 6 })).items
+      items.value = src.map((p) => ({ key: p._id, url: mainImage(p), to: `/producto/${p.slug}` }))
+    }
   } catch {
     items.value = []
   }
@@ -34,14 +47,14 @@ onUnmounted(() => window.removeEventListener('mousemove', onMove))
   <div class="collage" aria-hidden="true">
     <RouterLink
       v-for="(p, i) in items.slice(0, 6)"
-      :key="p._id"
-      :to="{ name: 'Product', params: { slug: p.slug } }"
+      :key="p.key"
+      :to="p.to"
       class="collage__item"
       :class="`collage__item--${i + 1}`"
       :style="{ '--i': i, '--tx': `${tilt.x * (6 + i * 3)}px`, '--ty': `${tilt.y * (4 + i * 2)}px` }"
       tabindex="-1"
     >
-      <img :src="mainImage(p)" :alt="''" loading="eager" />
+      <img :src="p.url" :alt="''" loading="eager" />
     </RouterLink>
   </div>
 </template>
