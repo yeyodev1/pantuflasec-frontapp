@@ -30,6 +30,9 @@ function logout() {
       </div>
     </dl>
 
+    <RouterLink v-if="userStore.isAdmin" to="/admin" class="btn btn--primary">
+      <i class="fa-solid fa-gauge"></i> Panel de administración
+    </RouterLink>
     <button class="btn btn--ghost" @click="logout">
       <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
     </button>
@@ -38,6 +41,7 @@ function logout() {
 
 <style scoped lang="scss">
 .account {
+  @include reveal;
   @include container(720px);
   @include flex(column, flex-start, flex-start, 1rem);
   padding-block: $space-xl;
