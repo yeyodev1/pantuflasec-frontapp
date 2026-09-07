@@ -1,32 +1,46 @@
 <script setup lang="ts">
 import { site, whatsappLink } from '@/config/site'
+import CategoryTiles from '@/components/home/CategoryTiles.vue'
+import FeaturedProducts from '@/components/home/FeaturedProducts.vue'
+import HeroCollage from '@/components/home/HeroCollage.vue'
+import CollectionMarquee from '@/components/home/CollectionMarquee.vue'
 
-const features = [
-  { icon: 'fa-solid fa-bolt', title: 'Rápido', text: 'Vite 7, Vue 3.5 y builds de segundos.' },
-  { icon: 'fa-solid fa-palette', title: 'Con identidad', text: 'Tokens SCSS propios, sin Tailwind ni librerías UI.' },
-  { icon: 'fa-solid fa-plug', title: 'Conectado', text: 'APIBase listo para hablar con el backapp.' },
+const perks = [
+  { icon: 'fa-solid fa-truck-fast', title: 'Envíos a todo Ecuador', text: 'Por Servientrega, de 24 a 72 horas a provincias.' },
+  { icon: 'fa-solid fa-credit-card', title: 'Paga con tarjeta', text: 'Cobro seguro con PayPhone, sin salir de la tienda.' },
+  { icon: 'fa-solid fa-store', title: 'Tienda en Guayaquil', text: 'La Garzota, av. Agustín Freire frente al Garzocentro.' },
 ]
 </script>
 
 <template>
   <div class="home">
     <section class="hero">
-      <p class="hero__eyebrow">{{ site.name }}</p>
-      <h1 class="hero__title">{{ site.tagline }}</h1>
-      <p class="hero__text">{{ site.description }}</p>
-      <div class="hero__actions">
-        <RouterLink to="/login" class="btn btn--primary">Empezar</RouterLink>
-        <a v-if="site.whatsapp" :href="whatsappLink()" class="btn btn--ghost" target="_blank" rel="noopener">
-          <i class="fa-brands fa-whatsapp"></i> Escríbenos
-        </a>
+      <HeroCollage />
+      <div class="hero__inner">
+        <p class="hero__eyebrow" style="--i: 0">{{ site.name }}</p>
+        <h1 class="hero__title" style="--i: 1">{{ site.tagline }}</h1>
+        <p class="hero__text" style="--i: 2">{{ site.description }}</p>
+        <div class="hero__actions" style="--i: 3">
+          <RouterLink to="/tienda" class="btn btn--primary">
+            <i class="fa-solid fa-bag-shopping"></i> Ver la tienda
+          </RouterLink>
+          <a v-if="site.whatsapp" :href="whatsappLink()" class="btn btn--ghost" target="_blank" rel="noopener">
+            <i class="fa-brands fa-whatsapp"></i> Escríbenos
+          </a>
+        </div>
       </div>
     </section>
 
-    <section id="nosotros" class="features">
-      <article v-for="feature in features" :key="feature.title" class="feature">
-        <span class="feature__icon"><i :class="feature.icon"></i></span>
-        <h3 class="feature__title">{{ feature.title }}</h3>
-        <p class="feature__text">{{ feature.text }}</p>
+    <CollectionMarquee />
+    <div v-reveal><CategoryTiles /></div>
+    <div v-reveal><FeaturedProducts eyebrow="Favoritos" title="Los más pedidos" :query="{ featured: true }" /></div>
+    <div v-reveal><FeaturedProducts eyebrow="Nuevo" title="Recién llegados" :query="{ sort: 'recent' }" /></div>
+
+    <section id="contacto" class="perks">
+      <article v-for="(perk, i) in perks" :key="perk.title" v-reveal="i" class="perk">
+        <span class="perk__icon"><i :class="perk.icon"></i></span>
+        <h3 class="perk__title">{{ perk.title }}</h3>
+        <p class="perk__text">{{ perk.text }}</p>
       </article>
     </section>
   </div>
@@ -34,10 +48,31 @@ const features = [
 
 <style scoped lang="scss">
 .hero {
-  @include container(880px);
-  @include flex(column, center, center, 1.2rem);
-  text-align: center;
-  padding-block: $space-section $space-xl;
+  position: relative;
+  background: linear-gradient(160deg, $accent-soft, $paper 60%);
+  overflow: hidden;
+
+  &__inner {
+    position: relative;
+    z-index: 1;
+    @include container(880px);
+    @include flex(column, flex-start, center, 1rem);
+    padding-block: $space-xl;
+    text-align: left;
+
+    @include from('md') {
+      align-items: center;
+      text-align: center;
+      padding-block: $space-section;
+    }
+  }
+
+  &__eyebrow,
+  &__title,
+  &__text,
+  &__actions {
+    @include reveal(0.7s, 0.12s);
+  }
 
   &__eyebrow {
     @include eyebrow;
@@ -50,31 +85,26 @@ const features = [
   &__text {
     font-size: $text-lg;
     color: $ink-soft;
-    max-width: 52ch;
+    max-width: 48ch;
   }
 
   &__actions {
-    @include flex(row, center, center, 0.8rem);
+    @include flex(row, center, flex-start, 0.6rem);
     flex-wrap: wrap;
-    margin-top: 0.6rem;
+    margin-top: 0.4rem;
   }
 }
 
-.features {
+.perks {
   @include container;
-  @include flex-cards(260px, 1.25rem);
-  padding-block: 0 $space-section;
+  @include flex-cards(240px, 1rem);
+  padding-block: $space-xl $space-section;
 }
 
-.feature {
+.perk {
   @include card;
-  padding: 1.8rem 1.6rem;
-  @include transition;
-
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: $shadow-md;
-  }
+  padding: 1.5rem 1.4rem;
+  @include lift;
 
   &__icon {
     @include flex(row, center, center);
@@ -83,12 +113,12 @@ const features = [
     border-radius: $radius-sm;
     background: $accent-soft;
     color: $accent-deep;
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem;
   }
 
   &__title {
-    @include display($text-xl, 600);
-    margin-bottom: 0.4rem;
+    @include display($text-lg, 600);
+    margin-bottom: 0.3rem;
   }
 
   &__text {
