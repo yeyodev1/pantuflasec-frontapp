@@ -3,10 +3,12 @@ import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { site } from '@/config/site'
 import { useUserStore } from '@/stores/user'
+import { useCartStore } from '@/stores/cart'
 import { useBodyScroll } from '@/composables/useBodyScroll'
 
 const route = useRoute()
 const userStore = useUserStore()
+const cart = useCartStore()
 const mobileOpen = ref(false)
 
 useBodyScroll(mobileOpen)
@@ -24,20 +26,27 @@ watch(() => route.fullPath, () => (mobileOpen.value = false))
         <RouterLink v-for="link in site.nav" :key="link.to" :to="link.to" class="header__link">
           {{ link.label }}
         </RouterLink>
+        <RouterLink v-if="userStore.isAdmin" to="/admin" class="header__link">Admin</RouterLink>
         <RouterLink v-if="userStore.isAuthenticated" to="/cuenta" class="header__link">
           Mi cuenta
         </RouterLink>
         <RouterLink v-else to="/login" class="btn btn--primary header__cta">Ingresar</RouterLink>
       </nav>
 
-      <button
+      <div class="header__actions">
+        <button class="header__cart" aria-label="Abrir carrito" @click="cart.open = true">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span v-if="cart.count" :key="cart.count" class="header__count">{{ cart.count }}</span>
+        </button>
+        <button
         class="header__burger"
         :aria-label="mobileOpen ? 'Cerrar menú' : 'Abrir menú'"
         :aria-expanded="mobileOpen"
         @click="mobileOpen = !mobileOpen"
       >
         <i :class="mobileOpen ? 'fa-solid fa-xmark' : 'fa-solid fa-bars'"></i>
-      </button>
+        </button>
+      </div>
     </div>
   </header>
 </template>
@@ -99,6 +108,38 @@ watch(() => route.fullPath, () => (mobileOpen.value = false))
   &__cta {
     padding: 0.6rem 1.3rem;
     font-size: $text-xs;
+  }
+
+  &__actions {
+    @include flex(row, center, flex-end, 0.2rem);
+  }
+
+  &__cart {
+    position: relative;
+    font-size: 1.2rem;
+    color: $ink;
+    width: 2.4rem;
+    height: 2.4rem;
+    @include flex(row, center, center);
+    @include press;
+  }
+
+  &__count {
+    position: absolute;
+    top: 0.1rem;
+    right: 0.1rem;
+    min-width: 1.1rem;
+    height: 1.1rem;
+    padding-inline: 0.25rem;
+    border-radius: $radius-pill;
+    background: $accent;
+    color: $surface;
+    font-size: 0.62rem;
+    font-weight: 700;
+    line-height: 1.1rem;
+    text-align: center;
+    // Se vuelve a montar con :key al cambiar la cantidad: late cada vez.
+    animation: bump 0.4s $ease;
   }
 
   &__burger {
