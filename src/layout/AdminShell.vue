@@ -8,6 +8,7 @@ const links = [
   { to: '/admin/productos', label: 'Productos', icon: 'fa-solid fa-box' },
   { to: '/admin/pedidos', label: 'Pedidos', icon: 'fa-solid fa-receipt' },
   { to: '/admin/usuarios', label: 'Usuarios', icon: 'fa-solid fa-users' },
+  { to: '/admin/galeria', label: 'Galería', icon: 'fa-solid fa-panorama' },
   { to: '/admin/archivos', label: 'Archivos', icon: 'fa-solid fa-images' },
 ]
 </script>
