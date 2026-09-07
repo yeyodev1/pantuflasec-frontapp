@@ -63,7 +63,7 @@ En componentes: `$ink`, `$accent`, `@include from('md')`, `@include container` �
 - **Rutas públicas:** `/tienda` (catálogo, filtros en la query string: `q`, `categoria`, `coleccion`,
   `orden`, `pagina`), `/producto/:slug`, `/checkout`, `/pay-response` (vuelta de PayPhone),
   `/pedido/:token`. **Admin** (`requiresAdmin`): `/admin/productos`, `/admin/productos/:slug|nuevo`,
-  `/admin/pedidos`, `/admin/pedidos/:id`, `/admin/usuarios`. `AdminShell` es el marco: sidebar
+  `/admin/pedidos`, `/admin/pedidos/:id`, `/admin/usuarios`, `/admin/galeria`, `/admin/archivos`. `AdminShell` es el marco: sidebar
   en escritorio y barra inferior en móvil.
 - **Carrito:** `stores/cart.ts` (Pinia + localStorage `pantuflasec.cart`). Guarda una copia de
   precio e imagen; el backend revalida al crear el pedido. `CartDrawer` se abre al agregar.
@@ -75,7 +75,8 @@ En componentes: `$ink`, `$accent`, `@include from('md')`, `@include container` �
 - **Movimiento:** mixins `reveal` (entrada escalonada con `--i`), `lift` (hover solo con puntero
   fino) y `press` en `_mixins.scss`; keyframes `rise-in`, `bump`, `shimmer` en `global.scss`.
   Toda animación respeta `prefers-reduced-motion` por la regla global.
-- **Home:** `HeroCollage` (fotos destacadas flotando con parallax de mouse), `CollectionMarquee`
+- **Home:** `HomeGallery` (dos filas de fotos en loop opuesto con parallax de scroll; usa la galería
+  del admin y cae a destacados), `HeroCollage` (fotos flotando con parallax de mouse), `CollectionMarquee`
   (cinta infinita de colecciones) y la directiva `v-reveal` (`useScrollReveal`) para entrar al
   hacer scroll.
 - **Meta Pixel:** `utils/pixel.ts`. Sin `VITE_META_PIXEL_ID` es un no-op. Eventos: PageView por
