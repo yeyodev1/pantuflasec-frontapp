@@ -56,7 +56,7 @@ onMounted(async () => {
 
       <div class="order__meta">
         <p><strong>Entrega:</strong>
-          <template v-if="order.shipping.method === 'pickup'">retiro en tienda, La Garzota (Guayaquil).</template>
+          <template v-if="order.shipping.method.startsWith('pickup')">{{ order.shipping.label }} · {{ order.shipping.address }}, {{ order.shipping.city }}.</template>
           <template v-else>{{ order.shipping.address }}, {{ order.shipping.city }}<span v-if="order.shipping.reference"> · {{ order.shipping.reference }}</span></template>
         </p>
         <p><strong>Contacto:</strong> {{ order.customer.email }} · {{ order.customer.phone }}</p>
