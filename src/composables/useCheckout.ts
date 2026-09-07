@@ -20,7 +20,7 @@ export function useCheckout() {
 
   const form = reactive<CheckoutInput>({
     customer: { name: '', email: '', phone: '', documentId: '' },
-    shipping: { method: 'pickup', address: '', city: '', reference: '', notes: '' },
+    shipping: { method: 'pickup-garzota', address: '', city: '', reference: '', notes: '' },
     items: [],
   })
 
@@ -35,7 +35,7 @@ export function useCheckout() {
   )
   const tax = computed(() => round2(cart.subtotal * (config.value?.taxRate ?? 0)))
   const total = computed(() => round2(cart.subtotal + shippingCost.value + tax.value))
-  const needsAddress = computed(() => form.shipping.method !== 'pickup')
+  const needsAddress = computed(() => !form.shipping.method.startsWith('pickup'))
   const payphoneReady = computed(() => Boolean(config.value?.payphone))
 
   function setMethod(method: ShippingMethod) {
