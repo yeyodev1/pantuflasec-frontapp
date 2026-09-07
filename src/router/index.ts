@@ -80,6 +80,12 @@ const routes: Array<RouteRecordRaw> = [
     meta: { title: 'Usuarios', requiresAuth: true, requiresAdmin: true },
   },
   {
+    path: '/admin/galeria',
+    name: 'AdminGallery',
+    component: () => import('@/views/admin/AdminGalleryView.vue'),
+    meta: { title: 'Galería', requiresAuth: true, requiresAdmin: true },
+  },
+  {
     path: '/admin/archivos',
     name: 'AdminMedia',
     component: () => import('@/views/admin/AdminMediaView.vue'),
