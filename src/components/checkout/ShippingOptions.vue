@@ -6,7 +6,8 @@ defineProps<{ methods: ShopConfig['shippingMethods']; value: ShippingMethod; loa
 const emit = defineEmits<{ change: [method: ShippingMethod] }>()
 
 const meta: Record<string, { icon: string; text: string }> = {
-  pickup: { icon: 'fa-solid fa-store', text: 'La Garzota, frente al Garzocentro. Te avisamos cuando esté listo.' },
+  'pickup-garzota': { icon: 'fa-solid fa-store', text: 'Av. Agustín Freire, frente al Garzocentro. Te avisamos cuando esté listo.' },
+  'pickup-joya': { icon: 'fa-solid fa-store', text: 'Plaza Sevilla, urbanización La Joya. Te avisamos cuando esté listo.' },
   gye: { icon: 'fa-solid fa-motorcycle', text: 'Entrega en la ciudad en 1 a 2 días hábiles.' },
   ec: { icon: 'fa-solid fa-truck-fast', text: 'Servientrega a todo el país, de 24 a 72 horas.' },
 }
