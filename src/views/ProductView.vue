@@ -4,6 +4,10 @@ import { categoryLabel, placeholderImage } from '@/config/catalog'
 import { formatMoney } from '@/utils/format'
 import { site, whatsappLink } from '@/config/site'
 import ProductOptions from '@/components/product/ProductOptions.vue'
+import ProductDetails from '@/components/product/ProductDetails.vue'
+import ProductRail from '@/components/product/ProductRail.vue'
+import StickyBuyBar from '@/components/product/StickyBuyBar.vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { useToastStore } from '@/stores/toast'
 import { pixel } from '@/utils/pixel'
@@ -12,8 +16,19 @@ import { watch } from 'vue'
 const cart = useCartStore()
 const toast = useToastStore()
 
-const { product, loading, error, variant, imageIndex, qty, price, maxQty, canBuy, pick } =
+const { product, loading, error, variant, imageIndex, qty, price, maxQty, canBuy, pick, related } =
   useProductPage()
+
+// La barra fija aparece cuando el botón principal ya salió de pantalla.
+const buyBlock = ref<HTMLElement | null>(null)
+const showBar = ref(false)
+let io: IntersectionObserver | undefined
+onMounted(() => {
+  io = new IntersectionObserver(([e]) => (showBar.value = Boolean(e && !e.isIntersecting && e.boundingClientRect.top < 0)))
+  const tick = () => (buyBlock.value ? io?.observe(buyBlock.value) : setTimeout(tick, 300))
+  tick()
+})
+onUnmounted(() => io?.disconnect())
 
 watch(product, (p) => p && pixel.viewContent(p._id, p.name, p.price, p.category))
 
@@ -74,6 +89,7 @@ function addToCart() {
             <s v-if="product.compareAtPrice" class="info__compare">{{ formatMoney(product.compareAtPrice) }}</s>
           </p>
 
+          <div ref="buyBlock">
           <ProductOptions
             :product="product"
             :variant="variant"
@@ -84,6 +100,7 @@ function addToCart() {
             @update:qty="qty = $event"
             @add="addToCart"
           />
+          </div>
 
           <a
             v-if="site.whatsapp"
@@ -95,9 +112,24 @@ function addToCart() {
             <i class="fa-brands fa-whatsapp"></i> Preguntar por WhatsApp
           </a>
 
-          <p v-if="product.description" class="info__desc">{{ product.description }}</p>
+          <ProductDetails :product="product" />
         </div>
       </div>
+
+      <ProductRail
+        eyebrow="Completa el regalo"
+        :title="`Más de ${product.collection || 'la colección'}`"
+        :items="related.complement"
+        :more="product.collection ? { path: '/tienda', query: { coleccion: product.collection } } : undefined"
+      />
+      <ProductRail
+        eyebrow="También te puede gustar"
+        :title="`Otros ${categoryLabel(product.category).toLowerCase()}`"
+        :items="related.similar"
+        :more="{ path: '/tienda', query: { categoria: product.category } }"
+      />
+
+      <StickyBuyBar :name="product.name" :price="price" :can-buy="canBuy" :visible="showBar" @add="addToCart" />
     </template>
   </section>
 </template>
@@ -226,12 +258,6 @@ function addToCart() {
     padding: 0.5rem;
   }
 
-  &__desc {
-    color: $ink-soft;
-    white-space: pre-line;
-    padding-top: 0.6rem;
-    border-top: 1px solid $line;
-  }
 }
 
 
