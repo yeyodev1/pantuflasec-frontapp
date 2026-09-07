@@ -76,7 +76,7 @@ function waLink(o: Order) {
         <section class="panel">
           <h2 class="panel__title">Entrega</h2>
           <p>{{ order.shipping.label }}</p>
-          <p v-if="order.shipping.method !== 'pickup'">{{ order.shipping.address }}, {{ order.shipping.city }}</p>
+          <p>{{ order.shipping.address }}, {{ order.shipping.city }}</p>
           <p v-if="order.shipping.reference">Ref.: {{ order.shipping.reference }}</p>
           <p v-if="order.shipping.notes" class="panel__notes">“{{ order.shipping.notes }}”</p>
         </section>
