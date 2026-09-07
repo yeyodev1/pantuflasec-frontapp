@@ -184,3 +184,15 @@ export interface AdminUser extends SessionUser {
   lastLoginAt: string | null
   createdAt: string
 }
+
+/** Ítem de la galería del home (administrable). */
+export interface GalleryItem {
+  _id: string
+  title: string
+  subtitle: string
+  image: { url: string; publicId: string }
+  link: string
+  order: number
+  isActive: boolean
+  createdAt: string
+}
