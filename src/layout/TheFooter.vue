@@ -20,6 +20,13 @@ const year = new Date().getFullYear()
       </div>
 
       <div class="footer__col">
+        <h4 class="footer__heading">Tiendas</h4>
+        <span v-for="s in site.stores" :key="s.name" class="footer__store">
+          <i class="fa-solid fa-location-dot"></i> {{ s.name }} · {{ s.address }}, {{ s.city }}
+        </span>
+      </div>
+
+      <div class="footer__col">
         <h4 class="footer__heading">Contacto</h4>
         <a :href="`mailto:${site.email}`">
           <i class="fa-solid fa-envelope"></i> {{ site.email }}
@@ -64,6 +71,20 @@ const year = new Date().getFullYear()
     font-size: $text-sm;
     color: rgba($paper, 0.65);
     max-width: 34ch;
+  }
+
+  &__store {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    font-size: $text-sm;
+    line-height: 1.4;
+    opacity: 0.85;
+
+    i {
+      margin-top: 0.25rem;
+      color: $accent;
+    }
   }
 
   &__col {
