@@ -4,20 +4,20 @@
  */
 export const site = {
   name: 'Pantuflasec',
-  tagline: 'Tu nueva app, lista para crecer.',
-  description: 'Pantuflasec — hecho con Vue 3, TypeScript y SCSS.',
+  tagline: 'Pantuflas, peluches y regalos con tus personajes favoritos.',
+  description: 'Tienda de pantuflas, peluches, tazas, pijamas y arreglos en Guayaquil. Envíos a todo el Ecuador.',
   url: 'https://pantuflas.ec',
   email: 'hola@pantuflas.ec',
   // Solo dígitos con código de país, ej: 593984934039
-  whatsapp: '',
+  whatsapp: '593982401562',
   social: {
-    instagram: '',
+    instagram: 'https://instagram.com/pantuflasec',
     facebook: '',
     tiktok: '',
   },
   nav: [
     { label: 'Inicio', to: '/' },
-    { label: 'Nosotros', to: '/#nosotros' },
+    { label: 'Tienda', to: '/tienda' },
     { label: 'Contacto', to: '/#contacto' },
   ],
 } as const
