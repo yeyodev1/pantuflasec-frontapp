@@ -69,6 +69,7 @@ async function submit() {
   padding-block: $space-xl;
 
   &__card {
+    @include reveal;
     @include card;
     @include flex(column, stretch, flex-start, 1rem);
     padding: 2.2rem 2rem;
