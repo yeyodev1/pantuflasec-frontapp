@@ -9,6 +9,7 @@
 
 <style scoped lang="scss">
 .not-found {
+  @include reveal;
   @include container(640px);
   @include flex(column, center, center, 0.8rem);
   flex: 1;
