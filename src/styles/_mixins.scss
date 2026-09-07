@@ -1,5 +1,6 @@
 @use 'sass:map';
 @use 'colorVariables.module.scss' as *;
+@use 'typography' as *;
 
 // Breakpoints mobile-first. Uso: @include from('md') { ... }
 $breakpoints: (
@@ -80,5 +81,34 @@ $breakpoints: (
   &:focus-visible {
     outline: 2px solid $color;
     outline-offset: 3px;
+  }
+}
+
+// --- Movimiento ---
+// Entrada suave desde abajo. `--i` (índice) escalona hermanos: style="--i: n".
+// Los keyframes `rise-in` viven en global.scss; el mixin solo emite la animación.
+@mixin reveal($duration: 0.55s, $step: 0.06s) {
+  animation: rise-in $duration $ease both;
+  animation-delay: calc(var(--i, 0) * #{$step});
+}
+
+// Elevación al pasar el mouse. Solo en dispositivos con puntero fino:
+// en táctil el hover se pega y la tarjeta queda flotando.
+@mixin lift($y: -3px, $shadow: $shadow-md) {
+  @include transition;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY($y);
+      box-shadow: $shadow;
+    }
+  }
+}
+
+// Escalado sutil al presionar (botones, chips, tarjetas).
+@mixin press {
+  &:active {
+    transform: scale(0.97);
+    transition-duration: 0.08s;
   }
 }
