@@ -5,7 +5,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Qué es esto
 
 Frontend de Pantuflasec. Vue 3 + Vite + TypeScript, SCSS propio, Pinia, vue-router.
-Desplegado en Vercel. El backend vive en el repo hermano `*-backapp` (Express 5 + Mongoose).
+Desplegado en Vercel: `https://dev-project-front.bakano.ec` (proyecto `pantuflasec-frontapp`).
+El backend vive en el repo hermano `*-backapp` (Express 5 + Mongoose).
 
 ## Comandos
 
@@ -79,8 +80,9 @@ En componentes: `$ink`, `$accent`, `@include from('md')`, `@include container` �
   hacer scroll.
 - **Meta Pixel:** `utils/pixel.ts`. Sin `VITE_META_PIXEL_ID` es un no-op. Eventos: PageView por
   ruta, ViewContent, AddToCart, InitiateCheckout, Purchase (con `order_id`).
-- **Fotos del catálogo importado** viven en `public/catalogo/*.webp` (URLs `/catalogo/…`),
-  extraídas de los PDFs del cliente. Las fotos nuevas del admin van a Cloudinary.
+- **Fotos: solo Cloudinary.** `public/catalogo/` está en `.gitignore` y no debe volver al repo
+  (se purgó del historial). El admin sube y elige fotos en `/admin/archivos` (`useMediaLibrary`,
+  `MediaGrid`, `MediaPicker`); el editor de producto abre la biblioteca con "Elegir de la biblioteca".
 
 ## Convenciones
 
