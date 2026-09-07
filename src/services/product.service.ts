@@ -27,6 +27,13 @@ class ProductService extends APIBase {
     return data
   }
 
+  async related(slug: string): Promise<{ complement: Product[]; similar: Product[] }> {
+    const { data } = await this.get<{ complement: Product[]; similar: Product[] }>(
+      `products/${encodeURIComponent(slug)}/related`,
+    )
+    return data
+  }
+
   // --- Admin ---
 
   async listAll(query: ProductQuery = {}): Promise<Paginated<Product>> {
