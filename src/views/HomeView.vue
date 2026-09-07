@@ -9,7 +9,7 @@ import HomeGallery from '@/components/home/HomeGallery.vue'
 const perks = [
   { icon: 'fa-solid fa-truck-fast', title: 'Envíos a todo Ecuador', text: 'Por Servientrega, de 24 a 72 horas a provincias.' },
   { icon: 'fa-solid fa-credit-card', title: 'Paga con tarjeta', text: 'Cobro seguro con PayPhone, sin salir de la tienda.' },
-  { icon: 'fa-solid fa-store', title: 'Tienda en Guayaquil', text: 'La Garzota, av. Agustín Freire frente al Garzocentro.' },
+  { icon: 'fa-solid fa-store', title: 'Dos tiendas para retirar', text: 'La Garzota (frente al Garzocentro) y La Joya (Plaza Sevilla).' },
 ]
 </script>
 
