@@ -31,12 +31,21 @@ const icons: Record<string, string> = {
 
 <style scoped lang="scss">
 .toasts {
+  // Arriba en móvil: abajo taparía los botones fijos (carrito, pagar).
   position: fixed;
-  bottom: 1.4rem;
-  right: 1.4rem;
+  top: calc(0.9rem + env(safe-area-inset-top));
+  left: 0.9rem;
+  right: 0.9rem;
   @include flex(column, stretch, flex-start, 0.6rem);
   z-index: 300;
-  max-width: min(360px, calc(100vw - 2.8rem));
+
+  @include from('md') {
+    top: auto;
+    left: auto;
+    bottom: 1.4rem;
+    right: 1.4rem;
+    max-width: 360px;
+  }
 
   &__item {
     @include flex(row, center, flex-start, 0.7rem);
