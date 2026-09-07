@@ -87,7 +87,7 @@ export interface ProductQuery {
 
 // --- Pedidos ---
 
-export type ShippingMethod = 'pickup' | 'gye' | 'ec'
+export type ShippingMethod = 'pickup-garzota' | 'pickup-joya' | 'gye' | 'ec'
 
 export type OrderStatus =
   | 'pending_payment'
