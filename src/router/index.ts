@@ -10,6 +10,36 @@ const routes: Array<RouteRecordRaw> = [
     meta: { title: site.name },
   },
   {
+    path: '/tienda',
+    name: 'Catalog',
+    component: () => import('@/views/CatalogView.vue'),
+    meta: { title: 'Tienda' },
+  },
+  {
+    path: '/producto/:slug',
+    name: 'Product',
+    component: () => import('@/views/ProductView.vue'),
+    meta: { title: 'Producto' },
+  },
+  {
+    path: '/checkout',
+    name: 'Checkout',
+    component: () => import('@/views/CheckoutView.vue'),
+    meta: { title: 'Finalizar compra' },
+  },
+  {
+    path: '/pay-response',
+    name: 'PayResponse',
+    component: () => import('@/views/PayResponseView.vue'),
+    meta: { title: 'Confirmando pago' },
+  },
+  {
+    path: '/pedido/:code',
+    name: 'Order',
+    component: () => import('@/views/OrderView.vue'),
+    meta: { title: 'Tu pedido' },
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/LoginView.vue'),
@@ -20,6 +50,40 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Account',
     component: () => import('@/views/AccountView.vue'),
     meta: { title: 'Mi cuenta', requiresAuth: true },
+  },
+  {
+    path: '/admin',
+    redirect: '/admin/productos',
+  },
+  {
+    path: '/admin/productos',
+    name: 'AdminProducts',
+    component: () => import('@/views/admin/AdminProductsView.vue'),
+    meta: { title: 'Productos', requiresAuth: true, requiresAdmin: true },
+  },
+  {
+    path: '/admin/productos/:slug',
+    name: 'AdminProductEdit',
+    component: () => import('@/views/admin/AdminProductEditView.vue'),
+    meta: { title: 'Editar producto', requiresAuth: true, requiresAdmin: true },
+  },
+  {
+    path: '/admin/pedidos',
+    name: 'AdminOrders',
+    component: () => import('@/views/admin/AdminOrdersView.vue'),
+    meta: { title: 'Pedidos', requiresAuth: true, requiresAdmin: true },
+  },
+  {
+    path: '/admin/usuarios',
+    name: 'AdminUsers',
+    component: () => import('@/views/admin/AdminUsersView.vue'),
+    meta: { title: 'Usuarios', requiresAuth: true, requiresAdmin: true },
+  },
+  {
+    path: '/admin/pedidos/:id',
+    name: 'AdminOrder',
+    component: () => import('@/views/admin/AdminOrderView.vue'),
+    meta: { title: 'Pedido', requiresAuth: true, requiresAdmin: true },
   },
   {
     path: '/:pathMatch(.*)*',
@@ -51,6 +115,10 @@ router.beforeEach(async (to) => {
 
   if (to.meta.requiresAuth && !userStore.isAuthenticated) {
     return { name: 'Login', query: { next: to.fullPath }, replace: true }
+  }
+
+  if (to.meta.requiresAdmin && !userStore.isAdmin) {
+    return { name: 'Account', replace: true }
   }
 
   if (to.meta.guestOnly && userStore.isAuthenticated) {
