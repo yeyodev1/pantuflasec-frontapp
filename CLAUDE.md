@@ -22,8 +22,10 @@ Si vite sirve código viejo tras un cambio grande: `rm -rf node_modules/.vite &&
 
 ## Reglas duras
 
-- **Ningún `.vue` pasa de 300 líneas** (SFC entero). La salida no es partirlo en dos de 290:
-  es sacar la lógica a un composable y dejar un componente que solo compone.
+- **Mobile first.** Estilos base para móvil; los breakpoints solo agrandan con
+  `@include from('md')`. `until()` es la excepción, no el punto de partida.
+- **Ningún archivo pasa de 300 líneas** (`.vue` completo, `.ts`, `.scss`). La salida no es
+  partirlo en dos de 290: es sacar la lógica a un composable y dejar un componente que solo compone.
 - **Layout con flexbox.** Para "grillas" usar el mixin `flex-cards($basis, $gap)`.
 - **Nada de librerías UI ni Tailwind.** SCSS propio con los tokens de `src/styles/`.
 - **Iconos con Font Awesome por CDN** (`<i class="fa-solid fa-…">`). Sin emojis en la UI.
@@ -54,6 +56,31 @@ En componentes: `$ink`, `$accent`, `@include from('md')`, `@include container` �
 - **Composables** — estado de módulo (`ref` fuera de la función) para estado UI compartido.
 - **Errores del API** — siempre `{ status, message, data? }` (`ApiError`); el `message` viene
   en español desde el backend y se puede mostrar tal cual en un toast.
+
+## La tienda
+
+- **Rutas públicas:** `/tienda` (catálogo, filtros en la query string: `q`, `categoria`, `coleccion`,
+  `orden`, `pagina`), `/producto/:slug`, `/checkout`, `/pay-response` (vuelta de PayPhone),
+  `/pedido/:token`. **Admin** (`requiresAdmin`): `/admin/productos`, `/admin/productos/:slug|nuevo`,
+  `/admin/pedidos`, `/admin/pedidos/:id`, `/admin/usuarios`. `AdminShell` es el marco: sidebar
+  en escritorio y barra inferior en móvil.
+- **Carrito:** `stores/cart.ts` (Pinia + localStorage `pantuflasec.cart`). Guarda una copia de
+  precio e imagen; el backend revalida al crear el pedido. `CartDrawer` se abre al agregar.
+- **Checkout en dos fases** (`useCheckout`): formulario → `POST /orders` → se pinta la Cajita de
+  PayPhone (`PayphoneBox.vue`, script y CSS por CDN en `index.html`). El carrito se vacía solo
+  cuando `/pay-response` confirma el pago.
+- **Catálogo y categorías:** etiquetas, iconos y orden en `config/catalog.ts`; estados de pedido
+  en `config/orders.ts`. Deben coincidir con los enums del backapp.
+- **Movimiento:** mixins `reveal` (entrada escalonada con `--i`), `lift` (hover solo con puntero
+  fino) y `press` en `_mixins.scss`; keyframes `rise-in`, `bump`, `shimmer` en `global.scss`.
+  Toda animación respeta `prefers-reduced-motion` por la regla global.
+- **Home:** `HeroCollage` (fotos destacadas flotando con parallax de mouse), `CollectionMarquee`
+  (cinta infinita de colecciones) y la directiva `v-reveal` (`useScrollReveal`) para entrar al
+  hacer scroll.
+- **Meta Pixel:** `utils/pixel.ts`. Sin `VITE_META_PIXEL_ID` es un no-op. Eventos: PageView por
+  ruta, ViewContent, AddToCart, InitiateCheckout, Purchase (con `order_id`).
+- **Fotos del catálogo importado** viven en `public/catalogo/*.webp` (URLs `/catalogo/…`),
+  extraídas de los PDFs del cliente. Las fotos nuevas del admin van a Cloudinary.
 
 ## Convenciones
 
