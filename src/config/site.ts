@@ -15,6 +15,10 @@ export const site = {
     facebook: '',
     tiktok: '',
   },
+  stores: [
+    { name: 'La Garzota', address: 'Av. Agustín Freire, frente al Garzocentro', city: 'Guayaquil' },
+    { name: 'La Joya', address: 'Plaza Sevilla, urbanización La Joya', city: 'Daule' },
+  ],
   nav: [
     { label: 'Inicio', to: '/' },
     { label: 'Tienda', to: '/tienda' },
