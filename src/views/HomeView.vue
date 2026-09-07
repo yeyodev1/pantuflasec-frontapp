@@ -4,6 +4,7 @@ import CategoryTiles from '@/components/home/CategoryTiles.vue'
 import FeaturedProducts from '@/components/home/FeaturedProducts.vue'
 import HeroCollage from '@/components/home/HeroCollage.vue'
 import CollectionMarquee from '@/components/home/CollectionMarquee.vue'
+import HomeGallery from '@/components/home/HomeGallery.vue'
 
 const perks = [
   { icon: 'fa-solid fa-truck-fast', title: 'Envíos a todo Ecuador', text: 'Por Servientrega, de 24 a 72 horas a provincias.' },
@@ -32,6 +33,7 @@ const perks = [
     </section>
 
     <CollectionMarquee />
+    <HomeGallery />
     <div v-reveal><CategoryTiles /></div>
     <div v-reveal><FeaturedProducts eyebrow="Favoritos" title="Los más pedidos" :query="{ featured: true }" /></div>
     <div v-reveal><FeaturedProducts eyebrow="Nuevo" title="Recién llegados" :query="{ sort: 'recent' }" /></div>
