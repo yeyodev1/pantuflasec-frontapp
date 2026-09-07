@@ -13,6 +13,7 @@ export function useProductPage() {
   const variant = ref<ProductVariant | null>(null)
   const imageIndex = ref(0)
   const qty = ref(1)
+  const related = ref<{ complement: Product[]; similar: Product[] }>({ complement: [], similar: [] })
 
   async function load(slug: string) {
     loading.value = true
@@ -26,6 +27,10 @@ export function useProductPage() {
       // compra sirva de una, sin obligar a elegir cuando solo hay una opción.
       variant.value = product.value.variants.find((v) => v.stock > 0) ?? null
       document.title = `${product.value.name} — Pantuflasec`
+      productService
+        .related(slug)
+        .then((r) => (related.value = r))
+        .catch(() => (related.value = { complement: [], similar: [] }))
     } catch (e) {
       error.value = (e as ApiError).message
     } finally {
@@ -52,5 +57,5 @@ export function useProductPage() {
     qty.value = Math.min(qty.value, v.stock)
   }
 
-  return { product, loading, error, variant, imageIndex, qty, price, needsVariant, maxQty, canBuy, pick }
+  return { product, loading, error, variant, imageIndex, qty, price, needsVariant, maxQty, canBuy, pick, related }
 }
