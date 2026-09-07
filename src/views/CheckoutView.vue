@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { useCheckout } from '@/composables/useCheckout'
 import CheckoutSummary from '@/components/checkout/CheckoutSummary.vue'
 import PayphoneBox from '@/components/checkout/PayphoneBox.vue'
-import { onMounted } from 'vue'
+import FormField from '@/components/checkout/FormField.vue'
+import ShippingOptions from '@/components/checkout/ShippingOptions.vue'
+import { formatMoney } from '@/utils/format'
 import { pixel } from '@/utils/pixel'
 
 const {
@@ -20,76 +23,24 @@ onMounted(() => {
 <template>
   <section class="checkout">
     <header class="checkout__head">
-      <p class="checkout__eyebrow">{{ payphone ? 'Paso 2 de 2' : 'Paso 1 de 2' }}</p>
+      <ol class="steps" aria-label="Progreso">
+        <li class="steps__item" :class="{ 'steps__item--done': payphone, 'steps__item--on': !payphone }">
+          <span>1</span> Datos
+        </li>
+        <li class="steps__item" :class="{ 'steps__item--on': payphone }"><span>2</span> Pago</li>
+      </ol>
       <h1 class="checkout__title">{{ payphone ? 'Paga tu pedido' : 'Finalizar compra' }}</h1>
     </header>
 
     <p v-if="cart.isEmpty && !payphone" class="checkout__empty">
+      <i class="fa-solid fa-bag-shopping"></i>
       Tu carrito está vacío.
       <RouterLink to="/tienda" class="btn btn--primary">Ir a la tienda</RouterLink>
     </p>
 
     <div v-else class="checkout__layout">
-      <Transition name="rise" mode="out-in">
-      <!-- Fase 2: cajita de PayPhone -->
-      <div v-if="payphone" class="pay">
-        <p class="pay__order">
-          Pedido <strong>{{ orderNumber }}</strong> creado. Completa el pago para confirmarlo.
-        </p>
-        <PayphoneBox :params="payphone" />
-      </div>
-
-      <!-- Fase 1: datos -->
-      <form v-else class="form" @submit.prevent="submit">
-        <fieldset class="form__group">
-          <legend>Tus datos</legend>
-          <label>Nombre completo <input v-model="form.customer.name" required autocomplete="name" /></label>
-          <label>Correo <input v-model="form.customer.email" type="email" required autocomplete="email" /></label>
-          <div class="form__row">
-            <label>Celular <input v-model="form.customer.phone" type="tel" required autocomplete="tel" placeholder="0991234567" /></label>
-            <label>Cédula <input v-model="form.customer.documentId" inputmode="numeric" placeholder="Opcional" /></label>
-          </div>
-        </fieldset>
-
-        <fieldset class="form__group">
-          <legend>Entrega</legend>
-          <p v-if="loadingConfig" class="form__hint">Cargando opciones…</p>
-          <div v-else class="methods">
-            <button
-              v-for="m in config?.shippingMethods ?? []"
-              :key="m.key"
-              type="button"
-              class="methods__opt"
-              :class="{ 'methods__opt--on': form.shipping.method === m.key }"
-              @click="setMethod(m.key)"
-            >
-              <span>{{ m.label }}</span>
-              <strong>{{ m.cost ? `$${m.cost.toFixed(2)}` : 'Gratis' }}</strong>
-            </button>
-          </div>
-          <template v-if="needsAddress">
-            <label>Dirección <input v-model="form.shipping.address" required autocomplete="street-address" /></label>
-            <div class="form__row">
-              <label>Ciudad <input v-model="form.shipping.city" required autocomplete="address-level2" /></label>
-              <label>Referencia <input v-model="form.shipping.reference" placeholder="Opcional" /></label>
-            </div>
-          </template>
-          <label>Notas para tu pedido <textarea v-model="form.shipping.notes" rows="2" placeholder="Opcional"></textarea></label>
-        </fieldset>
-
-        <p v-if="error" class="form__error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</p>
-        <p v-if="!loadingConfig && !payphoneReady" class="form__error">
-          Los pagos con tarjeta no están disponibles ahora. Escríbenos por WhatsApp para completar tu compra.
-        </p>
-
-        <button class="btn btn--primary form__submit" :disabled="submitting || !payphoneReady">
-          <i v-if="submitting" class="fa-solid fa-spinner fa-spin"></i>
-          Continuar al pago
-        </button>
-      </form>
-      </Transition>
-
       <CheckoutSummary
+        class="checkout__summary"
         :lines="cart.lines"
         :subtotal="cart.subtotal"
         :shipping-cost="shippingCost"
@@ -98,47 +49,119 @@ onMounted(() => {
         :tax-rate="config?.taxRate ?? 0"
         :total="total"
       />
+
+      <Transition name="rise" mode="out-in">
+        <div v-if="payphone" class="pay">
+          <p class="pay__order">
+            <i class="fa-solid fa-circle-check"></i>
+            Pedido <strong>{{ orderNumber }}</strong> creado. Completa el pago para confirmarlo.
+          </p>
+          <PayphoneBox :params="payphone" />
+        </div>
+
+        <form v-else class="form" @submit.prevent="submit">
+          <section class="card" style="--i: 0">
+            <h2 class="card__title"><span>1</span> Tus datos</h2>
+            <FormField label="Nombre completo" icon="fa-solid fa-user">
+              <input v-model="form.customer.name" required autocomplete="name" placeholder="Como aparece en tu cédula" />
+            </FormField>
+            <FormField label="Correo" icon="fa-solid fa-envelope" hint="Te enviamos la confirmación aquí.">
+              <input v-model="form.customer.email" type="email" required autocomplete="email" placeholder="tu@correo.com" />
+            </FormField>
+            <div class="form__row">
+              <FormField label="Celular" icon="fa-solid fa-mobile-screen">
+                <input v-model="form.customer.phone" type="tel" inputmode="tel" required autocomplete="tel" placeholder="099 123 4567" />
+              </FormField>
+              <FormField label="Cédula" icon="fa-solid fa-id-card" optional>
+                <input v-model="form.customer.documentId" inputmode="numeric" placeholder="Para la factura" />
+              </FormField>
+            </div>
+          </section>
+
+          <section class="card" style="--i: 1">
+            <h2 class="card__title"><span>2</span> Entrega</h2>
+            <ShippingOptions
+              :methods="config?.shippingMethods ?? []"
+              :value="form.shipping.method"
+              :loading="loadingConfig"
+              @change="setMethod"
+            />
+            <Transition name="rise">
+              <div v-if="needsAddress" class="form__address">
+                <FormField label="Dirección" icon="fa-solid fa-location-dot">
+                  <input v-model="form.shipping.address" required autocomplete="street-address" placeholder="Calle, número y sector" />
+                </FormField>
+                <div class="form__row">
+                  <FormField label="Ciudad" icon="fa-solid fa-city">
+                    <input v-model="form.shipping.city" required autocomplete="address-level2" />
+                  </FormField>
+                  <FormField label="Referencia" icon="fa-solid fa-map-pin" optional>
+                    <input v-model="form.shipping.reference" placeholder="Edificio, piso, punto cercano" />
+                  </FormField>
+                </div>
+              </div>
+            </Transition>
+            <FormField label="Notas para tu pedido" icon="fa-solid fa-pen" optional>
+              <textarea v-model="form.shipping.notes" rows="2" placeholder="Dedicatoria, color preferido, hora de entrega…"></textarea>
+            </FormField>
+          </section>
+
+          <p v-if="error" class="form__error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</p>
+          <p v-if="!loadingConfig && !payphoneReady" class="form__error">
+            Los pagos con tarjeta no están disponibles ahora. Escríbenos por WhatsApp para completar tu compra.
+          </p>
+
+          <button class="btn btn--primary form__submit" :disabled="submitting || !payphoneReady">
+            <i v-if="submitting" class="fa-solid fa-spinner fa-spin"></i>
+            <i v-else class="fa-solid fa-lock"></i>
+            Continuar al pago
+            <span class="form__total">{{ formatMoney(total) }}</span>
+          </button>
+          <p class="form__safe"><i class="fa-brands fa-cc-visa"></i> <i class="fa-brands fa-cc-mastercard"></i> Pago seguro con PayPhone</p>
+        </form>
+      </Transition>
     </div>
   </section>
 </template>
 
 <style scoped lang="scss">
 .checkout {
-  @include container(1000px);
+  @include container(1040px);
   padding-block: $space-md $space-section;
 
   &__head {
     @include reveal;
-  }
-
-  &__eyebrow {
-    @include eyebrow;
+    margin-bottom: 1.2rem;
   }
 
   &__title {
     @include display($display-sm);
-    margin-bottom: 1.2rem;
   }
 
   &__empty {
     @include flex(column, center, center, 1rem);
     padding-block: $space-lg;
     color: $ink-soft;
+
+    i {
+      font-size: 2rem;
+      color: $ink-muted;
+    }
   }
 
   &__layout {
-    @include flex(column, stretch, flex-start, 1.5rem);
+    @include flex(column, stretch, flex-start, 1rem);
 
     @include from('md') {
-      flex-direction: row;
+      flex-direction: row-reverse;
       align-items: flex-start;
       gap: 2.5rem;
 
-      > :first-child {
+      > :last-child {
         flex: 1 1 60%;
       }
 
-      > :last-child {
+      > :first-child {
         flex: 1 1 40%;
         position: sticky;
         top: 80px;
@@ -147,21 +170,60 @@ onMounted(() => {
   }
 }
 
-.form {
-  @include flex(column, stretch, flex-start, 1.2rem);
+.steps {
+  list-style: none;
+  @include flex(row, center, flex-start, 0.6rem);
+  margin-bottom: 0.6rem;
 
-  &__group {
-    border: none;
-    @include flex(column, stretch, flex-start, 0.8rem);
+  &__item {
+    @include flex(row, center, center, 0.4rem);
+    font-size: $text-xs;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: $ink-muted;
 
-    legend {
-      @include display($text-lg, 600);
-      margin-bottom: 0.6rem;
+    span {
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: $radius-pill;
+      border: 1.5px solid $line;
+      @include flex(row, center, center);
+      font-size: 0.7rem;
+      @include transition;
+    }
+
+    &--on {
+      color: $accent-deep;
+
+      span {
+        background: $accent;
+        border-color: $accent;
+        color: $surface;
+      }
+    }
+
+    &--done span {
+      background: $success;
+      border-color: $success;
+      color: $surface;
+    }
+
+    & + &::before {
+      content: '';
+      width: 1.4rem;
+      height: 1.5px;
+      background: $line;
+      margin-right: 0.2rem;
     }
   }
+}
+
+.form {
+  @include flex(column, stretch, flex-start, 1rem);
 
   &__row {
-    @include flex(column, stretch, flex-start, 0.8rem);
+    @include flex(column, stretch, flex-start, 0.9rem);
 
     @include from('sm') {
       flex-direction: row;
@@ -172,45 +234,70 @@ onMounted(() => {
     }
   }
 
-  &__hint {
-    font-size: $text-sm;
-    color: $ink-muted;
+  &__address {
+    @include flex(column, stretch, flex-start, 0.9rem);
+    padding-top: 0.2rem;
   }
 
   &__error {
     color: $danger;
     font-size: $text-sm;
     @include flex(row, center, flex-start, 0.5rem);
+    padding: 0.7rem 0.9rem;
+    background: $danger-bg;
+    border-radius: $radius-sm;
   }
 
   &__submit {
     width: 100%;
-    padding-block: 1rem;
+    padding-block: 1.05rem;
+    font-size: 0.95rem;
+    gap: 0.6rem;
+  }
+
+  &__total {
+    margin-left: auto;
+    padding-left: 0.8rem;
+    border-left: 1px solid rgba($surface, 0.35);
+  }
+
+  &__safe {
+    text-align: center;
+    font-size: $text-xs;
+    color: $ink-muted;
+
+    i {
+      font-size: 1.1rem;
+      vertical-align: middle;
+    }
   }
 }
 
-.methods {
-  @include flex(column, stretch, flex-start, 0.5rem);
+.card {
+  @include card;
+  padding: 1.1rem 1rem 1.2rem;
+  @include flex(column, stretch, flex-start, 0.9rem);
+  @include reveal;
 
-  &__opt {
-    @include flex(row, center, space-between, 0.8rem);
-    text-align: left;
-    padding: 0.8rem 1rem;
-    border: 1px solid $line;
-    border-radius: $radius-sm;
-    background: $surface;
-    font-size: $text-sm;
-    @include transition;
-    @include press;
+  @include from('sm') {
+    padding: 1.4rem 1.3rem;
+  }
 
-    &--on {
-      border-color: $accent;
+  &__title {
+    @include display($text-lg, 600);
+    @include flex(row, center, flex-start, 0.6rem);
+    margin-bottom: 0.2rem;
+
+    span {
+      width: 1.7rem;
+      height: 1.7rem;
+      border-radius: $radius-pill;
       background: $accent-soft;
-    }
-
-    strong {
       color: $accent-deep;
-      white-space: nowrap;
+      font-family: $font-principal;
+      font-size: 0.8rem;
+      font-weight: 700;
+      @include flex(row, center, center);
     }
   }
 }
@@ -220,9 +307,14 @@ onMounted(() => {
 
   &__order {
     @include card;
+    @include flex(row, center, flex-start, 0.6rem);
     padding: 0.9rem 1rem;
     font-size: $text-sm;
     color: $ink-soft;
+
+    i {
+      color: $success;
+    }
   }
 }
 </style>
