@@ -3,12 +3,22 @@ import { onMounted, ref } from 'vue'
 import { uploadService } from '@/services/upload.service'
 import { useToastStore } from '@/stores/toast'
 import type { ApiError, ProductImage } from '@/types'
+import MediaPicker from './MediaPicker.vue'
+import type { MediaItem } from '@/services/upload.service'
 
 const props = defineProps<{ images: ProductImage[] }>()
 const toast = useToastStore()
 const canUpload = ref(false)
 const uploading = ref(false)
 const url = ref('')
+const pickerOpen = ref(false)
+
+function fromLibrary(items: MediaItem[]) {
+  for (const m of items) {
+    if (!props.images.some((i) => i.url === m.url)) props.images.push({ url: m.url, publicId: m.publicId })
+  }
+  pickerOpen.value = false
+}
 
 onMounted(async () => {
   try {
@@ -64,19 +74,26 @@ function move(i: number, dir: -1 | 1) {
       </figure>
     </div>
 
-    <label v-if="canUpload" class="images__upload btn btn--ghost">
-      <i :class="uploading ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-upload'"></i>
-      {{ uploading ? 'Subiendo…' : 'Subir fotos' }}
-      <input type="file" accept="image/*" multiple hidden :disabled="uploading" @change="onFiles" />
-    </label>
+    <div v-if="canUpload" class="images__actions">
+      <label class="btn btn--ghost images__upload">
+        <i :class="uploading ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-upload'"></i>
+        {{ uploading ? 'Subiendo…' : 'Subir fotos' }}
+        <input type="file" accept="image/*" multiple hidden :disabled="uploading" @change="onFiles" />
+      </label>
+      <button type="button" class="btn btn--ghost" @click="pickerOpen = true">
+        <i class="fa-solid fa-images"></i> Elegir de la biblioteca
+      </button>
+    </div>
     <p v-else class="images__hint">
-      La subida directa requiere configurar Cloudinary en el servidor. Mientras tanto puedes pegar la URL de una imagen.
+      Cloudinary no está configurado en el servidor: no se pueden subir fotos. Como salida temporal puedes pegar una URL.
     </p>
 
-    <div class="images__url">
+    <div v-if="!canUpload" class="images__url">
       <input v-model="url" type="url" placeholder="https://…/foto.jpg" @keydown.enter.prevent="addUrl" />
       <button type="button" class="btn btn--ghost" @click="addUrl">Agregar URL</button>
     </div>
+
+    <MediaPicker :open="pickerOpen" @pick="fromLibrary" @close="pickerOpen = false" />
   </fieldset>
 </template>
 
@@ -129,8 +146,12 @@ function move(i: number, dir: -1 | 1) {
     }
   }
 
+  &__actions {
+    @include flex(row, center, flex-start, 0.5rem);
+    flex-wrap: wrap;
+  }
+
   &__upload {
-    align-self: flex-start;
     cursor: pointer;
   }
 
