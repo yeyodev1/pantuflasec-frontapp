@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { galleryService } from '@/services/gallery.service'
 import { productService } from '@/services/product.service'
 import { mainImage } from '@/utils/product'
@@ -17,8 +17,6 @@ interface Slide {
 }
 
 const slides = ref<Slide[]>([])
-const shift = ref(0)
-const root = ref<HTMLElement | null>(null)
 
 const rows = computed(() => {
   const list = slides.value
@@ -27,19 +25,13 @@ const rows = computed(() => {
   return [list.slice(0, half), list.slice(half)]
 })
 
-// Cada fila se duplica para que el loop no salte.
-const loop = (row: Slide[]) => [...row, ...row]
-
-let raf = 0
-function onScroll() {
-  cancelAnimationFrame(raf)
-  raf = requestAnimationFrame(() => {
-    const el = root.value
-    if (!el) return
-    const r = el.getBoundingClientRect()
-    const progress = (window.innerHeight - r.top) / (window.innerHeight + r.height)
-    shift.value = Math.max(0, Math.min(1, progress))
-  })
+// Cada mitad debe cubrir de sobra el ancho de pantalla: si hay pocas fotos se
+// repiten hasta tener al menos 10, y luego la mitad se duplica para el loop.
+function loop(row: Slide[]): Slide[] {
+  if (!row.length) return []
+  const half: Slide[] = []
+  while (half.length < 10) half.push(...row)
+  return [...half, ...half]
 }
 
 onMounted(async () => {
@@ -60,14 +52,11 @@ onMounted(async () => {
   } catch {
     slides.value = []
   }
-  window.addEventListener('scroll', onScroll, { passive: true })
-  onScroll()
 })
-onUnmounted(() => window.removeEventListener('scroll', onScroll))
 </script>
 
 <template>
-  <section v-if="slides.length" ref="root" class="strip" :style="{ '--shift': shift }" aria-label="Galería">
+  <section v-if="slides.length" class="strip" aria-label="Galería">
     <div v-for="(row, r) in rows" :key="r" class="strip__row" :class="`strip__row--${r + 1}`">
       <component
         :is="s.link ? 'RouterLink' : 'div'"
@@ -77,7 +66,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
         class="slide"
         :style="{ '--i': i % 8 }"
       >
-        <img :src="s.url" :alt="s.title" loading="lazy" />
+        <img :src="s.url" :alt="s.title" loading="eager" decoding="async" />
         <span v-if="s.title" class="slide__cap">
           <strong>{{ s.title }}</strong>
           <small v-if="s.subtitle">{{ s.subtitle }}</small>
@@ -92,9 +81,6 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   overflow: hidden;
   padding-block: 1.2rem;
   @include flex(column, stretch, flex-start, 0.8rem);
-  // El bloque entero se desplaza levemente con el scroll: sensación de profundidad.
-  transform: translateY(calc((0.5 - var(--shift, 0.5)) * 40px));
-  will-change: transform;
 
   &__row {
     display: flex;
@@ -104,7 +90,17 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 
     &--2 {
       animation-name: strip-right;
-      animation-duration: 65s;
+      animation-duration: 70s;
+    }
+
+    // La segunda fila más lenta y un poco más chica: sensación de profundidad
+    // sin mover el bloque (mover el bloque dejaba un hueco arriba).
+    &--2 .slide {
+      width: 40vw;
+
+      @include from('md') {
+        width: 19vw;
+      }
     }
 
     &:hover {
@@ -123,12 +119,9 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   overflow: hidden;
   background: $sand;
   box-shadow: $shadow-sm;
-  // Cada foto entra girada apenas y se endereza; en hover se destaca.
-  rotate: calc((var(--i) - 3.5) * 0.6deg);
   transition:
     transform 0.5s $ease,
-    box-shadow 0.5s ease,
-    rotate 0.5s $ease;
+    box-shadow 0.5s ease;
 
   img {
     position: absolute;
@@ -165,7 +158,6 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      rotate: 0deg;
       transform: translateY(-6px) scale(1.04);
       box-shadow: $shadow-lg;
       z-index: 1;
