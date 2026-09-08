@@ -5,6 +5,7 @@ import { orderService } from '@/services/order.service'
 import { useToastStore } from '@/stores/toast'
 import { paymentStatuses } from '@/config/orders'
 import { formatMoney } from '@/utils/format'
+import { whatsappLink } from '@/config/site'
 
 /**
  * Qué tiene que hacer el cliente para pagar, según el método: cuentas y
@@ -93,8 +94,17 @@ async function copy(value: string) {
         </p>
 
         <template v-if="pay.status !== 'review'">
-          <p class="paypanel__step"><span>1</span> Transfiere <strong>{{ formatMoney(order.total) }}</strong> a una de estas cuentas</p>
-          <ul class="accounts">
+          <p class="paypanel__step"><span>1</span> Transfiere <strong>{{ formatMoney(order.total) }}</strong>{{ accounts.length ? ' a una de estas cuentas' : '' }}</p>
+          <a
+            v-if="!accounts.length"
+            :href="whatsappLink(`Hola, hice el pedido ${order.number} y quiero pagar por transferencia. ¿Me pasan los datos de la cuenta? 🙏`)"
+            class="btn btn--ghost paypanel__wa"
+            target="_blank"
+            rel="noopener"
+          >
+            <i class="fa-brands fa-whatsapp"></i> Pedir los datos de la cuenta por WhatsApp
+          </a>
+          <ul v-else class="accounts">
             <li v-for="(a, i) in accounts" :key="i" class="account">
               <span class="account__bank">{{ a.bank }}<small v-if="a.type"> · {{ a.type }}</small></span>
               <button type="button" class="account__number" :title="'Copiar número'" @click="copy(a.number)">
@@ -197,6 +207,16 @@ async function copy(value: string) {
       font-size: 0.75rem;
       font-weight: 700;
       @include flex(row, center, center);
+    }
+  }
+
+  &__wa {
+    border-color: #25d366;
+    color: #128c7e;
+
+    &:hover {
+      background: #25d366;
+      color: #fff;
     }
   }
 
