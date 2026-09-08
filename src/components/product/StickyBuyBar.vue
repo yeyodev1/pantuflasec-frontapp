@@ -10,7 +10,7 @@ const emit = defineEmits<{ add: [] }>()
   <Transition name="slide-up">
     <div v-if="visible" class="bar">
       <div class="bar__info">
-        <strong>{{ formatMoney(price) }}</strong>
+        <strong>{{ formatMoney(price) }} <small>IVA incl.</small></strong>
         <small>{{ name }}</small>
       </div>
       <button class="btn btn--primary bar__btn" :disabled="!canBuy" @click="emit('add')">
@@ -39,6 +39,14 @@ const emit = defineEmits<{ add: [] }>()
   &__info {
     @include flex(column, flex-start, center);
     min-width: 0;
+
+    strong small {
+      font-size: 0.6rem;
+      font-weight: 500;
+      color: $ink-muted;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
 
     strong {
       font-size: $text-lg;
