@@ -133,7 +133,7 @@ function pick(key: OrderStatus) {
 
 .step {
   position: relative;
-  flex: 1 0 5.4rem;
+  flex: 1 0 6.4rem;
   min-width: 0;
 
   // Conector entre pasos.
@@ -181,11 +181,13 @@ function pick(key: OrderStatus) {
   }
 
   &__label {
-    font-size: 0.66rem;
+    font-size: 0.62rem;
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    white-space: nowrap;
+    text-align: center;
+    line-height: 1.15;
+    max-width: 6rem;
   }
 
   &--done {
