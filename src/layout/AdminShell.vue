@@ -17,6 +17,7 @@ const links = computed(() => {
     { to: '/admin/productos', label: 'Productos', icon: 'fa-solid fa-box', roles: ['admin'] },
     { to: '/admin/portada', label: 'Portada', icon: 'fa-solid fa-image', roles: ['admin'] },
     { to: '/admin/galeria', label: 'Galería', icon: 'fa-solid fa-panorama', roles: ['admin'] },
+    { to: '/admin/envios', label: 'Envíos', icon: 'fa-solid fa-truck-fast', roles: ['admin'] },
     { to: '/admin/pagos', label: 'Pagos', icon: 'fa-solid fa-money-bill-transfer', roles: ['admin'] },
     { to: '/admin/archivos', label: 'Archivos', icon: 'fa-solid fa-images', roles: ['admin'] },
     { to: '/admin/usuarios', label: 'Usuarios', icon: 'fa-solid fa-users', roles: ['admin'] },
