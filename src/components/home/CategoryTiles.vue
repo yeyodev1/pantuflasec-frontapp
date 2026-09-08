@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { productService } from '@/services/product.service'
 import { categories } from '@/config/catalog'
 import type { ProductFacets } from '@/types'
+import { track, waitForImages } from '@/composables/usePreloader'
 
 /**
  * Mosaico de categorías con la foto de portada de cada una. Las dos primeras
@@ -10,13 +11,18 @@ import type { ProductFacets } from '@/types'
  */
 const facets = ref<ProductFacets | null>(null)
 
-onMounted(async () => {
-  try {
-    facets.value = await productService.facets()
-  } catch {
-    facets.value = null
-  }
-})
+onMounted(() =>
+  track(
+    (async () => {
+      try {
+        facets.value = await productService.facets()
+      } catch {
+        facets.value = null
+      }
+      await waitForImages((facets.value?.categories ?? []).map((c) => c.cover ?? ''))
+    })(),
+  ),
+)
 
 const tiles = computed(() =>
   categories
