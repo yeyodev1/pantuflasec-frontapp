@@ -6,7 +6,7 @@ export interface UserInput {
   password?: string
   name?: string
   phone?: string
-  accountType?: 'admin' | 'customer'
+  accountType?: 'admin' | 'staff' | 'customer'
   isActive?: boolean
 }
 
