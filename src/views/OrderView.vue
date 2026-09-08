@@ -6,6 +6,7 @@ import { formatDate, formatMoney } from '@/utils/format'
 import { orderStatusLabel } from '@/config/orders'
 import { site, whatsappLink } from '@/config/site'
 import type { ApiError, Order } from '@/types'
+import { rememberOrder } from '@/utils/myOrders'
 
 const route = useRoute()
 const order = ref<Order | null>(null)
@@ -15,6 +16,7 @@ const isNew = route.query.nuevo === '1'
 onMounted(async () => {
   try {
     order.value = await orderService.track(String(route.params.code))
+    rememberOrder({ token: order.value.clientTransactionId, number: order.value.number, total: order.value.total, createdAt: order.value.createdAt })
   } catch (e) {
     error.value = (e as ApiError).message
   }
