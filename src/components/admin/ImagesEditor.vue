@@ -12,9 +12,15 @@ const canUpload = ref(false)
 const uploading = ref(false)
 const url = ref('')
 const pickerOpen = ref(false)
+const MAX = 5
+const full = () => props.images.length >= MAX
 
 function fromLibrary(items: MediaItem[]) {
   for (const m of items) {
+    if (full()) {
+      toast.error(`Máximo ${MAX} fotos por producto`)
+      break
+    }
     if (!props.images.some((i) => i.url === m.url)) props.images.push({ url: m.url, publicId: m.publicId })
   }
   pickerOpen.value = false
@@ -34,6 +40,10 @@ async function onFiles(event: Event) {
   uploading.value = true
   try {
     for (const file of files) {
+      if (full()) {
+        toast.error(`Máximo ${MAX} fotos por producto`)
+        break
+      }
       const img = await uploadService.image(file)
       props.images.push(img)
     }
@@ -48,6 +58,7 @@ async function onFiles(event: Event) {
 function addUrl() {
   const clean = url.value.trim()
   if (!clean) return
+  if (full()) return toast.error(`Máximo ${MAX} fotos por producto`)
   props.images.push({ url: clean, publicId: '' })
   url.value = ''
 }
@@ -62,7 +73,7 @@ function move(i: number, dir: -1 | 1) {
 
 <template>
   <fieldset class="images">
-    <legend>Fotos</legend>
+    <legend>Fotos <small class="images__max">{{ images.length }} / {{ MAX }}</small></legend>
     <div class="images__grid">
       <figure v-for="(img, i) in images" :key="img.url" class="images__item">
         <img :src="img.url" :alt="''" />
@@ -105,6 +116,14 @@ function move(i: number, dir: -1 | 1) {
   legend {
     @include display($text-lg, 600);
     margin-bottom: 0.4rem;
+  }
+
+  &__max {
+    font-family: $font-principal;
+    font-size: $text-xs;
+    font-weight: 600;
+    color: $ink-muted;
+    margin-left: 0.4rem;
   }
 
   &__grid {
