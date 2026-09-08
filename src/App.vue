@@ -3,6 +3,7 @@ import TheHeader from '@/layout/TheHeader.vue'
 import TheFooter from '@/layout/TheFooter.vue'
 import ToastList from '@/components/ui/ToastList.vue'
 import CartDrawer from '@/components/cart/CartDrawer.vue'
+import TheWhatsApp from '@/components/ui/TheWhatsApp.vue'
 </script>
 
 <template>
@@ -18,6 +19,7 @@ import CartDrawer from '@/components/cart/CartDrawer.vue'
     <TheFooter />
     <ToastList />
     <CartDrawer />
+    <TheWhatsApp />
   </div>
 </template>
 
