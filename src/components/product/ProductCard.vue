@@ -78,8 +78,8 @@ const hasVariants = computed(() => props.product.variants.length > 0)
     text-transform: uppercase;
     padding: 0.25rem 0.6rem;
     border-radius: $radius-pill;
-    background: $accent;
-    color: $surface;
+    background: $highlight;
+    color: $ink;
 
     &--out {
       background: $ink;
@@ -114,7 +114,7 @@ const hasVariants = computed(() => props.product.variants.length > 0)
   &__price {
     font-size: $text-base;
     font-weight: 700;
-    color: $accent-deep;
+    color: $price;
     margin-top: auto;
     padding-top: 0.3rem;
   }
