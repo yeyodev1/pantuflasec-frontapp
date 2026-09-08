@@ -2,6 +2,7 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import { productService } from '@/services/product.service'
 import { galleryService } from '@/services/gallery.service'
+import { track, waitForImages } from '@/composables/usePreloader'
 import { mainImage } from '@/utils/product'
 import type { Product } from '@/types'
 
@@ -22,7 +23,9 @@ function onMove(e: MouseEvent) {
   tilt.value = { x: (e.clientX / w - 0.5) * 2, y: (e.clientY / h - 0.5) * 2 }
 }
 
-onMounted(async () => {
+onMounted(() => track(load()))
+
+async function load() {
   try {
     // Manda la galería del admin; si no hay suficientes fotos, los destacados.
     const g = await galleryService.list()
@@ -36,10 +39,11 @@ onMounted(async () => {
   } catch {
     items.value = []
   }
+  await waitForImages(items.value.map((i) => i.url))
   if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
     window.addEventListener('mousemove', onMove, { passive: true })
   }
-})
+}
 onUnmounted(() => window.removeEventListener('mousemove', onMove))
 </script>
 
