@@ -88,19 +88,31 @@ class APIBase {
     return headers
   }
 
+  /**
+   * Los GET se reintentan dos veces ante 503 o caída de red: el backend corre
+   * en serverless y un arranque frío puede fallar el primer intento.
+   */
   protected async get<T>(
     endpoint: string,
     headers?: Record<string, string>,
     config?: AxiosRequestConfig,
   ): Promise<AxiosResponse<T>> {
-    try {
-      return await this.axiosInstance.get<T>(this.buildUrl(endpoint), {
-        headers: headers || this.getHeaders(),
-        ...config,
-      })
-    } catch (error: unknown) {
-      throw toApiError(error)
+    let lastError: unknown
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        return await this.axiosInstance.get<T>(this.buildUrl(endpoint), {
+          headers: headers || this.getHeaders(),
+          ...config,
+        })
+      } catch (error: unknown) {
+        lastError = error
+        const status = axios.isAxiosError(error) ? error.response?.status : undefined
+        const retryable = status === 503 || status === 502 || status === undefined
+        if (!retryable || attempt === 2) break
+        await new Promise((r) => setTimeout(r, 700 * (attempt + 1)))
+      }
     }
+    throw toApiError(lastError)
   }
 
   protected async post<T>(
