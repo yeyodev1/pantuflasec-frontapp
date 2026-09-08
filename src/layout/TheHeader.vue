@@ -1,53 +1,59 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { site } from '@/config/site'
+import { logo, site } from '@/config/site'
 import { useUserStore } from '@/stores/user'
 import { useCartStore } from '@/stores/cart'
-import { useBodyScroll } from '@/composables/useBodyScroll'
+import { useOrdersSummary } from '@/composables/useOrdersSummary'
+import TheMenu from './TheMenu.vue'
 
 const route = useRoute()
 const userStore = useUserStore()
 const cart = useCartStore()
-const mobileOpen = ref(false)
+const { pending } = useOrdersSummary()
+const menuOpen = ref(false)
 
-useBodyScroll(mobileOpen)
-
-// Al navegar se cierra el menú móvil.
-watch(() => route.fullPath, () => (mobileOpen.value = false))
+// Al navegar se cierra el menú.
+watch(() => route.fullPath, () => (menuOpen.value = false))
 </script>
 
 <template>
   <header class="header">
     <div class="header__inner">
-      <RouterLink to="/" class="header__logo">{{ site.name }}</RouterLink>
+      <RouterLink to="/" class="header__logo" aria-label="Pantuflas Ecuador, inicio">
+        <img :src="logo.wordmark" alt="Pantuflas Ecuador" width="180" height="65" />
+      </RouterLink>
 
-      <nav class="header__nav" :class="{ 'header__nav--open': mobileOpen }">
+      <nav class="header__nav" aria-label="Principal">
         <RouterLink v-for="link in site.nav" :key="link.to" :to="link.to" class="header__link">
           {{ link.label }}
         </RouterLink>
-        <RouterLink v-if="userStore.isAdmin" to="/admin" class="header__link">Admin</RouterLink>
-        <RouterLink v-if="userStore.isAuthenticated" to="/cuenta" class="header__link">
-          Mi cuenta
-        </RouterLink>
-        <RouterLink v-else to="/login" class="btn btn--primary header__cta">Ingresar</RouterLink>
       </nav>
 
       <div class="header__actions">
-        <button class="header__cart" aria-label="Abrir carrito" @click="cart.open = true">
+        <!-- Pedidos: el acceso clave del admin, siempre a la vista con su contador. -->
+        <RouterLink v-if="userStore.isAdmin" to="/admin/pedidos" class="header__orders" title="Pedidos">
+          <i class="fa-solid fa-receipt"></i>
+          <span class="header__orders-label">Pedidos</span>
+          <span v-if="pending" class="header__count header__count--hot">{{ pending }}</span>
+        </RouterLink>
+
+        <RouterLink v-if="!userStore.isAdmin" to="/mis-pedidos" class="header__icon" aria-label="Mis pedidos" title="Mis pedidos">
+          <i class="fa-solid fa-receipt"></i>
+        </RouterLink>
+
+        <button class="header__icon" aria-label="Abrir carrito" @click="cart.open = true">
           <i class="fa-solid fa-bag-shopping"></i>
           <span v-if="cart.count" :key="cart.count" class="header__count">{{ cart.count }}</span>
         </button>
-        <button
-        class="header__burger"
-        :aria-label="mobileOpen ? 'Cerrar menú' : 'Abrir menú'"
-        :aria-expanded="mobileOpen"
-        @click="mobileOpen = !mobileOpen"
-      >
-        <i :class="mobileOpen ? 'fa-solid fa-xmark' : 'fa-solid fa-bars'"></i>
+
+        <button class="header__icon" aria-label="Abrir menú" :aria-expanded="menuOpen" @click="menuOpen = true">
+          <i class="fa-solid fa-bars"></i>
         </button>
       </div>
     </div>
+
+    <TheMenu :open="menuOpen" @close="menuOpen = false" />
   </header>
 </template>
 
@@ -63,31 +69,28 @@ watch(() => route.fullPath, () => (mobileOpen.value = false))
   &__inner {
     @include container;
     @include flex(row, center, space-between, 1rem);
-    padding-block: 0.85rem;
+    padding-block: 0.6rem;
   }
 
-  &__logo {
-    @include display($text-xl, 600);
-    color: $ink;
+  &__logo img {
+    height: 2.4rem;
+    width: auto;
+    @include transition(transform);
+
+    @include from('md') {
+      height: 2.9rem;
+    }
+  }
+
+  &__logo:hover img {
+    transform: scale(1.03);
   }
 
   &__nav {
     display: none;
 
     @include from('md') {
-      @include flex(row, center, flex-end, 1.75rem);
-    }
-
-    &--open {
-      @include until('md') {
-        @include flex(column, stretch, flex-start, 0.5rem);
-        position: fixed;
-        inset: 0;
-        top: 61px;
-        background: $paper;
-        padding: 1.5rem 1.25rem;
-        z-index: 90;
-      }
+      @include flex(row, center, center, 1.75rem);
     }
   }
 
@@ -105,23 +108,51 @@ watch(() => route.fullPath, () => (mobileOpen.value = false))
     }
   }
 
-  &__cta {
-    padding: 0.6rem 1.3rem;
-    font-size: $text-xs;
-  }
-
   &__actions {
-    @include flex(row, center, flex-end, 0.2rem);
+    @include flex(row, center, flex-end, 0.15rem);
   }
 
-  &__cart {
+  &__icon {
     position: relative;
     font-size: 1.2rem;
     color: $ink;
-    width: 2.4rem;
-    height: 2.4rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: $radius-pill;
     @include flex(row, center, center);
     @include press;
+
+    &:hover {
+      background: $sand;
+    }
+  }
+
+  &__orders {
+    position: relative;
+    @include flex(row, center, center, 0.45rem);
+    height: 2.3rem;
+    padding: 0 0.9rem;
+    margin-right: 0.3rem;
+    border-radius: $radius-pill;
+    background: $ink;
+    color: $surface;
+    font-size: $text-xs;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    @include transition;
+    @include press;
+
+    &:hover {
+      background: $accent-deep;
+    }
+
+    &-label {
+      display: none;
+
+      @include from('sm') {
+        display: inline;
+      }
+    }
   }
 
   &__count {
@@ -138,19 +169,13 @@ watch(() => route.fullPath, () => (mobileOpen.value = false))
     font-weight: 700;
     line-height: 1.1rem;
     text-align: center;
-    // Se vuelve a montar con :key al cambiar la cantidad: late cada vez.
     animation: bump 0.4s $ease;
-  }
 
-  &__burger {
-    font-size: 1.3rem;
-    color: $ink;
-    width: 2.4rem;
-    height: 2.4rem;
-    @include flex(row, center, center);
-
-    @include from('md') {
-      display: none;
+    &--hot {
+      top: -0.35rem;
+      right: -0.3rem;
+      background: #ffcc00;
+      color: $ink;
     }
   }
 }
