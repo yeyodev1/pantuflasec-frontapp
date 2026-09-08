@@ -60,16 +60,29 @@ onUnmounted(() => window.removeEventListener('mousemove', onMove))
 </template>
 
 <style scoped lang="scss">
+// Móvil: el collage es un bloque propio debajo del texto con cuatro fotos
+// enteras flotando. Escritorio: fotos absolutas en los márgenes del hero.
 .collage {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  height: 12.5rem;
+  margin: 0.5rem 1.25rem 1rem;
   pointer-events: none;
-  overflow: hidden;
+
+  @include from('md') {
+    height: 15rem;
+    margin-bottom: 1.5rem;
+  }
+
+  @include from('lg') {
+    position: absolute;
+    inset: 0;
+    height: auto;
+    margin: 0;
+    overflow: hidden;
+  }
 
   &__item {
     position: absolute;
-    width: 22vw;
-    max-width: 150px;
     aspect-ratio: 1;
     border-radius: $radius-md;
     overflow: hidden;
@@ -90,25 +103,31 @@ onUnmounted(() => window.removeEventListener('mousemove', onMove))
       object-fit: cover;
     }
 
+    // Móvil: cuatro fotos en abanico, todas dentro de la pantalla.
+    &--1 { left: 0; top: 18%; width: 27vw; rotate: -9deg; }
+    &--2 { left: 24%; top: 0; width: 34vw; rotate: 2deg; z-index: 2; }
+    &--3 { right: 14%; top: 30%; width: 26vw; rotate: 7deg; z-index: 1; }
+    &--4 { right: -2%; top: 2%; width: 22vw; rotate: 12deg; }
+    &--5, &--6 { display: none; }
+
+    // Tablet: mismas cuatro fotos, más chicas y centradas.
     @include from('md') {
-      width: 12vw;
-      max-width: 180px;
+      &--1 { left: 12%; width: 150px; }
+      &--2 { left: 30%; width: 190px; }
+      &--3 { right: 26%; width: 150px; }
+      &--4 { right: 10%; width: 130px; }
     }
 
-    // Posiciones: siempre en los márgenes, nunca sobre el texto. El texto
-    // ocupa un contenedor de 880px centrado; las fotos viven fuera de él.
-    &--1 { top: -4%; right: -14%; width: 20vw; rotate: 8deg; }
-    &--2 { bottom: -6%; left: -14%; width: 22vw; rotate: -10deg; }
-    &--3, &--4, &--5, &--6 { display: none; }
-
+    // Escritorio: en los márgenes, nunca sobre el texto.
     @include from('lg') {
       width: 11vw;
       max-width: 170px;
+      z-index: auto;
 
-      &--1 { top: 8%; right: 1.5%; }
-      &--2 { bottom: 8%; left: 1.5%; }
-      &--3 { display: block; bottom: 6%; right: 3%; width: 8vw; rotate: -5deg; }
-      &--4 { display: block; top: 34%; left: 2.5%; width: 8vw; rotate: 5deg; }
+      &--1 { top: 8%; right: 1.5%; left: auto; width: 11vw; rotate: 8deg; }
+      &--2 { bottom: 8%; left: 1.5%; top: auto; width: 11vw; rotate: -10deg; }
+      &--3 { bottom: 6%; right: 3%; top: auto; width: 8vw; rotate: -5deg; }
+      &--4 { top: 34%; left: 2.5%; right: auto; width: 8vw; rotate: 5deg; }
     }
 
     @include from('xl') {
