@@ -35,8 +35,15 @@ Si vite sirve código viejo tras un cambio grande: `rm -rf node_modules/.vite &&
 - **Iconos con Font Awesome por CDN** (`<i class="fa-solid fa-…">`). Sin emojis en la UI.
 - **Logo y favicon vienen de Cloudinary** (`config/site.ts` → `logo.*`, transformaciones en la URL).
   No hay imágenes en `public/`.
-- **Sin cuentas de cliente.** El login (`/login`, enlace discreto "Admin" en el footer) es solo para
-  el admin. Los clientes siguen sus compras en `/mis-pedidos`: tokens guardados en localStorage
+- **Sin cuentas de cliente.** El login (`/login`, enlace discreto "Admin" en el footer) es para el
+  equipo. Roles en `meta.roles` de cada ruta: `admin` (todo) y `staff` (vendedor: solo pedidos).
+  Al entrar, cada rol va a `userStore.home`. El sidebar (`AdminShell`) filtra sus enlaces por rol.
+- **Teléfonos** siempre en E.164 vía `PhoneField` (selector de país con bandera de flagcdn,
+  Ecuador por defecto, `utils/phone.ts` parsea y valida). Úsalo en cualquier formulario con celular.
+- **Fotos de producto:** máximo 5 (validado en el editor y en el backend). En la página de producto
+  hay lupa al pasar el mouse (`ProductZoom`) y visor a pantalla completa (`ImageLightbox`).
+- **Carrito:** `CartDrawer` es a pantalla completa; agregar no muestra toast, resalta la línea nueva.
+  `QuickAdd` en cada tarjeta agrega sin entrar al producto (selector de talla si hay variantes). Los clientes siguen sus compras en `/mis-pedidos`: tokens guardados en localStorage
   (`utils/myOrders.ts`) al pagar o al abrir un enlace, más un formulario que pide los enlaces por correo.
 - **Menú a pantalla completa** (`layout/TheMenu.vue`) abierto desde el header; el admin ve un
   botón "Pedidos" con contador (`useOrdersSummary`) en el header y en el menú. La sección de
