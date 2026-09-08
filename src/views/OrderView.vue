@@ -81,7 +81,7 @@ async function send(text: string) {
       <div class="order__meta">
         <p><strong>Entrega: </strong>
           <template v-if="order.shipping.method.startsWith('pickup')">{{ order.shipping.label }} · {{ order.shipping.address }}, {{ order.shipping.city }}.</template>
-          <template v-else>{{ order.shipping.address }}, {{ order.shipping.city }}<span v-if="order.shipping.reference"> · {{ order.shipping.reference }}</span></template>
+          <template v-else>{{ order.shipping.address }}, {{ order.shipping.city }}<span v-if="order.shipping.reference"> · {{ order.shipping.reference }}</span><span v-if="order.shipping.km != null"> · {{ order.shipping.km }} km en moto</span></template>
         </p>
         <p><strong>Contacto:</strong> {{ order.customer.email }} · {{ order.customer.phone }}</p>
         <p v-if="order.billing?.wanted"><strong>Factura:</strong> {{ order.billing.name }} · {{ order.billing.documentId }} · {{ order.billing.email }}</p>
