@@ -6,6 +6,7 @@ import PayphoneBox from '@/components/checkout/PayphoneBox.vue'
 import FormField from '@/components/checkout/FormField.vue'
 import ShippingOptions from '@/components/checkout/ShippingOptions.vue'
 import CheckoutSteps from '@/components/checkout/CheckoutSteps.vue'
+import PhoneField from '@/components/ui/PhoneField.vue'
 import { formatMoney } from '@/utils/format'
 import { pixel } from '@/utils/pixel'
 import { useWhatsApp } from '@/composables/useWhatsApp'
@@ -67,8 +68,8 @@ onMounted(() => {
               <input v-model="form.customer.email" type="email" required autocomplete="email" placeholder="tu@correo.com" />
             </FormField>
             <div class="form__row">
-              <FormField label="Celular" icon="fa-solid fa-mobile-screen">
-                <input v-model="form.customer.phone" type="tel" inputmode="tel" required autocomplete="tel" placeholder="099 123 4567" />
+              <FormField label="Celular" icon="fa-solid fa-mobile-screen" hint="Te escribimos por WhatsApp a este número.">
+                <PhoneField v-model="form.customer.phone" required />
               </FormField>
               <FormField label="Cédula" icon="fa-solid fa-id-card" optional>
                 <input v-model="form.customer.documentId" inputmode="numeric" placeholder="Para la factura" />
