@@ -1,32 +1,47 @@
-// Paleta de Pantuflasec. Semántica primero: los componentes hablan de tinta,
-// papel y acento, no de "rosa" o "gris 700".
+// Paleta de Pantuflas Ecuador, sacada del logo: letrero azul con borde blanco,
+// "Ecuador" rojo-naranja y fondo amarillo. Semántica primero: los componentes
+// hablan de tinta, papel y acento, no de "azul 600".
 @use 'sass:color';
 
-// Acento de marca
-$accent: #e6285c;
-$accent-deep: color.adjust($accent, $lightness: -12%);
-$accent-soft: color.mix($accent, #ffffff, 14%);
+// Marca
+$brand-blue: #2f7ce6; // azul del letrero
+$brand-blue-deep: #1d56b3; // sombra del letrero
+$brand-yellow: #ffcc00; // fondo del logo
+$brand-red: #e63a2e; // "Ecuador"
+$brand-orange: #f39a1e;
 
-// Superficies
-$paper: #fdfcfa; // fondo base
+// Acento de acción (botones, enlaces, foco): el azul del logo.
+$accent: $brand-blue;
+$accent-deep: $brand-blue-deep;
+$accent-soft: color.mix($brand-blue, #ffffff, 12%);
+
+// Amarillo de marca para resaltar sin gritar.
+$highlight: $brand-yellow;
+$highlight-soft: color.mix($brand-yellow, #ffffff, 22%);
+
+// Precios y etiquetas de oferta: el rojo de "Ecuador".
+$price: $brand-red;
+
+// Superficies: papel cálido con un toque del amarillo del logo.
+$paper: #fffdf7; // fondo base
 $surface: #ffffff; // superficies elevadas
-$sand: #f1ece6; // bloques suaves
-$line: #e7e1d9; // bordes
+$sand: #fff6d6; // bloques suaves (amarillo muy claro)
+$line: #efe6c9; // bordes
 
-// Texto
-$ink: #191423; // texto principal
-$ink-soft: #4a4552; // texto secundario
-$ink-muted: #8a8590; // terciario / labels
+// Texto: azul marino, no negro puro, para que el azul y el amarillo respiren.
+$ink: #16213e; // texto principal
+$ink-soft: #4a5472; // texto secundario
+$ink-muted: #8b91a6; // terciario / labels
 
-$overlay: rgba(#100c14, 0.55);
+$overlay: rgba(#0f172a, 0.55);
 
 // Estados
-$success: #3bb77e;
+$success: #2fa36b;
 $warning: #d9a441;
-$info: #6a8caf;
-$danger: #c2554f;
+$info: $brand-blue;
+$danger: $brand-red;
 $success-bg: rgba($success, 0.12);
-$warning-bg: rgba($warning, 0.12);
+$warning-bg: rgba($warning, 0.14);
 $info-bg: rgba($info, 0.12);
 $danger-bg: rgba($danger, 0.12);
 
@@ -38,7 +53,7 @@ $white: $surface;
 $text-light: $surface;
 $text-secondary: $ink-soft;
 
-// Sombras — suaves, nada de "card de dashboard"
-$shadow-sm: 0 1px 2px rgba($ink, 0.04), 0 4px 12px rgba($ink, 0.04);
-$shadow-md: 0 2px 6px rgba($ink, 0.05), 0 18px 40px rgba($ink, 0.08);
-$shadow-lg: 0 30px 70px rgba($ink, 0.14);
+// Sombras — suaves, con un tinte del azul marino
+$shadow-sm: 0 1px 2px rgba($ink, 0.04), 0 4px 12px rgba($ink, 0.05);
+$shadow-md: 0 2px 6px rgba($ink, 0.05), 0 18px 40px rgba($ink, 0.09);
+$shadow-lg: 0 30px 70px rgba($ink, 0.16);
