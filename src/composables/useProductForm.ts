@@ -19,6 +19,7 @@ export interface ProductDraft {
   isActive: boolean
   featured: boolean
   newArrival: boolean
+  showOnHome: boolean
   sortOrder: number
 }
 
@@ -36,6 +37,7 @@ function empty(): ProductDraft {
     isActive: true,
     featured: false,
     newArrival: false,
+    showOnHome: false,
     sortOrder: 0,
   }
 }
