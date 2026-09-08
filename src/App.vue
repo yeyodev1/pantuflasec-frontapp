@@ -7,6 +7,10 @@ import TheWhatsApp from '@/components/ui/TheWhatsApp.vue'
 import WhatsAppModal from '@/components/ui/WhatsAppModal.vue'
 import ThePreloader from '@/components/ui/ThePreloader.vue'
 import TheRouteBar from '@/components/ui/TheRouteBar.vue'
+import { useRoute } from 'vue-router'
+
+// El panel es una app aparte: sin el pie de la tienda.
+const route = useRoute()
 </script>
 
 <template>
@@ -19,7 +23,7 @@ import TheRouteBar from '@/components/ui/TheRouteBar.vue'
         </Transition>
       </RouterView>
     </main>
-    <TheFooter />
+    <TheFooter v-if="!route.path.startsWith('/admin')" />
     <ToastList />
     <CartDrawer />
     <TheWhatsApp />
