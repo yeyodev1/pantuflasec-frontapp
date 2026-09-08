@@ -96,22 +96,38 @@ En componentes: `$ink`, `$accent`, `@include from('md')`, `@include container` �
 - **Rutas públicas:** `/tienda` (catálogo, filtros en la query string: `q`, `categoria`, `coleccion`,
   `orden`, `pagina`), `/producto/:slug`, `/checkout`, `/pay-response` (vuelta de PayPhone),
   `/pedido/:token`. **Admin** (`requiresAdmin`): `/admin/productos`, `/admin/productos/:slug|nuevo`,
-  `/admin/pedidos`, `/admin/pedidos/:id`, `/admin/usuarios`, `/admin/galeria`, `/admin/archivos`. `AdminShell` es el marco: sidebar
-  en escritorio y barra inferior en móvil.
+  `/admin/pedidos`, `/admin/pedidos/:id`, `/admin/usuarios`, `/admin/portada`, `/admin/galeria`,
+  `/admin/pagos`, `/admin/archivos`. `AdminShell` es el marco: sidebar en escritorio y barra
+  inferior en móvil.
 - **Carrito:** `stores/cart.ts` (Pinia + localStorage `pantuflasec.cart`). Guarda una copia de
   precio e imagen; el backend revalida al crear el pedido. `CartDrawer` se abre al agregar.
-- **Checkout en dos fases** (`useCheckout`): formulario → `POST /orders` → se pinta la Cajita de
-  PayPhone (`PayphoneBox.vue`, script y CSS por CDN en `index.html`). El carrito se vacía solo
-  cuando `/pay-response` confirma el pago.
+- **Checkout en dos fases** (`useCheckout`): formulario (datos, entrega, **pago** con
+  `PaymentOptions`) → `POST /orders`. Con tarjeta se pinta la Cajita de PayPhone
+  (`PayphoneBox.vue`, script y CSS por CDN en `index.html`) y el carrito se vacía solo cuando
+  `/pay-response` confirma. Con transferencia o efectivo el pedido queda reservado, el carrito se
+  vacía y se va a `/pedido/:token?nuevo=1`. Efectivo solo aparece con retiro en tienda; la lista de
+  métodos sale de `/orders/config` (`payments`, editable en `/admin/pagos`).
+- **Precios con IVA incluido.** `taxIncluded` viene del backend: el resumen muestra "Incluye IVA"
+  en gris y no lo suma. Nunca volver a sumar IVA en el front.
+- **Página del pedido** (`OrderView`): `OrderPaymentPanel` (cuentas con botón de copiar, subir
+  comprobante, estado en revisión/rechazado con motivo, instrucciones de efectivo) y
+  `OrderMessages` (hilera cliente ↔ equipo, misma pieza que usa el panel con `viewer="team"`).
+  En el admin, `PaymentReview` aprueba o rechaza (con motivo) y `AdminOrdersView` tiene el chip
+  "Comprobantes por revisar" (`pay=review`). Etiquetas de métodos y estados de pago en `config/orders.ts`.
 - **Catálogo y categorías:** etiquetas, iconos y orden en `config/catalog.ts`; estados de pedido
   en `config/orders.ts`. Deben coincidir con los enums del backapp.
 - **Movimiento:** mixins `reveal` (entrada escalonada con `--i`), `lift` (hover solo con puntero
   fino) y `press` en `_mixins.scss`; keyframes `rise-in`, `bump`, `shimmer` en `global.scss`.
   Toda animación respeta `prefers-reduced-motion` por la regla global.
-- **Home:** `HomeGallery` (dos filas de fotos en loop opuesto con parallax de scroll; usa la galería
-  del admin y cae a destacados), `HeroCollage` (fotos flotando con parallax de mouse), `CollectionMarquee`
-  (cinta infinita de colecciones) y la directiva `v-reveal` (`useScrollReveal`) para entrar al
-  hacer scroll.
+- **Home:** `HeroBanner` (portada del admin en `/admin/portada`: foto grande + título + botón; si
+  está apagada cae a `HeroCollage`, fotos flotando con parallax de mouse), `HomeGallery` (dos
+  filas de fotos en loop opuesto con parallax de scroll; usa la galería del admin y cae a
+  destacados), `CollectionMarquee` (cinta infinita de colecciones) y la directiva `v-reveal`
+  (`useScrollReveal`) para entrar al hacer scroll. La sección "Recién llegados" lista solo
+  productos con `newArrival`.
+- **Sección "Nuevo":** `newArrival` en el producto (checkbox en el editor), badge rojo en la
+  tarjeta, chip amarillo en los filtros, `/tienda?nuevo=1` en header, menú y "Ver todo".
+- **Redes:** `socialLinks` en `config/site.ts` (Instagram, TikTok, Facebook) alimenta menú y pie.
 - **Meta Pixel:** `utils/pixel.ts`. Sin `VITE_META_PIXEL_ID` es un no-op. Eventos: PageView por
   ruta, ViewContent, AddToCart, InitiateCheckout, Purchase (con `order_id`).
 - **Fotos: solo Cloudinary.** `public/catalogo/` está en `.gitignore` y no debe volver al repo
