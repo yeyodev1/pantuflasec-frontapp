@@ -98,6 +98,12 @@ const routes: Array<RouteRecordRaw> = [
     meta: { title: 'Portada', requiresAuth: true, roles: ['admin'] },
   },
   {
+    path: '/admin/envios',
+    name: 'AdminShipping',
+    component: () => import('@/views/admin/AdminShippingView.vue'),
+    meta: { title: 'Métodos de entrega', requiresAuth: true, roles: ['admin'] },
+  },
+  {
     path: '/admin/pagos',
     name: 'AdminPayments',
     component: () => import('@/views/admin/AdminPaymentsView.vue'),
