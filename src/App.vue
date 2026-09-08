@@ -4,6 +4,8 @@ import TheFooter from '@/layout/TheFooter.vue'
 import ToastList from '@/components/ui/ToastList.vue'
 import CartDrawer from '@/components/cart/CartDrawer.vue'
 import TheWhatsApp from '@/components/ui/TheWhatsApp.vue'
+import WhatsAppModal from '@/components/ui/WhatsAppModal.vue'
+import ThePreloader from '@/components/ui/ThePreloader.vue'
 </script>
 
 <template>
@@ -20,6 +22,8 @@ import TheWhatsApp from '@/components/ui/TheWhatsApp.vue'
     <ToastList />
     <CartDrawer />
     <TheWhatsApp />
+    <WhatsAppModal />
+    <ThePreloader />
   </div>
 </template>
 
