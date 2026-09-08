@@ -63,7 +63,17 @@ watch(page, load, { immediate: true })
               <i v-if="o.stockIssue" class="fa-solid fa-triangle-exclamation row__warn" title="Revisar stock"></i>
             </p>
             <p class="row__meta">
-              {{ formatDate(o.createdAt) }} · {{ o.items.reduce((n, i) => n + i.qty, 0) }} ítems · {{ o.shipping.label }}
+              {{ formatDate(o.createdAt) }} · {{ o.items.reduce((n, i) => n + i.qty, 0) }} ítems
+            </p>
+            <p class="row__tags">
+              <span class="tag" :class="o.payment.status === 'paid' ? 'tag--ok' : 'tag--warn'">
+                <i :class="o.payment.status === 'paid' ? 'fa-solid fa-circle-check' : 'fa-solid fa-clock'"></i>
+                {{ o.payment.status === 'paid' ? 'Pagado' : 'Sin pagar' }}
+              </span>
+              <span class="tag"><i :class="o.shipping.method.startsWith('pickup') ? 'fa-solid fa-store' : 'fa-solid fa-truck-fast'"></i> {{ o.shipping.label.replace(/\s*\(.*\)$/, '') }}</span>
+              <span v-if="o.billing?.wanted" class="tag"><i class="fa-solid fa-file-invoice"></i> Factura</span>
+              <span class="tag tag--muted"><i class="fa-solid fa-envelope-circle-check"></i> {{ (o.events ?? []).filter((e) => e.kind === 'email').length }} correos</span>
+              <span v-if="(o.events ?? []).some((e) => e.kind.startsWith('contact'))" class="tag tag--muted"><i class="fa-brands fa-whatsapp"></i> contactado</span>
             </p>
           </div>
           <div class="row__side">
@@ -137,10 +147,31 @@ watch(page, load, { immediate: true })
   &__meta { font-size: $text-xs; color: $ink-muted; }
   &__warn { color: $warning; margin-left: 0.3rem; }
 
+  &__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: 0.35rem;
+  }
+
   &__side {
     @include flex(column, flex-end, center, 0.2rem);
     font-size: $text-sm;
   }
+}
+
+.tag {
+  @include flex(row, center, center, 0.3rem);
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: $radius-pill;
+  background: $accent-soft;
+  color: $accent-deep;
+
+  &--ok { background: $success-bg; color: $success; }
+  &--warn { background: $warning-bg; color: $warning; }
+  &--muted { background: $sand; color: $ink-soft; }
 }
 
 .empty {
