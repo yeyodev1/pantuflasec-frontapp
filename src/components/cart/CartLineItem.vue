@@ -2,17 +2,20 @@
 import type { CartLine } from '@/stores/cart'
 import { formatMoney } from '@/utils/format'
 
-defineProps<{ line: CartLine }>()
+defineProps<{ line: CartLine; fresh?: boolean }>()
 const emit = defineEmits<{ qty: [qty: number]; remove: [] }>()
 </script>
 
 <template>
-  <div class="line">
+  <div class="line" :class="{ 'line--fresh': fresh }">
     <RouterLink :to="{ name: 'Product', params: { slug: line.slug } }" class="line__img">
       <img :src="line.image" :alt="line.name" width="72" height="72" />
     </RouterLink>
     <div class="line__body">
-      <p class="line__name">{{ line.name }}</p>
+      <p class="line__name">
+        {{ line.name }}
+        <span v-if="fresh" class="line__fresh"><i class="fa-solid fa-check"></i> Agregado</span>
+      </p>
       <p v-if="line.variantLabel" class="line__variant">{{ line.variantLabel }}</p>
       <div class="line__row">
         <div class="line__qty">
@@ -34,8 +37,16 @@ const emit = defineEmits<{ qty: [qty: number]; remove: [] }>()
 <style scoped lang="scss">
 .line {
   @include flex(row, flex-start, flex-start, 0.8rem);
-  padding-block: 0.9rem;
+  padding: 0.9rem 0.6rem;
+  margin-inline: -0.6rem;
   border-bottom: 1px solid $line;
+  border-radius: $radius-sm;
+  transition: background 0.6s ease;
+
+  // La línea recién agregada se ilumina en amarillo de marca y se apaga sola.
+  &--fresh {
+    background: $highlight-soft;
+  }
 
   &__img {
     flex: 0 0 4.5rem;
@@ -49,6 +60,10 @@ const emit = defineEmits<{ qty: [qty: number]; remove: [] }>()
       height: 100%;
       object-fit: cover;
     }
+
+    @include from('md') {
+      flex-basis: 5.5rem;
+    }
   }
 
   &__body {
@@ -60,6 +75,18 @@ const emit = defineEmits<{ qty: [qty: number]; remove: [] }>()
     font-size: $text-sm;
     font-weight: 600;
     line-height: 1.3;
+    @include flex(row, center, flex-start, 0.5rem);
+    flex-wrap: wrap;
+  }
+
+  &__fresh {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: $success;
+    @include flex(row, center, center, 0.25rem);
+    animation: bump 0.5s $ease;
   }
 
   &__variant {
@@ -76,6 +103,7 @@ const emit = defineEmits<{ qty: [qty: number]; remove: [] }>()
     @include flex(row, center, center);
     border: 1px solid $line;
     border-radius: $radius-pill;
+    background: $surface;
 
     button {
       width: 2rem;
