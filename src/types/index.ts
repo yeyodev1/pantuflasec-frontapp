@@ -90,7 +90,19 @@ export interface ProductQuery {
 
 // --- Pedidos ---
 
-export type ShippingMethod = 'pickup-garzota' | 'pickup-joya' | 'gye' | 'ec'
+/** Claves que genera el admin en /admin/envios; los retiros empiezan con `pickup-`. */
+export type ShippingMethod = string
+
+export interface ShippingMethodSetting {
+  key: string
+  label: string
+  description: string
+  cost: number
+  kind: 'pickup' | 'delivery'
+  address: string
+  city: string
+  enabled: boolean
+}
 
 export type PaymentMethod = 'payphone' | 'transfer' | 'cash'
 /** `review` = comprobante subido, pendiente de que el equipo lo apruebe. */
@@ -187,7 +199,7 @@ export interface HeroSettings {
 }
 
 export interface ShopConfig {
-  shippingMethods: Array<{ key: ShippingMethod; label: string; cost: number }>
+  shippingMethods: Array<{ key: ShippingMethod; label: string; description: string; cost: number; kind: 'pickup' | 'delivery' }>
   taxRate: number
   taxIncluded: boolean
   payphone: { token: string; storeId: string } | null
