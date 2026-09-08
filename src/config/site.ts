@@ -20,17 +20,20 @@ export const logo = {
 export const site = {
   name: 'Pantuflasec',
   tagline: 'Pantuflas, peluches y regalos con tus personajes favoritos.',
-  description: 'Tienda de pantuflas, peluches, tazas, pijamas y arreglos en Guayaquil. Envíos a todo el Ecuador.',
+  description:
+    'Tienda de pantuflas, peluches, tazas, pijamas y arreglos en Guayaquil. Envíos a todo el Ecuador.',
   url: 'https://pantuflas.ec',
   email: 'hola@pantuflas.ec',
   // Solo dígitos con código de país, ej: 593984934039
   whatsapp: '593982401562',
   whatsappDisplay: '+593 98 240 1562',
   social: {
-    instagram: 'https://instagram.com/pantuflasec',
+    instagram: 'https://www.instagram.com/pantuflasec',
     instagramHandle: '@pantuflasec',
-    facebook: '',
-    tiktok: '',
+    tiktok: 'https://www.tiktok.com/@pantuflasec',
+    tiktokHandle: '@pantuflasec',
+    facebook: 'https://www.facebook.com/share/19QsuSy5Tc/',
+    facebookHandle: 'Pantuflas Ecuador',
   },
   stores: [
     { name: 'La Garzota', address: 'Av. Agustín Freire, frente al Garzocentro', city: 'Guayaquil' },
@@ -39,9 +42,32 @@ export const site = {
   nav: [
     { label: 'Inicio', to: '/' },
     { label: 'Tienda', to: '/tienda' },
+    { label: 'Nuevo', to: '/tienda?nuevo=1' },
     { label: 'Mis pedidos', to: '/mis-pedidos' },
   ],
 } as const
+
+/** Redes con icono, para el menú y el pie. */
+export const socialLinks = [
+  {
+    href: site.social.instagram,
+    icon: 'fa-brands fa-instagram',
+    label: site.social.instagramHandle,
+    name: 'Instagram',
+  },
+  {
+    href: site.social.tiktok,
+    icon: 'fa-brands fa-tiktok',
+    label: site.social.tiktokHandle,
+    name: 'TikTok',
+  },
+  {
+    href: site.social.facebook,
+    icon: 'fa-brands fa-facebook',
+    label: site.social.facebookHandle,
+    name: 'Facebook',
+  },
+] as const
 
 export function whatsappLink(message = 'Hola, quiero más información'): string {
   if (!site.whatsapp) return '#'
