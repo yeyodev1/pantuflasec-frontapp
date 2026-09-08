@@ -6,7 +6,7 @@ import { useBodyScroll } from '@/composables/useBodyScroll'
 import { formatMoney } from '@/utils/format'
 import CartLineItem from './CartLineItem.vue'
 
-/** Carrito a pantalla completa: líneas a la izquierda, resumen fijo a la derecha. */
+/** Carrito: pantalla completa en móvil, panel lateral derecho en escritorio. */
 const cart = useCartStore()
 const router = useRouter()
 const open = computed(() => cart.open)
@@ -21,6 +21,9 @@ function checkout() {
 
 <template>
   <Teleport to="body">
+    <Transition name="fade">
+      <div v-if="cart.open" class="cart-backdrop" @click="cart.open = false"></div>
+    </Transition>
     <Transition name="cart">
       <div v-if="cart.open" class="cart" role="dialog" aria-modal="true" aria-label="Carrito">
         <header class="cart__head">
@@ -73,6 +76,13 @@ function checkout() {
 </template>
 
 <style scoped lang="scss">
+.cart-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: $overlay;
+}
+
 .cart {
   position: fixed;
   inset: 0;
@@ -80,6 +90,14 @@ function checkout() {
   background: $paper;
   @include flex(column, stretch, flex-start);
   overflow-y: auto;
+
+  // Escritorio: panel pegado a la derecha, con sombra sobre la tienda.
+  @include from('md') {
+    left: auto;
+    width: min(480px, 100%);
+    box-shadow: $shadow-lg;
+    border-left: 1px solid $line;
+  }
 
   &__head {
     position: sticky;
@@ -91,9 +109,8 @@ function checkout() {
   }
 
   &__head-inner {
-    @include container(1100px);
     @include flex(row, center, space-between);
-    padding-block: 0.9rem;
+    padding: 0.9rem 1.25rem;
   }
 
   &__title {
@@ -127,16 +144,12 @@ function checkout() {
   }
 
   &__body {
-    @include container(1100px);
     flex: 1;
-    @include flex(column, stretch, flex-start, 1.2rem);
-    padding-block: 0.6rem 7rem;
+    @include flex(column, stretch, flex-start);
+    padding: 0.4rem 1.25rem 8rem;
 
     @include from('md') {
-      flex-direction: row;
-      align-items: flex-start;
-      gap: 2.5rem;
-      padding-block: 1.5rem 3rem;
+      padding-bottom: 1rem;
     }
   }
 
@@ -165,7 +178,7 @@ function checkout() {
     @include flex(row, center, flex-start, 0.4rem);
   }
 
-  // Móvil: resumen fijo abajo. Escritorio: panel a la derecha, pegado al scroll.
+  // Resumen siempre a la vista abajo; en escritorio se pega al fondo del panel.
   &__summary {
     position: fixed;
     inset: auto 0 0;
@@ -176,14 +189,12 @@ function checkout() {
 
     @include from('md') {
       position: sticky;
-      top: 80px;
+      bottom: 0;
       inset: auto;
-      flex: 0 0 340px;
-      padding: 1.4rem 1.3rem;
-      border: 1px solid $line;
-      border-radius: $radius-md;
-      box-shadow: none;
+      margin: auto -1.25rem 0;
+      padding: 1.1rem 1.25rem 1.2rem;
       background: $sand;
+      box-shadow: none;
     }
   }
 
@@ -220,6 +231,7 @@ function checkout() {
   }
 }
 
+// Móvil sube desde abajo; escritorio entra desde la derecha.
 .cart-enter-active {
   transition: transform 0.4s $ease, opacity 0.3s ease;
 }
@@ -230,5 +242,10 @@ function checkout() {
 .cart-leave-to {
   transform: translateY(4%);
   opacity: 0;
+
+  @include from('md') {
+    transform: translateX(100%);
+    opacity: 1;
+  }
 }
 </style>
