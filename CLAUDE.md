@@ -38,7 +38,13 @@ Si vite sirve código viejo tras un cambio grande: `rm -rf node_modules/.vite &&
 - **Menú a pantalla completa** (`layout/TheMenu.vue`) abierto desde el header; el admin ve un
   botón "Pedidos" con contador (`useOrdersSummary`) en el header y en el menú. La sección de
   usuarios existe en `/admin/usuarios` pero no está en el sidebar por decisión del cliente.
-- **WhatsApp e Instagram globales** desde `config/site.ts`; botón flotante `TheWhatsApp.vue`.
+- **WhatsApp con contexto** (`useWhatsApp`): el botón flotante, el menú, el footer, el home, la
+  página de producto y el checkout abren `WhatsAppModal` con el mensaje armado según dónde esté el
+  cliente (producto abierto con variante y cantidad; carrito + datos guardados del checkout; o
+  consulta general). Los mensajes de WhatsApp llevan emojis; la UI nunca. El modal avisa que no se
+  modifique el mensaje. Datos del cliente en localStorage (`utils/customer.ts`).
+- **Preloader** (`ThePreloader.vue` + `usePreloader`): pantalla amarilla con el logo hasta que
+  cargan fuentes y página (mínimo 0,7 s, máximo 4 s).
 - **El copy vive en `src/config/site.ts`**, no dentro de los componentes.
 - Todo `VITE_*` queda expuesto en el navegador: nunca un secreto con ese prefijo.
 
