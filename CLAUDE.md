@@ -29,6 +29,9 @@ Si vite sirve código viejo tras un cambio grande: `rm -rf node_modules/.vite &&
   partirlo en dos de 290: es sacar la lógica a un composable y dejar un componente que solo compone.
 - **Layout con flexbox.** Para "grillas" usar el mixin `flex-cards($basis, $gap)`.
 - **Nada de librerías UI ni Tailwind.** SCSS propio con los tokens de `src/styles/`.
+- **Paleta = logo.** `colorVariables.module.scss`: azul del letrero (`$accent`) para acciones,
+  amarillo (`$highlight`) para resaltar, rojo de "Ecuador" (`$price`) para precios y eyebrows,
+  azul marino (`$ink`) para texto. Nada de fucsia.
 - **Iconos con Font Awesome por CDN** (`<i class="fa-solid fa-…">`). Sin emojis en la UI.
 - **Logo y favicon vienen de Cloudinary** (`config/site.ts` → `logo.*`, transformaciones en la URL).
   No hay imágenes en `public/`.
