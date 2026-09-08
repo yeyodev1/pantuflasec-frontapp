@@ -59,49 +59,49 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/admin',
-    redirect: '/admin/productos',
+    redirect: () => (useUserStore().isStaff ? '/admin/pedidos' : '/admin/productos'),
   },
   {
     path: '/admin/productos',
     name: 'AdminProducts',
     component: () => import('@/views/admin/AdminProductsView.vue'),
-    meta: { title: 'Productos', requiresAuth: true, requiresAdmin: true },
+    meta: { title: 'Productos', requiresAuth: true, roles: ['admin'] },
   },
   {
     path: '/admin/productos/:slug',
     name: 'AdminProductEdit',
     component: () => import('@/views/admin/AdminProductEditView.vue'),
-    meta: { title: 'Editar producto', requiresAuth: true, requiresAdmin: true },
+    meta: { title: 'Editar producto', requiresAuth: true, roles: ['admin'] },
   },
   {
     path: '/admin/pedidos',
     name: 'AdminOrders',
     component: () => import('@/views/admin/AdminOrdersView.vue'),
-    meta: { title: 'Pedidos', requiresAuth: true, requiresAdmin: true },
+    meta: { title: 'Pedidos', requiresAuth: true, roles: ['admin', 'staff'] },
   },
   {
     path: '/admin/usuarios',
     name: 'AdminUsers',
     component: () => import('@/views/admin/AdminUsersView.vue'),
-    meta: { title: 'Usuarios', requiresAuth: true, requiresAdmin: true },
+    meta: { title: 'Usuarios', requiresAuth: true, roles: ['admin'] },
   },
   {
     path: '/admin/galeria',
     name: 'AdminGallery',
     component: () => import('@/views/admin/AdminGalleryView.vue'),
-    meta: { title: 'Galería', requiresAuth: true, requiresAdmin: true },
+    meta: { title: 'Galería', requiresAuth: true, roles: ['admin'] },
   },
   {
     path: '/admin/archivos',
     name: 'AdminMedia',
     component: () => import('@/views/admin/AdminMediaView.vue'),
-    meta: { title: 'Archivos', requiresAuth: true, requiresAdmin: true },
+    meta: { title: 'Archivos', requiresAuth: true, roles: ['admin'] },
   },
   {
     path: '/admin/pedidos/:id',
     name: 'AdminOrder',
     component: () => import('@/views/admin/AdminOrderView.vue'),
-    meta: { title: 'Pedido', requiresAuth: true, requiresAdmin: true },
+    meta: { title: 'Pedido', requiresAuth: true, roles: ['admin', 'staff'] },
   },
   {
     path: '/:pathMatch(.*)*',
@@ -135,12 +135,13 @@ router.beforeEach(async (to) => {
     return { name: 'Login', query: { next: to.fullPath }, replace: true }
   }
 
-  if (to.meta.requiresAdmin && !userStore.isAdmin) {
-    return { name: 'Account', replace: true }
+  const roles = to.meta.roles as string[] | undefined
+  if (roles && !roles.includes(userStore.user?.accountType ?? '')) {
+    return { path: userStore.home, replace: true }
   }
 
   if (to.meta.guestOnly && userStore.isAuthenticated) {
-    return { name: 'Account', replace: true }
+    return { path: userStore.home, replace: true }
   }
 })
 
