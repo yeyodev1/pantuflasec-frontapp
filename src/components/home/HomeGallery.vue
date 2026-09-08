@@ -4,6 +4,7 @@ import { galleryService } from '@/services/gallery.service'
 import { productService } from '@/services/product.service'
 import { mainImage } from '@/utils/product'
 import { track, waitForImages } from '@/composables/usePreloader'
+import SkeletonBox from '@/components/ui/SkeletonBox.vue'
 
 /**
  * Tira de fotos en dos filas que corren en sentidos opuestos, con parallax
@@ -18,6 +19,7 @@ interface Slide {
 }
 
 const slides = ref<Slide[]>([])
+const loading = ref(true)
 
 const rows = computed(() => {
   const list = slides.value
@@ -55,13 +57,19 @@ async function load() {
   } catch {
     slides.value = []
   }
+  loading.value = false
   // Las primeras de cada fila son las que se ven al abrir.
   await waitForImages(slides.value.slice(0, 6).map((s) => s.url))
 }
 </script>
 
 <template>
-  <section v-if="slides.length" class="strip" aria-label="Galería">
+  <section v-if="loading" class="strip strip--skeleton" aria-busy="true">
+    <div v-for="r in 2" :key="r" class="strip__row strip__row--static">
+      <SkeletonBox v-for="n in 6" :key="n" class="slide" />
+    </div>
+  </section>
+  <section v-else-if="slides.length" class="strip" aria-label="Galería">
     <div v-for="(row, r) in rows" :key="r" class="strip__row" :class="`strip__row--${r + 1}`">
       <component
         :is="s.link ? 'RouterLink' : 'div'"
@@ -110,6 +118,10 @@ async function load() {
 
     &:hover {
       animation-play-state: paused;
+    }
+
+    &--static {
+      animation: none;
     }
   }
 }
