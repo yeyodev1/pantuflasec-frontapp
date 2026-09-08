@@ -1,25 +1,26 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { site, whatsappLink } from '@/config/site'
+import { site } from '@/config/site'
+import { useWhatsApp } from '@/composables/useWhatsApp'
 
 /** Botón flotante de WhatsApp en toda la tienda; se esconde en el admin y el checkout. */
 const route = useRoute()
-const hidden = () => route.path.startsWith('/admin') || route.path.startsWith('/checkout')
+const { ask } = useWhatsApp()
+const hidden = () => route.path.startsWith('/admin')
 </script>
 
 <template>
   <Transition name="pop">
-    <a
+    <button
       v-if="site.whatsapp && !hidden()"
-      :href="whatsappLink()"
+      type="button"
       class="wa"
-      target="_blank"
-      rel="noopener"
       aria-label="Escríbenos por WhatsApp"
+      @click="ask()"
     >
       <i class="fa-brands fa-whatsapp"></i>
       <span class="wa__label">{{ site.whatsappDisplay }}</span>
-    </a>
+    </button>
   </Transition>
 </template>
 
