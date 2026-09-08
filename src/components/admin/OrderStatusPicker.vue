@@ -8,7 +8,8 @@ import type { OrderStatus } from '@/types'
  * Flujo del pedido como pasos pulsables, con nuestros estilos. Avanzar o
  * retroceder es un toque; cancelar pide confirmación porque avisa al cliente.
  */
-const props = defineProps<{ status: OrderStatus; saving?: boolean }>()
+/** `awaitingPayment`: transferencia o efectivo sin aprobar; el paso "pagado" se da desde el bloque de pago. */
+const props = defineProps<{ status: OrderStatus; saving?: boolean; awaitingPayment?: boolean }>()
 const emit = defineEmits<{ change: [status: OrderStatus] }>()
 
 const index = computed(() => orderFlow.findIndex((s) => s.key === props.status))
@@ -16,7 +17,9 @@ const cancelled = computed(() => props.status === 'cancelled')
 const askCancel = ref(false)
 const current = computed(() => orderStatuses.find((s) => s.key === props.status))
 
-const next = computed(() => (index.value >= 0 && index.value < orderFlow.length - 1 ? orderFlow[index.value + 1] : null))
+const next = computed(() =>
+  index.value >= 0 && index.value < orderFlow.length - 1 ? orderFlow[index.value + 1] : null,
+)
 
 function pick(key: OrderStatus) {
   if (key === props.status || props.saving) return
@@ -31,10 +34,22 @@ function pick(key: OrderStatus) {
         v-for="(s, i) in orderFlow"
         :key="s.key"
         class="step"
-        :class="{ 'step--done': !cancelled && i < index, 'step--on': s.key === status, 'step--next': next?.key === s.key }"
+        :class="{
+          'step--done': !cancelled && i < index,
+          'step--on': s.key === status,
+          'step--next': next?.key === s.key,
+        }"
       >
-        <button type="button" class="step__btn" :disabled="saving || s.key === status" :title="s.hint" @click="pick(s.key)">
-          <span class="step__dot"><i :class="s.key === status && saving ? 'fa-solid fa-spinner fa-spin' : s.icon"></i></span>
+        <button
+          type="button"
+          class="step__btn"
+          :disabled="saving || s.key === status"
+          :title="s.hint"
+          @click="pick(s.key)"
+        >
+          <span class="step__dot"
+            ><i :class="s.key === status && saving ? 'fa-solid fa-spinner fa-spin' : s.icon"></i
+          ></span>
           <span class="step__label">{{ s.label }}</span>
         </button>
       </li>
@@ -42,21 +57,40 @@ function pick(key: OrderStatus) {
 
     <p class="picker__now">
       <i :class="current?.icon"></i>
-      <span><strong>{{ current?.label }}</strong> · {{ current?.hint }}</span>
+      <span
+        ><strong>{{ current?.label }}</strong> · {{ current?.hint }}</span
+      >
     </p>
 
     <div class="picker__actions">
-      <button v-if="next && !cancelled" type="button" class="btn btn--primary" :disabled="saving" @click="pick(next.key)">
+      <button
+        v-if="next && !cancelled && !(awaitingPayment && status === 'pending_payment')"
+        type="button"
+        class="btn btn--primary"
+        :disabled="saving"
+        @click="pick(next.key)"
+      >
         <i :class="next.icon"></i> Marcar como {{ next.label.toLowerCase() }}
       </button>
-      <button v-if="!cancelled" type="button" class="picker__cancel" :disabled="saving" @click="askCancel = true">
+      <span v-else-if="!cancelled && awaitingPayment" class="picker__hint"
+        ><i class="fa-solid fa-arrow-down"></i> Aprueba el pago en el bloque de abajo.</span
+      >
+      <button
+        v-if="!cancelled"
+        type="button"
+        class="picker__cancel"
+        :disabled="saving"
+        @click="askCancel = true"
+      >
         <i class="fa-solid fa-ban"></i> Cancelar pedido
       </button>
       <button v-else type="button" class="btn btn--ghost" :disabled="saving" @click="pick('paid')">
         <i class="fa-solid fa-rotate-left"></i> Reactivar como pagado
       </button>
     </div>
-    <p class="picker__hint"><i class="fa-solid fa-envelope"></i> Cada cambio le llega al cliente por correo.</p>
+    <p class="picker__hint">
+      <i class="fa-solid fa-envelope"></i> Cada cambio le llega al cliente por correo.
+    </p>
 
     <BaseModal
       :open="askCancel"
@@ -64,7 +98,7 @@ function pick(key: OrderStatus) {
       message="El cliente recibirá un correo avisando la cancelación. Si ya pagó, coordina el reembolso por WhatsApp."
       confirm-label="Sí, cancelar"
       danger
-      @confirm="askCancel = false; pick('cancelled')"
+      @confirm="(askCancel = false), pick('cancelled')"
       @cancel="askCancel = false"
     />
   </div>
