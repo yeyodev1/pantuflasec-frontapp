@@ -240,7 +240,7 @@ function addToCart() {
   &__price {
     font-size: $text-xl;
     font-weight: 700;
-    color: $accent-deep;
+    color: $price;
   }
 
   &__compare {
