@@ -62,9 +62,8 @@ const { draft, id, loading, saving, error, save, addVariant, removeVariant } = u
             ><input v-model="draft.isActive" type="checkbox" /> Visible en la tienda</label
           >
           <label class="check"><input v-model="draft.featured" type="checkbox" /> Destacado</label>
-          <label class="check"
-            ><input v-model="draft.newArrival" type="checkbox" /> Nuevo (sección "Nuevo")</label
-          >
+          <label class="check"><input v-model="draft.newArrival" type="checkbox" /> Nuevo (sección "Nuevo")</label>
+          <label class="check"><input v-model="draft.showOnHome" type="checkbox" /> Mostrar en el inicio</label>
           <label>Orden <input v-model="draft.sortOrder" type="number" step="1" /></label>
         </div>
       </fieldset>
