@@ -21,7 +21,8 @@ async function submit() {
   try {
     const user = await userStore.login(email.value.trim(), password.value)
     toast.success(`Hola, ${user.name || user.email}`)
-    const next = typeof route.query.next === 'string' ? route.query.next : '/cuenta'
+    // Cada rol entra a lo suyo: admin al catálogo, vendedor a los pedidos.
+    const next = typeof route.query.next === 'string' ? route.query.next : userStore.home
     router.replace(next)
   } catch (e) {
     error.value = (e as ApiError).message
