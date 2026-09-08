@@ -2,9 +2,11 @@
 import { onMounted } from 'vue'
 import { useCheckout } from '@/composables/useCheckout'
 import CheckoutSummary from '@/components/checkout/CheckoutSummary.vue'
+import CheckoutCard from '@/components/checkout/CheckoutCard.vue'
 import PayphoneBox from '@/components/checkout/PayphoneBox.vue'
 import FormField from '@/components/checkout/FormField.vue'
 import ShippingOptions from '@/components/checkout/ShippingOptions.vue'
+import PaymentOptions from '@/components/checkout/PaymentOptions.vue'
 import CheckoutSteps from '@/components/checkout/CheckoutSteps.vue'
 import PhoneField from '@/components/ui/PhoneField.vue'
 import BillingSection from '@/components/checkout/BillingSection.vue'
@@ -14,7 +16,8 @@ import { useWhatsApp } from '@/composables/useWhatsApp'
 
 const {
   cart, config, loadingConfig, submitting, error, form, payphone, orderNumber,
-  shippingCost, tax, total, needsAddress, payphoneReady, setMethod, submit,
+  shippingCost, tax, taxIncluded, total, needsAddress, availableMethods, submitLabel,
+  setMethod, setPayment, submit,
 } = useCheckout()
 const wa = useWhatsApp()
 
@@ -47,6 +50,7 @@ onMounted(() => {
         :shipping-label="config?.shippingMethods.find((m) => m.key === form.shipping.method)?.label ?? ''"
         :tax="tax"
         :tax-rate="config?.taxRate ?? 0"
+        :tax-included="taxIncluded"
         :total="total"
       />
 
@@ -60,8 +64,7 @@ onMounted(() => {
         </div>
 
         <form v-else class="form" @submit.prevent="submit">
-          <section class="card" style="--i: 0">
-            <h2 class="card__title"><span>1</span> Tus datos</h2>
+          <CheckoutCard :number="1" title="Tus datos">
             <FormField label="Nombre completo" icon="fa-solid fa-user">
               <input v-model="form.customer.name" required autocomplete="name" placeholder="Como aparece en tu cédula" />
             </FormField>
@@ -76,10 +79,9 @@ onMounted(() => {
                 <input v-model="form.customer.documentId" inputmode="numeric" placeholder="Para la factura" />
               </FormField>
             </div>
-          </section>
+          </CheckoutCard>
 
-          <section class="card" style="--i: 1">
-            <h2 class="card__title"><span>2</span> Entrega</h2>
+          <CheckoutCard :number="2" title="Entrega">
             <ShippingOptions
               :methods="config?.shippingMethods ?? []"
               :value="form.shipping.method"
@@ -104,22 +106,26 @@ onMounted(() => {
             <FormField label="Notas para tu pedido" icon="fa-solid fa-pen" optional>
               <textarea v-model="form.shipping.notes" rows="2" placeholder="Dedicatoria, color preferido, hora de entrega…"></textarea>
             </FormField>
-          </section>
+          </CheckoutCard>
+
+          <CheckoutCard :number="3" title="Pago">
+            <PaymentOptions :methods="availableMethods" :value="form.payment.method" :loading="loadingConfig" @change="setPayment" />
+          </CheckoutCard>
 
           <BillingSection v-if="form.billing" :billing="form.billing" :customer-document="form.customer.documentId" />
 
           <p v-if="error" class="form__error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</p>
-          <p v-if="!loadingConfig && !payphoneReady" class="form__error">
-            Los pagos con tarjeta no están disponibles ahora. Escríbenos por WhatsApp para completar tu compra.
-          </p>
 
-          <button class="btn btn--primary form__submit" :disabled="submitting || !payphoneReady">
+          <button class="btn btn--primary form__submit" :disabled="submitting || !availableMethods.length">
             <i v-if="submitting" class="fa-solid fa-spinner fa-spin"></i>
             <i v-else class="fa-solid fa-lock"></i>
-            Continuar al pago
+            {{ submitLabel }}
             <span class="form__total">{{ formatMoney(total) }}</span>
           </button>
-          <p class="form__safe"><i class="fa-brands fa-cc-visa"></i> <i class="fa-brands fa-cc-mastercard"></i> Pago seguro con PayPhone</p>
+          <p v-if="form.payment.method === 'payphone'" class="form__safe">
+            <i class="fa-brands fa-cc-visa"></i> <i class="fa-brands fa-cc-mastercard"></i> Pago seguro con PayPhone
+          </p>
+          <p v-else class="form__safe"><i class="fa-solid fa-shield-halved"></i> Tu pedido queda reservado hasta que confirmemos el pago.</p>
 
           <button type="button" class="btn btn--ghost form__wa" @click="wa.checkout()">
             <i class="fa-brands fa-whatsapp"></i> Prefiero terminar la compra por WhatsApp
@@ -175,7 +181,6 @@ onMounted(() => {
     }
   }
 }
-
 
 .form {
   @include flex(column, stretch, flex-start, 1rem);
@@ -238,35 +243,6 @@ onMounted(() => {
     i {
       font-size: 1.1rem;
       vertical-align: middle;
-    }
-  }
-}
-
-.card {
-  @include card;
-  padding: 1.1rem 1rem 1.2rem;
-  @include flex(column, stretch, flex-start, 0.9rem);
-  @include reveal;
-
-  @include from('sm') {
-    padding: 1.4rem 1.3rem;
-  }
-
-  &__title {
-    @include display($text-lg, 600);
-    @include flex(row, center, flex-start, 0.6rem);
-    margin-bottom: 0.2rem;
-
-    span {
-      width: 1.7rem;
-      height: 1.7rem;
-      border-radius: $radius-pill;
-      background: $accent-soft;
-      color: $accent-deep;
-      font-family: $font-principal;
-      font-size: 0.8rem;
-      font-weight: 700;
-      @include flex(row, center, center);
     }
   }
 }
