@@ -7,6 +7,7 @@ import PayphoneBox from '@/components/checkout/PayphoneBox.vue'
 import FormField from '@/components/checkout/FormField.vue'
 import ShippingOptions from '@/components/checkout/ShippingOptions.vue'
 import PaymentOptions from '@/components/checkout/PaymentOptions.vue'
+import TransferProofField from '@/components/checkout/TransferProofField.vue'
 import CheckoutSteps from '@/components/checkout/CheckoutSteps.vue'
 import PhoneField from '@/components/ui/PhoneField.vue'
 import BillingSection from '@/components/checkout/BillingSection.vue'
@@ -15,7 +16,7 @@ import { pixel } from '@/utils/pixel'
 import { useWhatsApp } from '@/composables/useWhatsApp'
 
 const {
-  cart, config, loadingConfig, submitting, error, form, payphone, orderNumber,
+  cart, config, loadingConfig, submitting, error, form, payphone, orderNumber, proof, proofNote,
   shippingCost, tax, taxIncluded, total, needsAddress, availableMethods, submitLabel,
   setMethod, setPayment, submit,
 } = useCheckout()
@@ -110,6 +111,18 @@ onMounted(() => {
 
           <CheckoutCard :number="3" title="Pago">
             <PaymentOptions :methods="availableMethods" :value="form.payment.method" :loading="loadingConfig" @change="setPayment" />
+            <Transition name="rise">
+              <TransferProofField
+                v-if="form.payment.method === 'transfer' && config"
+                :accounts="config.payments.transfer.accounts"
+                :instructions="config.payments.transfer.instructions"
+                :total="total"
+                :file="proof"
+                :note="proofNote"
+                @update:file="proof = $event"
+                @update:note="proofNote = $event"
+              />
+            </Transition>
           </CheckoutCard>
 
           <BillingSection v-if="form.billing" :billing="form.billing" :customer-document="form.customer.documentId" />
