@@ -10,6 +10,8 @@ defineProps<{
   shippingLabel: string
   tax: number
   taxRate: number
+  /** Los precios ya traen IVA: la fila es informativa y no suma al total. */
+  taxIncluded?: boolean
   total: number
 }>()
 
@@ -23,7 +25,10 @@ const open = ref(false)
       <span class="summary__title">
         <i class="fa-solid fa-bag-shopping"></i>
         Tu pedido
-        <small>{{ lines.reduce((n, l) => n + l.qty, 0) }} {{ lines.length === 1 && lines[0]?.qty === 1 ? 'artículo' : 'artículos' }}</small>
+        <small
+          >{{ lines.reduce((n, l) => n + l.qty, 0) }}
+          {{ lines.length === 1 && lines[0]?.qty === 1 ? 'artículo' : 'artículos' }}</small
+        >
       </span>
       <span class="summary__total-inline">{{ formatMoney(total) }}</span>
       <i class="fa-solid fa-chevron-down summary__chev"></i>
@@ -46,8 +51,10 @@ const open = ref(false)
         <dd>{{ formatMoney(subtotal) }}</dd>
         <dt>{{ shippingLabel.replace(/\s*\(.*\)$/, '') || 'Envío' }}</dt>
         <dd>{{ shippingCost ? formatMoney(shippingCost) : 'Gratis' }}</dd>
-        <dt>IVA ({{ Math.round(taxRate * 100) }}%)</dt>
-        <dd>{{ formatMoney(tax) }}</dd>
+        <dt :class="{ summary__muted: taxIncluded }">
+          {{ taxIncluded ? 'Incluye IVA' : 'IVA' }} ({{ Math.round(taxRate * 100) }}%)
+        </dt>
+        <dd :class="{ summary__muted: taxIncluded }">{{ formatMoney(tax) }}</dd>
         <dt class="summary__total">Total</dt>
         <dd class="summary__total">{{ formatMoney(total) }}</dd>
       </dl>
@@ -178,6 +185,11 @@ const open = ref(false)
       text-align: right;
       padding-block: 0.2rem;
     }
+  }
+
+  &__muted {
+    color: $ink-muted !important;
+    font-size: $text-xs;
   }
 
   &__total {
