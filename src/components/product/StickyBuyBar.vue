@@ -42,7 +42,7 @@ const emit = defineEmits<{ add: [] }>()
 
     strong {
       font-size: $text-lg;
-      color: $accent-deep;
+      color: $price;
     }
 
     small {
