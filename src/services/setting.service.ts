@@ -1,5 +1,5 @@
 import APIBase from './httpBase'
-import type { HeroSettings, PaymentSettings } from '@/types'
+import type { HeroSettings, PaymentSettings, ShippingMethodSetting } from '@/types'
 
 /** Ajustes editables desde el panel: portada del home y métodos de pago manuales. */
 class SettingService extends APIBase {
@@ -16,6 +16,16 @@ class SettingService extends APIBase {
   async payments(): Promise<PaymentSettings> {
     const { data } = await this.get<PaymentSettings>('settings/payments')
     return data
+  }
+
+  async shipping(): Promise<ShippingMethodSetting[]> {
+    const { data } = await this.get<{ methods: ShippingMethodSetting[] }>('settings/shipping')
+    return data.methods
+  }
+
+  async updateShipping(methods: ShippingMethodSetting[]): Promise<ShippingMethodSetting[]> {
+    const { data } = await this.put<{ methods: ShippingMethodSetting[] }>('settings/shipping', { methods })
+    return data.methods
   }
 
   async updatePayments(input: Partial<PaymentSettings>): Promise<PaymentSettings> {
