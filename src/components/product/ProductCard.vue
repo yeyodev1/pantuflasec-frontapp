@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import type { Product } from '@/types'
 import { formatMoney } from '@/utils/format'
 import { inStock, mainImage, priceRange } from '@/utils/product'
+import QuickAdd from './QuickAdd.vue'
 
 const props = defineProps<{ product: Product }>()
 
@@ -17,6 +18,7 @@ const hasVariants = computed(() => props.product.variants.length > 0)
       <img :src="mainImage(product)" :alt="product.name" loading="lazy" width="400" height="400" />
       <span v-if="!available" class="card__badge card__badge--out">Agotado</span>
       <span v-else-if="product.featured" class="card__badge">Destacado</span>
+      <QuickAdd v-if="available" :product="product" />
     </div>
     <div class="card__body">
       <p v-if="product.collection" class="card__collection">{{ product.collection }}</p>
