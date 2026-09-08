@@ -6,6 +6,7 @@ import CartDrawer from '@/components/cart/CartDrawer.vue'
 import TheWhatsApp from '@/components/ui/TheWhatsApp.vue'
 import WhatsAppModal from '@/components/ui/WhatsAppModal.vue'
 import ThePreloader from '@/components/ui/ThePreloader.vue'
+import TheRouteBar from '@/components/ui/TheRouteBar.vue'
 </script>
 
 <template>
@@ -24,6 +25,7 @@ import ThePreloader from '@/components/ui/ThePreloader.vue'
     <TheWhatsApp />
     <WhatsAppModal />
     <ThePreloader />
+    <TheRouteBar />
   </div>
 </template>
 
