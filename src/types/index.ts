@@ -65,6 +65,8 @@ export interface Product {
   featured: boolean
   /** Sección "Nuevo": lo marca el admin cuando llega mercadería. */
   newArrival: boolean
+  /** Sale en el inicio agrupado por colección (check en el editor). */
+  showOnHome: boolean
   sortOrder: number
   createdAt: string
   updatedAt: string
@@ -83,6 +85,7 @@ export interface ProductQuery {
   collection?: string
   featured?: boolean
   newArrival?: boolean
+  showOnHome?: boolean
   sort?: ProductSort
   page?: number
   limit?: number
