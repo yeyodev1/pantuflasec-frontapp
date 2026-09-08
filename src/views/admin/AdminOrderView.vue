@@ -124,6 +124,12 @@ function waLink(o: Order) {
           <p>{{ order.shipping.label }}</p>
           <p>{{ order.shipping.address }}, {{ order.shipping.city }}</p>
           <p v-if="order.shipping.reference">Ref.: {{ order.shipping.reference }}</p>
+          <p v-if="order.shipping.coords" class="panel__map">
+            <a :href="`https://www.google.com/maps?q=${order.shipping.coords.lat},${order.shipping.coords.lng}`" target="_blank" rel="noopener">
+              <i class="fa-solid fa-map-location-dot"></i> Ver punto en Google Maps
+            </a>
+            <span v-if="order.shipping.km != null">· {{ order.shipping.km }} km desde la tienda</span>
+          </p>
           <p v-if="order.shipping.notes" class="panel__notes">“{{ order.shipping.notes }}”</p>
         </section>
 
@@ -187,6 +193,14 @@ function waLink(o: Order) {
   &__meta { font-size: $text-xs; color: $ink-muted; }
   &__warn { color: $warning; font-weight: 600; }
   &__notes { color: $ink-soft; font-style: italic; }
+  &__map {
+    @include flex(row, center, flex-start, 0.4rem);
+    flex-wrap: wrap;
+    font-size: $text-xs;
+    color: $ink-muted;
+
+    a { color: $accent-deep; font-weight: 600; }
+  }
   &__contact {
     @include flex(row, center, flex-start, 0.4rem);
     flex-wrap: wrap;
