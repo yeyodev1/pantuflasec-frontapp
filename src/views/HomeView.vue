@@ -6,14 +6,10 @@ import FeaturedProducts from '@/components/home/FeaturedProducts.vue'
 import HeroCollage from '@/components/home/HeroCollage.vue'
 import CollectionMarquee from '@/components/home/CollectionMarquee.vue'
 import HomeGallery from '@/components/home/HomeGallery.vue'
+import HomePerks from '@/components/home/HomePerks.vue'
 
 const { ask } = useWhatsApp()
 
-const perks = [
-  { icon: 'fa-solid fa-truck-fast', title: 'Envíos a todo Ecuador', text: 'Por Servientrega, de 24 a 72 horas a provincias.' },
-  { icon: 'fa-solid fa-credit-card', title: 'Paga con tarjeta', text: 'Cobro seguro con PayPhone, sin salir de la tienda.' },
-  { icon: 'fa-solid fa-store', title: 'Dos tiendas para retirar', text: 'La Garzota (frente al Garzocentro) y La Joya (Plaza Sevilla).' },
-]
 </script>
 
 <template>
@@ -41,13 +37,7 @@ const perks = [
     <div v-reveal><FeaturedProducts eyebrow="Favoritos" title="Los más pedidos" :query="{ featured: true }" /></div>
     <div v-reveal><FeaturedProducts eyebrow="Nuevo" title="Recién llegados" :query="{ sort: 'recent' }" /></div>
 
-    <section id="contacto" class="perks">
-      <article v-for="(perk, i) in perks" :key="perk.title" v-reveal="i" class="perk">
-        <span class="perk__icon"><i :class="perk.icon"></i></span>
-        <h3 class="perk__title">{{ perk.title }}</h3>
-        <p class="perk__text">{{ perk.text }}</p>
-      </article>
-    </section>
+    <HomePerks />
   </div>
 </template>
 
@@ -100,35 +90,5 @@ const perks = [
   }
 }
 
-.perks {
-  @include container;
-  @include flex-cards(240px, 1rem);
-  padding-block: $space-xl $space-section;
-}
 
-.perk {
-  @include card;
-  padding: 1.5rem 1.4rem;
-  @include lift;
-
-  &__icon {
-    @include flex(row, center, center);
-    width: 2.6rem;
-    height: 2.6rem;
-    border-radius: $radius-sm;
-    background: $accent-soft;
-    color: $accent-deep;
-    margin-bottom: 0.8rem;
-  }
-
-  &__title {
-    @include display($text-lg, 600);
-    margin-bottom: 0.3rem;
-  }
-
-  &__text {
-    font-size: $text-sm;
-    color: $ink-soft;
-  }
-}
 </style>
