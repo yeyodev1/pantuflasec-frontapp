@@ -26,14 +26,30 @@ const { draft, id, loading, saving, error, save, addVariant, removeVariant } = u
               <option v-for="c in categories" :key="c.key" :value="c.key">{{ c.label }}</option>
             </select>
           </label>
-          <label>Colección / licencia <input v-model="draft.collection" placeholder="Stitch, Snoopy, Sanrio…" /></label>
+          <label
+            >Colección / licencia
+            <input v-model="draft.collection" placeholder="Stitch, Snoopy, Sanrio…"
+          /></label>
         </div>
         <div class="form__row">
-          <label>Precio base <input v-model="draft.price" type="number" step="0.01" min="0" required /></label>
-          <label>Precio anterior (tachado) <input v-model="draft.compareAtPrice" type="number" step="0.01" min="0" placeholder="Opcional" /></label>
+          <label
+            >Precio base <input v-model="draft.price" type="number" step="0.01" min="0" required
+          /></label>
+          <label
+            >Precio anterior (tachado)
+            <input
+              v-model="draft.compareAtPrice"
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="Opcional"
+          /></label>
         </div>
         <label>Descripción <textarea v-model="draft.description" rows="4"></textarea></label>
-        <label>Etiquetas (separadas por coma) <input v-model="draft.tags" placeholder="disney, niños, regalo" /></label>
+        <label
+          >Etiquetas (separadas por coma)
+          <input v-model="draft.tags" placeholder="disney, niños, regalo"
+        /></label>
       </fieldset>
 
       <ImagesEditor :images="draft.images" />
@@ -42,19 +58,31 @@ const { draft, id, loading, saving, error, save, addVariant, removeVariant } = u
       <fieldset class="form__group">
         <legend>Visibilidad</legend>
         <div class="form__row form__row--checks">
-          <label class="check"><input v-model="draft.isActive" type="checkbox" /> Visible en la tienda</label>
+          <label class="check"
+            ><input v-model="draft.isActive" type="checkbox" /> Visible en la tienda</label
+          >
           <label class="check"><input v-model="draft.featured" type="checkbox" /> Destacado</label>
+          <label class="check"
+            ><input v-model="draft.newArrival" type="checkbox" /> Nuevo (sección "Nuevo")</label
+          >
           <label>Orden <input v-model="draft.sortOrder" type="number" step="1" /></label>
         </div>
       </fieldset>
 
-      <p v-if="error" class="form__error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</p>
+      <p v-if="error" class="form__error">
+        <i class="fa-solid fa-circle-exclamation"></i> {{ error }}
+      </p>
 
       <div class="form__actions">
         <button class="btn btn--primary" :disabled="saving">
           <i v-if="saving" class="fa-solid fa-spinner fa-spin"></i> Guardar
         </button>
-        <RouterLink v-if="id" :to="`/producto/${$route.params.slug}`" class="btn btn--ghost" target="_blank">
+        <RouterLink
+          v-if="id"
+          :to="`/producto/${$route.params.slug}`"
+          class="btn btn--ghost"
+          target="_blank"
+        >
           Ver en la tienda
         </RouterLink>
       </div>
