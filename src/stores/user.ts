@@ -13,6 +13,11 @@ export const useUserStore = defineStore('user', {
   getters: {
     isAuthenticated: (s) => Boolean(s.user),
     isAdmin: (s) => s.user?.accountType === 'admin',
+    isStaff: (s) => s.user?.accountType === 'staff',
+    /** Administración y vendedores atienden pedidos. */
+    canManageOrders: (s) => s.user?.accountType === 'admin' || s.user?.accountType === 'staff',
+    /** A dónde va cada rol al entrar. */
+    home: (s) => (s.user?.accountType === 'admin' ? '/admin/productos' : s.user?.accountType === 'staff' ? '/admin/pedidos' : '/cuenta'),
     hasToken: () => Boolean(localStorage.getItem(TOKEN_KEY)),
   },
 
