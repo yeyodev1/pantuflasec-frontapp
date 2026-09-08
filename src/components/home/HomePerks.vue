@@ -6,10 +6,27 @@ import { useWhatsApp } from '@/composables/useWhatsApp'
 const { ask } = useWhatsApp()
 
 const perks = [
-  { icon: 'fa-solid fa-truck-fast', title: 'Envíos a todo Ecuador', text: 'Por Servientrega, de 24 a 72 horas a provincias. En Guayaquil llega en 1 a 2 días.' },
-  { icon: 'fa-solid fa-credit-card', title: 'Paga con tarjeta', text: 'Cobro seguro con PayPhone sin salir de la tienda. Visa, Mastercard, Diners y Discover.' },
-  { icon: 'fa-solid fa-store', title: 'Dos tiendas para retirar', text: `${site.stores[0]!.name} y ${site.stores[1]!.name}. Retiro gratis, te avisamos cuando esté listo.` },
-  { icon: 'fa-brands fa-whatsapp', title: 'Atención por WhatsApp', text: 'Resolvemos dudas, personalizamos regalos y cerramos tu compra por chat si prefieres.', action: true },
+  {
+    icon: 'fa-solid fa-truck-fast',
+    title: 'Envíos a todo Ecuador',
+    text: 'Por Servientrega, de 24 a 72 horas a provincias. En Guayaquil llega en 1 a 2 días.',
+  },
+  {
+    icon: 'fa-solid fa-credit-card',
+    title: 'Paga como prefieras',
+    text: 'Tarjeta con PayPhone, transferencia bancaria o efectivo al retirar en tienda. Precios con IVA incluido.',
+  },
+  {
+    icon: 'fa-solid fa-store',
+    title: 'Dos tiendas para retirar',
+    text: `${site.stores[0]!.name} y ${site.stores[1]!.name}. Retiro gratis, te avisamos cuando esté listo.`,
+  },
+  {
+    icon: 'fa-brands fa-whatsapp',
+    title: 'Atención por WhatsApp',
+    text: 'Resolvemos dudas, personalizamos regalos y cerramos tu compra por chat si prefieres.',
+    action: true,
+  },
 ]
 </script>
 
@@ -35,7 +52,9 @@ const perks = [
           <span class="perk__icon"><i :class="p.icon"></i></span>
           <strong class="perk__title">{{ p.title }}</strong>
           <p class="perk__text">{{ p.text }}</p>
-          <span v-if="p.action" class="perk__link">{{ site.whatsappDisplay }} <i class="fa-solid fa-arrow-right"></i></span>
+          <span v-if="p.action" class="perk__link"
+            >{{ site.whatsappDisplay }} <i class="fa-solid fa-arrow-right"></i
+          ></span>
         </component>
       </div>
     </div>
