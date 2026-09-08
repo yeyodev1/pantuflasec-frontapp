@@ -29,11 +29,38 @@ class OrderService extends APIBase {
     return data
   }
 
+  /** Captura de la transferencia; el backend la guarda en Cloudinary y avisa al equipo. */
+  async uploadProof(token: string, file: File, note = ''): Promise<Order> {
+    const form = new FormData()
+    form.append('file', file)
+    form.append('note', note)
+    const { data } = await this.post<Order>(
+      `orders/track/${encodeURIComponent(token)}/proof`,
+      form,
+      undefined,
+      {
+        timeout: 60000,
+      },
+    )
+    return data
+  }
+
+  /** El cliente escribe al equipo desde el seguimiento. */
+  async sendMessage(token: string, text: string): Promise<Order> {
+    const { data } = await this.post<Order>(`orders/track/${encodeURIComponent(token)}/messages`, {
+      text,
+    })
+    return data
+  }
+
   // --- Admin ---
 
-  async listAll(query: { status?: string; page?: number; q?: string } = {}): Promise<Paginated<Order>> {
+  async listAll(
+    query: { status?: string; pay?: string; page?: number; q?: string } = {},
+  ): Promise<Paginated<Order>> {
     const params = new URLSearchParams()
     if (query.status) params.set('status', query.status)
+    if (query.pay) params.set('pay', query.pay)
     if (query.page) params.set('page', String(query.page))
     if (query.q) params.set('q', query.q)
     const qs = params.toString()
@@ -41,8 +68,32 @@ class OrderService extends APIBase {
     return data
   }
 
-  async summary(): Promise<{ pending: number; paid: number; preparing: number; today: number }> {
-    const { data } = await this.get<{ pending: number; paid: number; preparing: number; today: number }>('orders/admin/summary')
+  async summary(): Promise<{
+    pending: number
+    paid: number
+    preparing: number
+    review: number
+    today: number
+  }> {
+    const { data } = await this.get<{
+      pending: number
+      paid: number
+      preparing: number
+      review: number
+      today: number
+    }>('orders/admin/summary')
+    return data
+  }
+
+  /** Aprueba o rechaza una transferencia (o registra el efectivo en tienda). */
+  async reviewPayment(id: string, action: 'approve' | 'reject', reason = ''): Promise<Order> {
+    const { data } = await this.put<Order>(`orders/admin/${id}/payment`, { action, reason })
+    return data
+  }
+
+  /** El equipo responde al cliente; le llega por correo con el enlace del pedido. */
+  async replyMessage(id: string, text: string): Promise<Order> {
+    const { data } = await this.post<Order>(`orders/admin/${id}/messages`, { text })
     return data
   }
 
