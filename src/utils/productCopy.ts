@@ -25,7 +25,10 @@ const byCategory: Record<string, (p: Product) => string> = {
 
 export function describe(p: Product): string {
   if (p.description?.trim()) return p.description
-  return byCategory[p.category]?.(p) ?? `${p.name}. Escríbenos por WhatsApp si quieres más detalles o fotos.`
+  return (
+    byCategory[p.category]?.(p) ??
+    `${p.name}. Escríbenos por WhatsApp si quieres más detalles o fotos.`
+  )
 }
 
 /** Pares etiqueta/valor para la ficha del producto. */
@@ -34,10 +37,12 @@ export function specs(p: Product): Array<{ label: string; value: string }> {
   if (p.collection) out.push({ label: 'Colección', value: p.collection })
   const sizes = p.variants.filter((v) => v.size).map((v) => v.size)
   const colors = p.variants.filter((v) => v.color).map((v) => v.color)
-  if (sizes.length) out.push({ label: sizes.length > 1 ? 'Tallas' : 'Talla', value: sizes.join(' · ') })
+  if (sizes.length)
+    out.push({ label: sizes.length > 1 ? 'Tallas' : 'Talla', value: sizes.join(' · ') })
   if (colors.length) out.push({ label: 'Opciones', value: colors.join(' · ') })
   const size = p.name.match(/(\d+(?:[.,]\d+)?)\s*(cm|m)\b/i)
-  if (size && !sizes.length) out.push({ label: 'Tamaño', value: `${size[1]} ${size[2]!.toLowerCase()}` })
+  if (size && !sizes.length)
+    out.push({ label: 'Tamaño', value: `${size[1]} ${size[2]!.toLowerCase()}` })
   out.push({ label: 'Entrega', value: 'Retiro en La Garzota o La Joya, o envío a todo el Ecuador' })
   return out
 }
@@ -53,6 +58,6 @@ export const slipperSizes = [
 export const perks = [
   { icon: 'fa-solid fa-truck-fast', text: 'Envío a todo Ecuador, 24 a 72 h' },
   { icon: 'fa-solid fa-store', text: 'Retiro gratis en La Garzota o La Joya' },
-  { icon: 'fa-solid fa-lock', text: 'Pago seguro con tarjeta' },
+  { icon: 'fa-solid fa-lock', text: 'Tarjeta, transferencia o efectivo en tienda' },
   { icon: 'fa-brands fa-whatsapp', text: 'Atención por WhatsApp' },
 ]
