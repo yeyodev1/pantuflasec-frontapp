@@ -15,7 +15,6 @@ const { ask } = useWhatsApp()
 <template>
   <div class="home">
     <section class="hero">
-      <HeroCollage />
       <div class="hero__inner">
         <p class="hero__eyebrow" style="--i: 0">{{ site.name }}</p>
         <h1 class="hero__title" style="--i: 1">{{ site.tagline }}</h1>
@@ -29,6 +28,7 @@ const { ask } = useWhatsApp()
           </button>
         </div>
       </div>
+      <HeroCollage />
     </section>
 
     <CollectionMarquee />
@@ -52,8 +52,12 @@ const { ask } = useWhatsApp()
     z-index: 1;
     @include container(880px);
     @include flex(column, flex-start, center, 1rem);
-    padding-block: $space-xl;
+    padding-block: $space-lg 0.5rem;
     text-align: left;
+
+    @include from('lg') {
+      padding-block: $space-section;
+    }
 
     @include from('md') {
       align-items: center;
