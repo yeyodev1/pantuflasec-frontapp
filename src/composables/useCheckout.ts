@@ -48,7 +48,7 @@ export function useCheckout() {
       phone: '',
     },
     shipping: {
-      method: (saved.shippingMethod as ShippingMethod) || 'pickup-garzota',
+      method: (saved.shippingMethod as ShippingMethod) || '',
       address: saved.address ?? '',
       city: saved.city ?? '',
       reference: saved.reference ?? '',
@@ -75,7 +75,13 @@ export function useCheckout() {
 
   orderService
     .config()
-    .then((c) => (config.value = c))
+    .then((c) => {
+      config.value = c
+      // El método guardado puede haber sido apagado por el admin: se cae al primero activo.
+      if (!c.shippingMethods.some((m) => m.key === form.shipping.method)) {
+        form.shipping.method = c.shippingMethods[0]?.key ?? ''
+      }
+    })
     .catch((e: ApiError) => (error.value = e.message))
     .finally(() => (loadingConfig.value = false))
 
