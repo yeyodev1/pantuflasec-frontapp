@@ -11,6 +11,8 @@ const meta: Record<string, { icon: string; label: string; tone: string }> = {
   created: { icon: 'fa-solid fa-cart-plus', label: 'Pedido creado', tone: 'info' },
   paid: { icon: 'fa-solid fa-circle-check', label: 'Pago aprobado', tone: 'ok' },
   'payment-failed': { icon: 'fa-solid fa-circle-xmark', label: 'Pago no completado', tone: 'bad' },
+  proof: { icon: 'fa-solid fa-receipt', label: 'Comprobante subido', tone: 'info' },
+  'payment-rejected': { icon: 'fa-solid fa-ban', label: 'Comprobante rechazado', tone: 'bad' },
   email: { icon: 'fa-solid fa-envelope-circle-check', label: 'Correo enviado', tone: 'ok' },
   'email-failed': { icon: 'fa-solid fa-envelope', label: 'Correo no enviado', tone: 'bad' },
   status: { icon: 'fa-solid fa-arrow-right-arrow-left', label: 'Cambio de estado', tone: 'info' },
@@ -27,7 +29,9 @@ function pretty(e: { kind: string; detail: string }) {
 }
 
 const events = computed(() =>
-  [...(props.order.events ?? [])].sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime()),
+  [...(props.order.events ?? [])].sort(
+    (a, b) => new Date(b.at).getTime() - new Date(a.at).getTime(),
+  ),
 )
 const emailsSent = computed(() => events.value.filter((e) => e.kind === 'email').length)
 </script>
@@ -36,11 +40,20 @@ const emailsSent = computed(() => events.value.filter((e) => e.kind === 'email')
   <section class="timeline">
     <header class="timeline__head">
       <h2 class="timeline__title">Historial</h2>
-      <span class="timeline__count"><i class="fa-solid fa-envelope-circle-check"></i> {{ emailsSent }} {{ emailsSent === 1 ? 'correo enviado' : 'correos enviados' }}</span>
+      <span class="timeline__count"
+        ><i class="fa-solid fa-envelope-circle-check"></i> {{ emailsSent }}
+        {{ emailsSent === 1 ? 'correo enviado' : 'correos enviados' }}</span
+      >
     </header>
     <p v-if="!events.length" class="timeline__empty">Todavía no hay movimientos.</p>
     <ol v-else class="timeline__list">
-      <li v-for="(e, i) in events" :key="i" class="ev" :class="`ev--${meta[e.kind]?.tone ?? 'muted'}`" :style="{ '--i': i }">
+      <li
+        v-for="(e, i) in events"
+        :key="i"
+        class="ev"
+        :class="`ev--${meta[e.kind]?.tone ?? 'muted'}`"
+        :style="{ '--i': i }"
+      >
         <span class="ev__icon"><i :class="meta[e.kind]?.icon ?? 'fa-solid fa-circle'"></i></span>
         <div class="ev__body">
           <p class="ev__label">{{ meta[e.kind]?.label ?? e.kind }}</p>
@@ -104,10 +117,22 @@ const emailsSent = computed(() => events.value.filter((e) => e.kind === 'email')
     color: $ink-soft;
   }
 
-  &--ok .ev__icon { background: $success-bg; color: $success; }
-  &--bad .ev__icon { background: $danger-bg; color: $danger; }
-  &--info .ev__icon { background: $accent-soft; color: $accent-deep; }
-  &--wa .ev__icon { background: rgba(#25d366, 0.15); color: #128c7e; }
+  &--ok .ev__icon {
+    background: $success-bg;
+    color: $success;
+  }
+  &--bad .ev__icon {
+    background: $danger-bg;
+    color: $danger;
+  }
+  &--info .ev__icon {
+    background: $accent-soft;
+    color: $accent-deep;
+  }
+  &--wa .ev__icon {
+    background: rgba(#25d366, 0.15);
+    color: #128c7e;
+  }
 
   &__body {
     min-width: 0;
