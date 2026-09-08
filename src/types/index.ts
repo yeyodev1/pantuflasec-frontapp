@@ -63,6 +63,8 @@ export interface Product {
   tags: string[]
   isActive: boolean
   featured: boolean
+  /** Sección "Nuevo": lo marca el admin cuando llega mercadería. */
+  newArrival: boolean
   sortOrder: number
   createdAt: string
   updatedAt: string
@@ -80,6 +82,7 @@ export interface ProductQuery {
   category?: Category | ''
   collection?: string
   featured?: boolean
+  newArrival?: boolean
   sort?: ProductSort
   page?: number
   limit?: number
@@ -89,13 +92,19 @@ export interface ProductQuery {
 
 export type ShippingMethod = 'pickup-garzota' | 'pickup-joya' | 'gye' | 'ec'
 
+export type PaymentMethod = 'payphone' | 'transfer' | 'cash'
+/** `review` = comprobante subido, pendiente de que el equipo lo apruebe. */
+export type PaymentStatus = 'pending' | 'review' | 'paid' | 'rejected' | 'failed' | 'cancelled'
+
+export interface OrderMessage {
+  at: string
+  from: 'customer' | 'team'
+  by: string
+  text: string
+}
+
 export type OrderStatus =
-  | 'pending_payment'
-  | 'paid'
-  | 'preparing'
-  | 'shipped'
-  | 'delivered'
-  | 'cancelled'
+  'pending_payment' | 'paid' | 'preparing' | 'shipped' | 'delivered' | 'cancelled'
 
 export interface OrderItem {
   productId: string
@@ -126,28 +135,63 @@ export interface Order {
   subtotal: number
   shippingCost: number
   taxRate: number
+  /** Con `taxIncluded` el IVA ya está dentro del subtotal: se muestra, no se suma. */
   tax: number
+  taxIncluded?: boolean
   total: number
   status: OrderStatus
   payment: {
-    method: 'payphone'
-    status: 'pending' | 'paid' | 'failed' | 'cancelled'
+    method: PaymentMethod
+    status: PaymentStatus
     payphoneId: number | null
     authorizationCode: string
     cardBrand: string
     paidAt: string | null
     message: string
+    proof: { url: string; publicId: string; note: string; uploadedAt: string | null }
+    reviewedBy: string
+    reviewedAt: string | null
+    rejectReason: string
   }
   stockIssue: boolean
   events?: Array<{ at: string; kind: string; detail: string; by: string }>
+  messages?: OrderMessage[]
   createdAt: string
   updatedAt: string
+}
+
+export interface BankAccount {
+  bank: string
+  type: string
+  number: string
+  holder: string
+  documentId: string
+  email: string
+}
+
+/** Métodos que aprueba el equipo; el admin los edita en /admin/pagos. */
+export interface PaymentSettings {
+  transfer: { enabled: boolean; accounts: BankAccount[]; instructions: string }
+  cash: { enabled: boolean; instructions: string }
+}
+
+/** Portada del home, editable en /admin/portada. */
+export interface HeroSettings {
+  enabled: boolean
+  image: { url: string; publicId: string }
+  eyebrow: string
+  title: string
+  text: string
+  ctaLabel: string
+  ctaLink: string
 }
 
 export interface ShopConfig {
   shippingMethods: Array<{ key: ShippingMethod; label: string; cost: number }>
   taxRate: number
+  taxIncluded: boolean
   payphone: { token: string; storeId: string } | null
+  payments: PaymentSettings
 }
 
 export interface CheckoutInput {
@@ -167,6 +211,7 @@ export interface CheckoutInput {
     email: string
     phone: string
   }
+  payment: { method: PaymentMethod }
   items: Array<{ productId: string; variantId: string | null; qty: number }>
 }
 
