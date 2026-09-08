@@ -97,7 +97,7 @@ En componentes: `$ink`, `$accent`, `@include from('md')`, `@include container` �
   `orden`, `pagina`), `/producto/:slug`, `/checkout`, `/pay-response` (vuelta de PayPhone),
   `/pedido/:token`. **Admin** (`requiresAdmin`): `/admin/productos`, `/admin/productos/:slug|nuevo`,
   `/admin/pedidos`, `/admin/pedidos/:id`, `/admin/usuarios`, `/admin/portada`, `/admin/galeria`,
-  `/admin/pagos`, `/admin/archivos`. `AdminShell` es el marco: sidebar en escritorio y barra
+  `/admin/envios`, `/admin/pagos`, `/admin/archivos`. `AdminShell` es el marco: sidebar en escritorio y barra
   inferior en móvil.
 - **Carrito:** `stores/cart.ts` (Pinia + localStorage `pantuflasec.cart`). Guarda una copia de
   precio e imagen; el backend revalida al crear el pedido. `CartDrawer` se abre al agregar.
@@ -107,6 +107,9 @@ En componentes: `$ink`, `$accent`, `@include from('md')`, `@include container` �
   `/pay-response` confirma. Con transferencia o efectivo el pedido queda reservado, el carrito se
   vacía y se va a `/pedido/:token?nuevo=1`. Efectivo solo aparece con retiro en tienda; la lista de
   métodos sale de `/orders/config` (`payments`, editable en `/admin/pagos`).
+- **Métodos de entrega** vienen del backend (`/orders/config`, editables en `/admin/envios`):
+  `ShippingMethod` es un string y los retiros se reconocen por el prefijo `pickup-`.
+  `ShippingOptions` pinta `description` tal cual; no hay textos de envío en el front.
 - **Precios con IVA incluido.** `taxIncluded` viene del backend: el resumen muestra "Incluye IVA"
   en gris y no lo suma. Nunca volver a sumar IVA en el front.
 - **Página del pedido** (`OrderView`): `OrderPaymentPanel` (cuentas con botón de copiar, subir
