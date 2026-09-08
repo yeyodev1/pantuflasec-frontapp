@@ -53,6 +53,9 @@ Si vite sirve código viejo tras un cambio grande: `rm -rf node_modules/.vite &&
   cliente (producto abierto con variante y cantidad; carrito + datos guardados del checkout; o
   consulta general). Los mensajes de WhatsApp llevan emojis; la UI nunca. El modal avisa que no se
   modifique el mensaje. Datos del cliente en localStorage (`utils/customer.ts`).
+- **Cargas:** los GET de `httpBase` se reintentan dos veces ante 503 o caída de red. Al cambiar de
+  vista hay barra de progreso arriba (`TheRouteBar`) y las vistas muestran `SkeletonBox` mientras
+  llegan datos (producto, tira de galería, categorías, catálogo). Nada de textos "Cargando…".
 - **Preloader** (`ThePreloader.vue` + `usePreloader`): pantalla amarilla con el logo hasta que
   el router resolvió la vista, cargaron fuentes y página, y terminó todo lo registrado con
   `track()` (collage, tira de galería, portadas de categorías, primeras fotos del catálogo, foto
