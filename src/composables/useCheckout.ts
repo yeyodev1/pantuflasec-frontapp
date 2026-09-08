@@ -28,6 +28,7 @@ export function useCheckout() {
       phone: saved.phone ?? '',
       documentId: saved.documentId ?? '',
     },
+    billing: { wanted: false, sameAsCustomer: true, documentId: '', name: '', email: '', phone: '' },
     shipping: {
       method: (saved.shippingMethod as ShippingMethod) || 'pickup-garzota',
       address: saved.address ?? '',
