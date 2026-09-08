@@ -9,11 +9,14 @@ import { useToastStore } from '@/stores/toast'
 import type { ApiError, Order, OrderStatus } from '@/types'
 import OrderTimeline from '@/components/admin/OrderTimeline.vue'
 import OrderStatusPicker from '@/components/admin/OrderStatusPicker.vue'
+import PaymentReview from '@/components/admin/PaymentReview.vue'
+import OrderMessages from '@/components/order/OrderMessages.vue'
 
 const route = useRoute()
 const toast = useToastStore()
 const order = ref<Order | null>(null)
 const saving = ref(false)
+const sending = ref(false)
 
 onMounted(async () => {
   try {
@@ -33,6 +36,33 @@ async function setStatus(status: OrderStatus) {
     toast.error((e as ApiError).message)
   } finally {
     saving.value = false
+  }
+}
+
+/** Aprobar cierra el cobro (stock + correos); rechazar avisa al cliente con el motivo. */
+async function review(action: 'approve' | 'reject', reason: string) {
+  if (!order.value) return
+  saving.value = true
+  try {
+    order.value = await orderService.reviewPayment(order.value._id, action, reason)
+    toast.success(action === 'approve' ? 'Pago aprobado: el cliente ya recibió la confirmación' : 'Comprobante rechazado: el cliente recibió el aviso')
+  } catch (e) {
+    toast.error((e as ApiError).message)
+  } finally {
+    saving.value = false
+  }
+}
+
+async function reply(text: string) {
+  if (!order.value) return
+  sending.value = true
+  try {
+    order.value = await orderService.replyMessage(order.value._id, text)
+    toast.success('Respuesta enviada al cliente')
+  } catch (e) {
+    toast.error((e as ApiError).message)
+  } finally {
+    sending.value = false
   }
 }
 
@@ -62,12 +92,14 @@ function waLink(o: Order) {
     <template v-if="order">
       <section class="panel panel--wide">
         <h2 class="panel__title">Estado</h2>
-          <OrderStatusPicker :status="order.status" :saving="saving" @change="setStatus" />
+          <OrderStatusPicker
+            :status="order.status"
+            :saving="saving"
+            :awaiting-payment="order.payment.method !== 'payphone' && order.payment.status !== 'paid'"
+            @change="setStatus"
+          />
           <p class="panel__meta">Creado {{ formatDate(order.createdAt) }}</p>
-          <p v-if="order.payment.status === 'paid'" class="panel__meta">
-            Pagado con PayPhone · {{ order.payment.cardBrand }} · aut. {{ order.payment.authorizationCode }} · id {{ order.payment.payphoneId }}
-          </p>
-          <p v-else class="panel__meta">Pago: {{ order.payment.status }} {{ order.payment.message }}</p>
+          <PaymentReview :order="order" :saving="saving" @review="review" />
           <p v-if="order.stockIssue" class="panel__warn">
             <i class="fa-solid fa-triangle-exclamation"></i> No se pudo descontar stock de algún ítem. Revisa el inventario.
           </p>
@@ -106,6 +138,8 @@ function waLink(o: Order) {
         </section>
       </div>
 
+      <OrderMessages :messages="order.messages ?? []" viewer="team" :sending="sending" @send="reply" />
+
       <OrderTimeline :order="order" />
 
       <section class="panel">
@@ -121,7 +155,7 @@ function waLink(o: Order) {
         <dl class="totals">
           <dt>Subtotal</dt><dd>{{ formatMoney(order.subtotal) }}</dd>
           <dt>Envío</dt><dd>{{ formatMoney(order.shippingCost) }}</dd>
-          <dt>IVA</dt><dd>{{ formatMoney(order.tax) }}</dd>
+          <dt>{{ order.taxIncluded ? 'IVA incluido' : 'IVA' }}</dt><dd>{{ formatMoney(order.tax) }}</dd>
           <dt class="totals__total">Total</dt><dd class="totals__total">{{ formatMoney(order.total) }}</dd>
         </dl>
       </section>
