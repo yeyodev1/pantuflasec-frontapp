@@ -46,7 +46,7 @@ defineProps<{ label: string; icon?: string; hint?: string; optional?: boolean }>
     }
   }
 
-  :deep(input),
+  :deep(input:not([type='tel'])),
   :deep(textarea) {
     padding: 0.9rem 1rem;
     font-size: 1rem;
