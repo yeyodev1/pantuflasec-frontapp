@@ -5,6 +5,7 @@ import { orderService } from '@/services/order.service'
 import { useCartStore } from '@/stores/cart'
 import type { ApiError } from '@/types'
 import { pixel } from '@/utils/pixel'
+import { rememberOrder } from '@/utils/myOrders'
 
 /**
  * PayPhone vuelve aquí con ?id=&clientTransactionId=. Se confirma con el
@@ -32,6 +33,7 @@ onMounted(async () => {
         order.total,
         order.items.reduce((n, i) => n + i.qty, 0),
       )
+      rememberOrder({ token, number: order.number, total: order.total, createdAt: order.createdAt })
       cart.clear()
       router.replace({ name: 'Order', params: { code: token }, query: { nuevo: '1' } })
     } else {
