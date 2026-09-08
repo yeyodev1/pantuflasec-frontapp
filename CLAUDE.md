@@ -47,7 +47,10 @@ Si vite sirve código viejo tras un cambio grande: `rm -rf node_modules/.vite &&
   consulta general). Los mensajes de WhatsApp llevan emojis; la UI nunca. El modal avisa que no se
   modifique el mensaje. Datos del cliente en localStorage (`utils/customer.ts`).
 - **Preloader** (`ThePreloader.vue` + `usePreloader`): pantalla amarilla con el logo hasta que
-  cargan fuentes y página (mínimo 0,7 s, máximo 4 s).
+  el router resolvió la vista, cargaron fuentes y página, y terminó todo lo registrado con
+  `track()` (collage, tira de galería, portadas de categorías, primeras fotos del catálogo, foto
+  principal del producto, vía `waitForImages`). Mínimo 0,7 s, máximo 6 s. Un bloque nuevo con
+  imágenes de primera pintura debe registrar su carga con `track()`.
 - **El copy vive en `src/config/site.ts`**, no dentro de los componentes.
 - Todo `VITE_*` queda expuesto en el navegador: nunca un secreto con ese prefijo.
 
