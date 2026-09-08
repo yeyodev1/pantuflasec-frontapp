@@ -287,12 +287,8 @@ const main = [
 }
 
 
-.menu-enter-active {
-  transition: transform 0.45s $ease, opacity 0.3s ease;
-}
-.menu-leave-active {
-  transition: transform 0.3s $ease, opacity 0.25s ease;
-}
+.menu-enter-active { transition: transform 0.45s $ease, opacity 0.3s ease; }
+.menu-leave-active { transition: transform 0.3s $ease, opacity 0.25s ease; }
 .menu-enter-from,
 .menu-leave-to {
   transform: translateY(-4%);
