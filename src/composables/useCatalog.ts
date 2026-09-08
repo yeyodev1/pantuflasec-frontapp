@@ -28,6 +28,7 @@ export function useCatalog() {
       q: typeof q.q === 'string' ? q.q : '',
       category: (typeof q.categoria === 'string' ? q.categoria : '') as Category | '',
       collection: typeof q.coleccion === 'string' ? q.coleccion : '',
+      newArrival: q.nuevo === '1',
       sort: (typeof q.orden === 'string' ? q.orden : 'featured') as ProductSort,
       page: Number(q.pagina) || 1,
     }
@@ -38,6 +39,7 @@ export function useCatalog() {
     if (query.value.q) next.q = query.value.q
     if (query.value.category) next.categoria = query.value.category
     if (query.value.collection) next.coleccion = query.value.collection
+    if (query.value.newArrival) next.nuevo = '1'
     if (query.value.sort && query.value.sort !== 'featured') next.orden = query.value.sort
     if ((query.value.page ?? 1) > 1) next.pagina = String(query.value.page)
     router.replace({ query: next })
