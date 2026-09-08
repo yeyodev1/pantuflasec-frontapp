@@ -7,15 +7,15 @@ import ProductOptions from '@/components/product/ProductOptions.vue'
 import ProductDetails from '@/components/product/ProductDetails.vue'
 import ProductRail from '@/components/product/ProductRail.vue'
 import StickyBuyBar from '@/components/product/StickyBuyBar.vue'
+import ProductZoom from '@/components/product/ProductZoom.vue'
+import ImageLightbox from '@/components/product/ImageLightbox.vue'
 import { onMounted, onUnmounted, ref, watchEffect } from 'vue'
 import { useWhatsApp } from '@/composables/useWhatsApp'
 import { useCartStore } from '@/stores/cart'
-import { useToastStore } from '@/stores/toast'
 import { pixel } from '@/utils/pixel'
 import { watch } from 'vue'
 
 const cart = useCartStore()
-const toast = useToastStore()
 const wa = useWhatsApp()
 
 const { product, loading, error, variant, imageIndex, qty, price, maxQty, canBuy, pick, related } =
@@ -27,6 +27,7 @@ onUnmounted(() => wa.setProduct(null))
 
 // La barra fija aparece cuando el botón principal ya salió de pantalla.
 const buyBlock = ref<HTMLElement | null>(null)
+const lightbox = ref(false)
 const showBar = ref(false)
 let io: IntersectionObserver | undefined
 onMounted(() => {
@@ -42,7 +43,6 @@ function addToCart() {
   if (!product.value) return
   cart.add(product.value, variant.value, qty.value)
   pixel.addToCart(product.value._id, product.value.name, price.value, qty.value)
-  toast.success(`${product.value.name} agregado al carrito`)
 }
 </script>
 
@@ -64,15 +64,22 @@ function addToCart() {
 
       <div class="product__layout">
         <div class="gallery">
-          <div class="gallery__main">
-            <Transition name="fade" mode="out-in">
-              <img
-                :key="product.images[imageIndex]?.url || 'placeholder'"
-                :src="product.images[imageIndex]?.url || placeholderImage"
-                :alt="product.name"
-              />
-            </Transition>
-          </div>
+          <Transition name="fade" mode="out-in">
+            <ProductZoom
+              :key="product.images[imageIndex]?.url || 'placeholder'"
+              :src="product.images[imageIndex]?.url || placeholderImage"
+              :alt="product.name"
+              @open="product.images.length && (lightbox = true)"
+            />
+          </Transition>
+          <ImageLightbox
+            :open="lightbox"
+            :images="product.images.map((i) => i.url)"
+            :index="imageIndex"
+            :alt="product.name"
+            @update:index="imageIndex = $event"
+            @close="lightbox = false"
+          />
           <div v-if="product.images.length > 1" class="gallery__thumbs">
             <button
               v-for="(img, i) in product.images"
@@ -179,19 +186,6 @@ function addToCart() {
 
 .gallery {
   @include reveal;
-
-  &__main {
-    aspect-ratio: 1;
-    border-radius: $radius-md;
-    overflow: hidden;
-    background: $sand;
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-  }
 
   &__thumbs {
     @include flex(row, center, flex-start, 0.5rem);
