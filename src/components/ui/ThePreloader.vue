@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { logo } from '@/config/site'
 import { usePreloader } from '@/composables/usePreloader'
 
+const router = useRouter()
 const { ready, start } = usePreloader()
-onMounted(() => start())
+// La vista de la ruta se carga en diferido: sin esto el preloader se iba antes de tenerla.
+onMounted(() => start([router.isReady()]))
 </script>
 
 <template>
