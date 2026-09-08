@@ -54,7 +54,7 @@ const perks = [
 <style scoped lang="scss">
 .hero {
   position: relative;
-  background: linear-gradient(160deg, $accent-soft, $paper 60%);
+  background: linear-gradient(160deg, $highlight-soft, $paper 65%);
   overflow: hidden;
 
   &__inner {
