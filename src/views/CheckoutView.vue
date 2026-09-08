@@ -5,13 +5,16 @@ import CheckoutSummary from '@/components/checkout/CheckoutSummary.vue'
 import PayphoneBox from '@/components/checkout/PayphoneBox.vue'
 import FormField from '@/components/checkout/FormField.vue'
 import ShippingOptions from '@/components/checkout/ShippingOptions.vue'
+import CheckoutSteps from '@/components/checkout/CheckoutSteps.vue'
 import { formatMoney } from '@/utils/format'
 import { pixel } from '@/utils/pixel'
+import { useWhatsApp } from '@/composables/useWhatsApp'
 
 const {
   cart, config, loadingConfig, submitting, error, form, payphone, orderNumber,
   shippingCost, tax, total, needsAddress, payphoneReady, setMethod, submit,
 } = useCheckout()
+const wa = useWhatsApp()
 
 onMounted(() => {
   if (!cart.isEmpty) {
@@ -23,12 +26,7 @@ onMounted(() => {
 <template>
   <section class="checkout">
     <header class="checkout__head">
-      <ol class="steps" aria-label="Progreso">
-        <li class="steps__item" :class="{ 'steps__item--done': payphone, 'steps__item--on': !payphone }">
-          <span>1</span> Datos
-        </li>
-        <li class="steps__item" :class="{ 'steps__item--on': payphone }"><span>2</span> Pago</li>
-      </ol>
+      <CheckoutSteps :paying="Boolean(payphone)" />
       <h1 class="checkout__title">{{ payphone ? 'Paga tu pedido' : 'Finalizar compra' }}</h1>
     </header>
 
@@ -118,6 +116,10 @@ onMounted(() => {
             <span class="form__total">{{ formatMoney(total) }}</span>
           </button>
           <p class="form__safe"><i class="fa-brands fa-cc-visa"></i> <i class="fa-brands fa-cc-mastercard"></i> Pago seguro con PayPhone</p>
+
+          <button type="button" class="btn btn--ghost form__wa" @click="wa.checkout()">
+            <i class="fa-brands fa-whatsapp"></i> Prefiero terminar la compra por WhatsApp
+          </button>
         </form>
       </Transition>
     </div>
@@ -170,54 +172,6 @@ onMounted(() => {
   }
 }
 
-.steps {
-  list-style: none;
-  @include flex(row, center, flex-start, 0.6rem);
-  margin-bottom: 0.6rem;
-
-  &__item {
-    @include flex(row, center, center, 0.4rem);
-    font-size: $text-xs;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: $ink-muted;
-
-    span {
-      width: 1.5rem;
-      height: 1.5rem;
-      border-radius: $radius-pill;
-      border: 1.5px solid $line;
-      @include flex(row, center, center);
-      font-size: 0.7rem;
-      @include transition;
-    }
-
-    &--on {
-      color: $accent-deep;
-
-      span {
-        background: $accent;
-        border-color: $accent;
-        color: $surface;
-      }
-    }
-
-    &--done span {
-      background: $success;
-      border-color: $success;
-      color: $surface;
-    }
-
-    & + &::before {
-      content: '';
-      width: 1.4rem;
-      height: 1.5px;
-      background: $line;
-      margin-right: 0.2rem;
-    }
-  }
-}
 
 .form {
   @include flex(column, stretch, flex-start, 1rem);
@@ -259,6 +213,17 @@ onMounted(() => {
     margin-left: auto;
     padding-left: 0.8rem;
     border-left: 1px solid rgba($surface, 0.35);
+  }
+
+  &__wa {
+    width: 100%;
+    border-color: #25d366;
+    color: #128c7e;
+
+    &:hover {
+      background: #25d366;
+      color: #fff;
+    }
   }
 
   &__safe {
