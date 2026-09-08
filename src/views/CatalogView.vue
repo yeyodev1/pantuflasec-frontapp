@@ -11,9 +11,15 @@ const { items, total, pages, loading, error, facets, query, setFilter, setPage, 
 <template>
   <section class="catalog">
     <header class="catalog__head">
-      <p class="catalog__eyebrow">Tienda</p>
+      <p class="catalog__eyebrow">{{ query.newArrival ? 'Recién llegado' : 'Tienda' }}</p>
       <h1 class="catalog__title">
-        {{ query.category ? categoryLabel(query.category) : 'Todo el catálogo' }}
+        {{
+          query.newArrival
+            ? 'Nuevo en la tienda'
+            : query.category
+              ? categoryLabel(query.category)
+              : 'Todo el catálogo'
+        }}
       </h1>
     </header>
 
@@ -31,7 +37,10 @@ const { items, total, pages, loading, error, facets, query, setFilter, setPage, 
     <p v-else-if="!items.length" class="catalog__state">
       <i class="fa-regular fa-face-frown"></i>
       No encontramos productos con esos filtros.
-      <button class="btn btn--ghost" @click="setFilter({ q: '', category: '', collection: '' })">
+      <button
+        class="btn btn--ghost"
+        @click="setFilter({ q: '', category: '', collection: '', newArrival: false })"
+      >
         Ver todo
       </button>
     </p>
@@ -41,11 +50,19 @@ const { items, total, pages, loading, error, facets, query, setFilter, setPage, 
     </div>
 
     <nav v-if="pages > 1" class="pager" aria-label="Páginas">
-      <button class="btn btn--ghost" :disabled="(query.page ?? 1) <= 1" @click="setPage((query.page ?? 1) - 1)">
+      <button
+        class="btn btn--ghost"
+        :disabled="(query.page ?? 1) <= 1"
+        @click="setPage((query.page ?? 1) - 1)"
+      >
         <i class="fa-solid fa-chevron-left"></i>
       </button>
       <span class="pager__label">{{ query.page ?? 1 }} / {{ pages }}</span>
-      <button class="btn btn--ghost" :disabled="(query.page ?? 1) >= pages" @click="setPage((query.page ?? 1) + 1)">
+      <button
+        class="btn btn--ghost"
+        :disabled="(query.page ?? 1) >= pages"
+        @click="setPage((query.page ?? 1) + 1)"
+      >
         <i class="fa-solid fa-chevron-right"></i>
       </button>
     </nav>
