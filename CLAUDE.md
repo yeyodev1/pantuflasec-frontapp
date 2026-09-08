@@ -37,7 +37,9 @@ Si vite sirve código viejo tras un cambio grande: `rm -rf node_modules/.vite &&
   No hay imágenes en `public/`.
 - **Sin cuentas de cliente.** El login (`/login`, enlace discreto "Admin" en el footer) es para el
   equipo. Roles en `meta.roles` de cada ruta: `admin` (todo) y `staff` (vendedor: solo pedidos).
-  Al entrar, cada rol va a `userStore.home`. El sidebar (`AdminShell`) filtra sus enlaces por rol.
+  Al entrar, cada rol va a `userStore.home`. El sidebar (`AdminShell`) filtra sus enlaces por rol y
+  en escritorio es fijo a toda la altura; el panel no muestra el pie de la tienda. El detalle de
+  pedido tiene `OrderTimeline` (historial) y los botones de contacto anotan un evento antes de abrir.
 - **Teléfonos** siempre en E.164 vía `PhoneField` (selector de país con bandera de flagcdn,
   Ecuador por defecto, `utils/phone.ts` parsea y valida). Úsalo en cualquier formulario con celular.
 - **Fotos de producto:** máximo 5 (validado en el editor y en el backend). En la página de producto
