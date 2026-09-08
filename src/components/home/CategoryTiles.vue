@@ -4,6 +4,7 @@ import { productService } from '@/services/product.service'
 import { categories } from '@/config/catalog'
 import type { ProductFacets } from '@/types'
 import { track, waitForImages } from '@/composables/usePreloader'
+import SkeletonBox from '@/components/ui/SkeletonBox.vue'
 
 /**
  * Mosaico de categorías con la foto de portada de cada una. Las dos primeras
@@ -44,7 +45,10 @@ const tiles = computed(() =>
       <RouterLink to="/tienda" class="tiles__all">Todo el catálogo <i class="fa-solid fa-arrow-right"></i></RouterLink>
     </header>
 
-    <div class="tiles__grid">
+    <div v-if="!facets" class="tiles__grid" aria-busy="true">
+      <SkeletonBox v-for="n in 6" :key="n" class="tile" :class="{ 'tile--big': n < 3 }" />
+    </div>
+    <div v-else class="tiles__grid">
       <RouterLink
         v-for="(t, i) in tiles"
         :key="t.key"
