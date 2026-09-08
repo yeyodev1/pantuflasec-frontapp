@@ -5,22 +5,44 @@ import { orderService } from '@/services/order.service'
 import { formatDate, formatMoney } from '@/utils/format'
 import { orderStatusLabel } from '@/config/orders'
 import { site, whatsappLink } from '@/config/site'
-import type { ApiError, Order } from '@/types'
+import type { ApiError, Order, ShopConfig } from '@/types'
 import { rememberOrder } from '@/utils/myOrders'
+import { useToastStore } from '@/stores/toast'
+import OrderPaymentPanel from '@/components/order/OrderPaymentPanel.vue'
+import OrderMessages from '@/components/order/OrderMessages.vue'
 
 const route = useRoute()
+const toast = useToastStore()
 const order = ref<Order | null>(null)
+const config = ref<ShopConfig | null>(null)
 const error = ref('')
+const sending = ref(false)
 const isNew = route.query.nuevo === '1'
 
 onMounted(async () => {
   try {
-    order.value = await orderService.track(String(route.params.code))
-    rememberOrder({ token: order.value.clientTransactionId, number: order.value.number, total: order.value.total, createdAt: order.value.createdAt })
+    const [o, c] = await Promise.all([orderService.track(String(route.params.code)), orderService.config().catch(() => null)])
+    order.value = o
+    config.value = c
+    rememberOrder({ token: o.clientTransactionId, number: o.number, total: o.total, createdAt: o.createdAt })
   } catch (e) {
     error.value = (e as ApiError).message
   }
 })
+
+/** Mensaje al equipo; el backend avisa por correo y devuelve el pedido con la hilera. */
+async function send(text: string) {
+  if (!order.value) return
+  sending.value = true
+  try {
+    order.value = await orderService.sendMessage(order.value.clientTransactionId, text)
+    toast.success('Mensaje enviado. Te respondemos pronto.')
+  } catch (e) {
+    toast.error((e as ApiError).message)
+  } finally {
+    sending.value = false
+  }
+}
 </script>
 
 <template>
@@ -28,8 +50,8 @@ onMounted(async () => {
     <p v-if="error" class="order__error">{{ error }}</p>
     <template v-else-if="order">
       <header class="order__head">
-        <i v-if="isNew" class="fa-solid fa-circle-check order__check"></i>
-        <p class="order__eyebrow">{{ isNew ? '¡Gracias por tu compra!' : 'Tu pedido' }}</p>
+        <i v-if="isNew" :class="order.payment.status === 'paid' ? 'fa-solid fa-circle-check' : 'fa-solid fa-hourglass-half'" class="order__check"></i>
+        <p class="order__eyebrow">{{ isNew ? (order.payment.status === 'paid' ? '¡Gracias por tu compra!' : '¡Pedido reservado!') : 'Tu pedido' }}</p>
         <h1 class="order__title">Pedido {{ order.number }}</h1>
         <p class="order__status" :class="`order__status--${order.status}`">
           {{ orderStatusLabel(order.status) }}
@@ -52,19 +74,27 @@ onMounted(async () => {
       <dl class="order__totals">
         <dt>Subtotal</dt><dd>{{ formatMoney(order.subtotal) }}</dd>
         <dt>{{ order.shipping.label }}</dt><dd>{{ formatMoney(order.shippingCost) }}</dd>
-        <dt>IVA</dt><dd>{{ formatMoney(order.tax) }}</dd>
+        <dt :class="{ order__muted: order.taxIncluded }">{{ order.taxIncluded ? 'Incluye IVA' : 'IVA' }}</dt><dd :class="{ order__muted: order.taxIncluded }">{{ formatMoney(order.tax) }}</dd>
         <dt class="order__total">Total</dt><dd class="order__total">{{ formatMoney(order.total) }}</dd>
       </dl>
 
       <div class="order__meta">
-        <p><strong>Entrega:</strong>
+        <p><strong>Entrega: </strong>
           <template v-if="order.shipping.method.startsWith('pickup')">{{ order.shipping.label }} · {{ order.shipping.address }}, {{ order.shipping.city }}.</template>
           <template v-else>{{ order.shipping.address }}, {{ order.shipping.city }}<span v-if="order.shipping.reference"> · {{ order.shipping.reference }}</span></template>
         </p>
         <p><strong>Contacto:</strong> {{ order.customer.email }} · {{ order.customer.phone }}</p>
         <p v-if="order.billing?.wanted"><strong>Factura:</strong> {{ order.billing.name }} · {{ order.billing.documentId }} · {{ order.billing.email }}</p>
-        <p v-if="order.payment.authorizationCode"><strong>Pago:</strong> PayPhone · {{ order.payment.cardBrand }} · aut. {{ order.payment.authorizationCode }}</p>
       </div>
+
+      <OrderPaymentPanel
+        :order="order"
+        :accounts="config?.payments.transfer.accounts ?? []"
+        :instructions="{ transfer: config?.payments.transfer.instructions ?? '', cash: config?.payments.cash.instructions ?? '' }"
+        @updated="order = $event"
+      />
+
+      <OrderMessages :messages="order.messages ?? []" viewer="customer" :sending="sending" @send="send" />
 
       <div class="order__actions">
         <a v-if="site.whatsapp" :href="whatsappLink(`Hola, tengo una consulta sobre mi pedido ${order.number}`)" class="btn btn--ghost" target="_blank" rel="noopener">
@@ -146,6 +176,11 @@ onMounted(async () => {
     font-weight: 700;
     color: $ink;
     margin-top: 0.3rem;
+  }
+
+  &__muted {
+    color: $ink-muted !important;
+    font-size: $text-xs;
   }
 
   &__meta {
