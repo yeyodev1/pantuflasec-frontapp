@@ -2,6 +2,8 @@ import { computed, reactive, ref } from 'vue'
 import { orderService } from '@/services/order.service'
 import { useCartStore } from '@/stores/cart'
 import type { ApiError, CheckoutInput, PayphoneBoxParams, ShopConfig, ShippingMethod } from '@/types'
+import { rememberCustomer, savedCustomer } from '@/utils/customer'
+import { watch } from 'vue'
 
 /**
  * Dos fases: formulario → pedido creado. Al crear el pedido el backend fija
@@ -18,11 +20,38 @@ export function useCheckout() {
   const payphone = ref<PayphoneBoxParams | null>(null)
   const orderNumber = ref('')
 
+  const saved = savedCustomer()
   const form = reactive<CheckoutInput>({
-    customer: { name: '', email: '', phone: '', documentId: '' },
-    shipping: { method: 'pickup-garzota', address: '', city: '', reference: '', notes: '' },
+    customer: {
+      name: saved.name ?? '',
+      email: saved.email ?? '',
+      phone: saved.phone ?? '',
+      documentId: saved.documentId ?? '',
+    },
+    shipping: {
+      method: (saved.shippingMethod as ShippingMethod) || 'pickup-garzota',
+      address: saved.address ?? '',
+      city: saved.city ?? '',
+      reference: saved.reference ?? '',
+      notes: '',
+    },
     items: [],
   })
+
+  // Lo que el cliente escribe se recuerda en el dispositivo: sirve para la
+  // próxima compra y para que WhatsApp salga con sus datos.
+  watch(
+    () => [form.customer, form.shipping],
+    () =>
+      rememberCustomer({
+        ...form.customer,
+        shippingMethod: form.shipping.method,
+        address: form.shipping.address,
+        city: form.shipping.city,
+        reference: form.shipping.reference,
+      }),
+    { deep: true },
+  )
 
   orderService
     .config()
