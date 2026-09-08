@@ -98,7 +98,7 @@ const emit = defineEmits<{ qty: [qty: number]; remove: [] }>()
 
   &__price {
     font-weight: 700;
-    color: $accent-deep;
+    color: $price;
   }
 
   &__remove {
