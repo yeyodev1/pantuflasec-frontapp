@@ -7,6 +7,7 @@ import FormField from '@/components/checkout/FormField.vue'
 import ShippingOptions from '@/components/checkout/ShippingOptions.vue'
 import CheckoutSteps from '@/components/checkout/CheckoutSteps.vue'
 import PhoneField from '@/components/ui/PhoneField.vue'
+import BillingSection from '@/components/checkout/BillingSection.vue'
 import { formatMoney } from '@/utils/format'
 import { pixel } from '@/utils/pixel'
 import { useWhatsApp } from '@/composables/useWhatsApp'
@@ -104,6 +105,8 @@ onMounted(() => {
               <textarea v-model="form.shipping.notes" rows="2" placeholder="Dedicatoria, color preferido, hora de entrega…"></textarea>
             </FormField>
           </section>
+
+          <BillingSection v-if="form.billing" :billing="form.billing" :customer-document="form.customer.documentId" />
 
           <p v-if="error" class="form__error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</p>
           <p v-if="!loadingConfig && !payphoneReady" class="form__error">
