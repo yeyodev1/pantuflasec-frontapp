@@ -52,14 +52,14 @@ const main = [
               </li>
             </ul>
 
-            <ul v-if="userStore.isAdmin" class="menu__admin" :style="{ '--i': 7 }">
+            <ul v-if="userStore.canManageOrders" class="menu__admin" :style="{ '--i': 7 }">
               <li>
                 <RouterLink to="/admin/pedidos" class="menu__link menu__link--sm menu__link--hot" @click="emit('close')">
                   <i class="fa-solid fa-receipt"></i>Pedidos
                   <span v-if="pending" class="menu__badge menu__badge--hot">{{ pending }}</span>
                 </RouterLink>
               </li>
-              <li><RouterLink to="/admin/productos" class="menu__link menu__link--sm" @click="emit('close')"><i class="fa-solid fa-gauge"></i>Panel</RouterLink></li>
+              <li v-if="userStore.isAdmin"><RouterLink to="/admin/productos" class="menu__link menu__link--sm" @click="emit('close')"><i class="fa-solid fa-gauge"></i>Panel</RouterLink></li>
               <li><RouterLink to="/cuenta" class="menu__link menu__link--sm" @click="emit('close')"><i class="fa-solid fa-user"></i>Mi cuenta</RouterLink></li>
             </ul>
           </nav>
