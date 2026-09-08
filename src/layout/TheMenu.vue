@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, toRef } from 'vue'
-import { logo, site, whatsappLink } from '@/config/site'
+import { logo, site } from '@/config/site'
+import { useWhatsApp } from '@/composables/useWhatsApp'
 import { categories } from '@/config/catalog'
 import { useUserStore } from '@/stores/user'
 import { useCartStore } from '@/stores/cart'
@@ -14,6 +15,7 @@ const emit = defineEmits<{ close: [] }>()
 const userStore = useUserStore()
 const cart = useCartStore()
 const { pending } = useOrdersSummary()
+const { ask } = useWhatsApp()
 useBodyScroll(toRef(props, 'open'))
 
 const main = computed(() => [
@@ -73,9 +75,9 @@ const main = computed(() => [
         </nav>
 
         <footer class="menu__foot" :style="{ '--i': 11 }">
-          <a :href="whatsappLink()" class="menu__contact" target="_blank" rel="noopener">
+          <button type="button" class="menu__contact" @click="emit('close'); ask()">
             <i class="fa-brands fa-whatsapp"></i> {{ site.whatsappDisplay }}
-          </a>
+          </button>
           <a :href="site.social.instagram" class="menu__contact" target="_blank" rel="noopener">
             <i class="fa-brands fa-instagram"></i> {{ site.social.instagramHandle }}
           </a>
