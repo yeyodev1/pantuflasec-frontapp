@@ -8,6 +8,7 @@ import FormField from '@/components/checkout/FormField.vue'
 import ShippingOptions from '@/components/checkout/ShippingOptions.vue'
 import PaymentOptions from '@/components/checkout/PaymentOptions.vue'
 import TransferProofField from '@/components/checkout/TransferProofField.vue'
+import DeliveryLocation from '@/components/checkout/DeliveryLocation.vue'
 import CheckoutSteps from '@/components/checkout/CheckoutSteps.vue'
 import PhoneField from '@/components/ui/PhoneField.vue'
 import BillingSection from '@/components/checkout/BillingSection.vue'
@@ -17,7 +18,7 @@ import { useWhatsApp } from '@/composables/useWhatsApp'
 
 const {
   cart, config, loadingConfig, submitting, error, form, payphone, orderNumber, proof, proofNote,
-  shippingCost, tax, taxIncluded, total, needsAddress, availableMethods, submitLabel,
+  shippingCost, byDistance, quote, quoting, locationReady, tax, taxIncluded, total, needsAddress, availableMethods, submitLabel,
   setMethod, setPayment, submit,
 } = useCheckout()
 const wa = useWhatsApp()
@@ -90,6 +91,17 @@ onMounted(() => {
               @change="setMethod"
             />
             <Transition name="rise">
+              <DeliveryLocation
+                v-if="byDistance && config"
+                :location="form.shipping.location"
+                :quote="quote"
+                :resolving="quoting"
+                :origin="config.delivery.origin"
+                :max-km="config.delivery.maxKm"
+                @update:location="form.shipping.location = $event"
+              />
+            </Transition>
+            <Transition name="rise">
               <div v-if="needsAddress" class="form__address">
                 <FormField label="Dirección" icon="fa-solid fa-location-dot">
                   <input v-model="form.shipping.address" required autocomplete="street-address" placeholder="Calle, número y sector" />
@@ -129,7 +141,7 @@ onMounted(() => {
 
           <p v-if="error" class="form__error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</p>
 
-          <button class="btn btn--primary form__submit" :disabled="submitting || !availableMethods.length">
+          <button class="btn btn--primary form__submit" :disabled="submitting || !availableMethods.length || !locationReady">
             <i v-if="submitting" class="fa-solid fa-spinner fa-spin"></i>
             <i v-else class="fa-solid fa-lock"></i>
             {{ submitLabel }}
