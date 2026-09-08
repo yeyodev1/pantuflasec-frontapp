@@ -30,15 +30,17 @@ const { methods, loading, saving, add, remove, move, save } = useShippingSetting
           <label class="method__kind">
             Tipo
             <select v-model="m.kind">
-              <option value="delivery">Envío</option>
+              <option value="delivery">Envío (precio fijo)</option>
+              <option value="distance">Moto por distancia (tarifario por km)</option>
               <option value="pickup">Retiro en tienda</option>
             </select>
           </label>
           <label class="method__grow">Nombre <input v-model="m.label" required maxlength="80" placeholder="Envío flores amarillas · Norte de Guayaquil" /></label>
           <label v-if="m.kind === 'delivery'" class="method__cost">Precio ($) <input v-model="m.cost" type="number" step="0.01" min="0" required /></label>
+          <span v-else-if="m.kind === 'distance'" class="method__cost method__auto">Precio por km (0 a 22 km: $3,00 a $8,50)</span>
         </div>
         <div class="method__row">
-          <label v-if="m.kind === 'delivery'" class="method__grow">
+          <label v-if="m.kind !== 'pickup'" class="method__grow">
             Descripción <input v-model="m.description" maxlength="160" placeholder="Entrega el mismo día, de 10:00 a 18:00" />
           </label>
           <template v-else>
@@ -119,6 +121,16 @@ const { methods, loading, saving, add, remove, move, save } = useShippingSetting
   &__cost {
     @include from('sm') {
       flex: 0 0 7rem;
+    }
+  }
+
+  &__auto {
+    font-size: $text-xs;
+    color: $ink-muted;
+    padding-bottom: 0.7rem;
+
+    @include from('sm') {
+      flex: 0 0 12rem;
     }
   }
 
