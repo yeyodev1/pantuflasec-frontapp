@@ -34,6 +34,7 @@ const hasVariants = computed(() => props.product.variants.length > 0)
       <p v-if="hasVariants" class="card__meta">
         {{ product.variants.map((v) => v.label).join(' · ') }}
       </p>
+      <p class="card__tax">IVA incluido</p>
     </div>
   </RouterLink>
 </template>
@@ -138,6 +139,13 @@ const hasVariants = computed(() => props.product.variants.length > 0)
     font-weight: 400;
     color: $ink-muted;
     margin-left: 0.3rem;
+  }
+
+  &__tax {
+    font-size: 0.62rem;
+    color: $ink-muted;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
 
   &__meta {
