@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { toRef } from 'vue'
-import { logo, site } from '@/config/site'
+import { logo, site, socialLinks } from '@/config/site'
 import { useUserStore } from '@/stores/user'
 import { useCartStore } from '@/stores/cart'
 import { useBodyScroll } from '@/composables/useBodyScroll'
@@ -21,7 +21,7 @@ useBodyScroll(toRef(props, 'open'))
 const main = [
   { to: '/', label: 'Inicio', icon: 'fa-solid fa-house' },
   { to: '/tienda', label: 'Tienda', icon: 'fa-solid fa-store' },
-  { to: '/tienda?orden=recent', label: 'Novedades', icon: 'fa-solid fa-wand-magic-sparkles' },
+  { to: '/tienda?nuevo=1', label: 'Nuevo', icon: 'fa-solid fa-wand-magic-sparkles' },
   { to: '/tienda?categoria=arreglos', label: 'Regalos y box', icon: 'fa-solid fa-gift' },
   { to: '/mis-pedidos', label: 'Mis pedidos', icon: 'fa-solid fa-receipt' },
 ]
@@ -71,9 +71,9 @@ const main = [
           <button type="button" class="menu__wa" @click="emit('close'); ask()">
             <i class="fa-brands fa-whatsapp"></i> {{ site.whatsappDisplay }}
           </button>
-          <a :href="site.social.instagram" class="menu__ig" target="_blank" rel="noopener">
-            <i class="fa-brands fa-instagram"></i> {{ site.social.instagramHandle }}
-          </a>
+          <div class="menu__social">
+            <a v-for="s in socialLinks" :key="s.href" :href="s.href" class="menu__ig" target="_blank" rel="noopener"><i :class="s.icon"></i> {{ s.label }}</a>
+          </div>
           <p class="menu__stores">
             <span v-for="s in site.stores" :key="s.name"><i class="fa-solid fa-location-dot"></i> {{ s.name }} · {{ s.address }}</span>
           </p>
@@ -263,15 +263,17 @@ const main = [
     }
   }
 
+  &__social {
+    @include flex(row, center, flex-start, 1.2rem);
+    flex-wrap: wrap;
+  }
+
   &__ig {
-    @include flex(row, center, flex-start, 0.6rem);
+    @include flex(row, center, flex-start, 0.5rem);
     font-weight: 600;
     color: $paper;
 
-    i {
-      font-size: 1.2rem;
-      color: $highlight;
-    }
+    i { font-size: 1.2rem; color: $highlight; }
   }
 
   &__stores {
