@@ -2,12 +2,13 @@
 import { useProductPage } from '@/composables/useProductPage'
 import { categoryLabel, placeholderImage } from '@/config/catalog'
 import { formatMoney } from '@/utils/format'
-import { site, whatsappLink } from '@/config/site'
+import { site } from '@/config/site'
 import ProductOptions from '@/components/product/ProductOptions.vue'
 import ProductDetails from '@/components/product/ProductDetails.vue'
 import ProductRail from '@/components/product/ProductRail.vue'
 import StickyBuyBar from '@/components/product/StickyBuyBar.vue'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watchEffect } from 'vue'
+import { useWhatsApp } from '@/composables/useWhatsApp'
 import { useCartStore } from '@/stores/cart'
 import { useToastStore } from '@/stores/toast'
 import { pixel } from '@/utils/pixel'
@@ -15,6 +16,11 @@ import { watch } from 'vue'
 
 const cart = useCartStore()
 const toast = useToastStore()
+const wa = useWhatsApp()
+
+// El WhatsApp global sabe qué producto está viendo el cliente mientras esté aquí.
+watchEffect(() => wa.setProduct(product.value ? { product: product.value, variant: variant.value, qty: qty.value } : null))
+onUnmounted(() => wa.setProduct(null))
 
 const { product, loading, error, variant, imageIndex, qty, price, maxQty, canBuy, pick, related } =
   useProductPage()
@@ -102,15 +108,9 @@ function addToCart() {
           />
           </div>
 
-          <a
-            v-if="site.whatsapp"
-            :href="whatsappLink(`Hola, me interesa: ${product.name} (${site.url}/producto/${product.slug})`)"
-            class="info__wa"
-            target="_blank"
-            rel="noopener"
-          >
+          <button v-if="site.whatsapp" type="button" class="info__wa" @click="wa.ask()">
             <i class="fa-brands fa-whatsapp"></i> Preguntar por WhatsApp
-          </a>
+          </button>
 
           <ProductDetails :product="product" />
         </div>
