@@ -5,12 +5,9 @@ import { formatMoney } from '@/utils/format'
 defineProps<{ methods: ShopConfig['shippingMethods']; value: ShippingMethod; loading?: boolean }>()
 const emit = defineEmits<{ change: [method: ShippingMethod] }>()
 
-const meta: Record<string, { icon: string; text: string }> = {
-  'pickup-garzota': { icon: 'fa-solid fa-store', text: 'Av. Agustín Freire, frente al Garzocentro. Te avisamos cuando esté listo.' },
-  'pickup-joya': { icon: 'fa-solid fa-store', text: 'Plaza Sevilla, urbanización La Joya. Te avisamos cuando esté listo.' },
-  gye: { icon: 'fa-solid fa-motorcycle', text: 'Entrega en la ciudad en 1 a 2 días hábiles.' },
-  ec: { icon: 'fa-solid fa-truck-fast', text: 'Servientrega a todo el país, de 24 a 72 horas.' },
-}
+// Los textos vienen del admin (/admin/envios); aquí solo el icono según retiro o envío.
+const icon = (m: { kind: string; cost: number }) =>
+  m.kind === 'pickup' ? 'fa-solid fa-store' : m.cost < 5 ? 'fa-solid fa-motorcycle' : 'fa-solid fa-truck-fast'
 </script>
 
 <template>
@@ -27,10 +24,10 @@ const meta: Record<string, { icon: string; text: string }> = {
       :style="{ '--i': i }"
       @click="emit('change', m.key)"
     >
-      <span class="opt__icon"><i :class="meta[m.key]?.icon ?? 'fa-solid fa-box'"></i></span>
+      <span class="opt__icon"><i :class="icon(m)"></i></span>
       <span class="opt__body">
         <strong>{{ m.label.replace(/\s*\(.*\)$/, '') }}</strong>
-        <small>{{ meta[m.key]?.text }}</small>
+        <small>{{ m.description }}</small>
       </span>
       <span class="opt__price" :class="{ 'opt__price--free': !m.cost }">
         {{ m.cost ? formatMoney(m.cost) : 'Gratis' }}
