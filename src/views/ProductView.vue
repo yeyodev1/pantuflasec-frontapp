@@ -18,12 +18,12 @@ const cart = useCartStore()
 const toast = useToastStore()
 const wa = useWhatsApp()
 
+const { product, loading, error, variant, imageIndex, qty, price, maxQty, canBuy, pick, related } =
+  useProductPage()
+
 // El WhatsApp global sabe qué producto está viendo el cliente mientras esté aquí.
 watchEffect(() => wa.setProduct(product.value ? { product: product.value, variant: variant.value, qty: qty.value } : null))
 onUnmounted(() => wa.setProduct(null))
-
-const { product, loading, error, variant, imageIndex, qty, price, maxQty, canBuy, pick, related } =
-  useProductPage()
 
 // La barra fija aparece cuando el botón principal ya salió de pantalla.
 const buyBlock = ref<HTMLElement | null>(null)
