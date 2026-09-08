@@ -114,6 +114,7 @@ function addToCart() {
           <p class="info__price">
             {{ formatMoney(price) }}
             <s v-if="product.compareAtPrice" class="info__compare">{{ formatMoney(product.compareAtPrice) }}</s>
+            <small class="info__tax">IVA incluido</small>
           </p>
 
           <div ref="buyBlock">
@@ -250,6 +251,15 @@ function addToCart() {
 
   &__name {
     @include display($display-sm, 500);
+  }
+
+  &__tax {
+    display: block;
+    font-family: $font-principal;
+    font-size: $text-xs;
+    font-weight: 500;
+    color: $ink-muted;
+    letter-spacing: 0;
   }
 
   &__price {
