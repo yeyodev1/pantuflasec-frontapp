@@ -32,10 +32,15 @@ async function load() {
     // Manda la galería del admin; si no hay suficientes fotos, los destacados.
     const g = await galleryService.list()
     if (g.length >= 4) {
-      items.value = g.slice(0, 6).map((i) => ({ key: i._id, url: i.image.url, to: i.link || '/tienda' }))
+      items.value = g
+        .slice(0, 6)
+        .map((i) => ({ key: i._id, url: i.image.url, to: i.link || '/tienda' }))
     } else {
       const r = await productService.list({ featured: true, limit: 6 })
-      const src: Product[] = r.items.length >= 4 ? r.items : (await productService.list({ sort: 'recent', limit: 6 })).items
+      const src: Product[] =
+        r.items.length >= 4
+          ? r.items
+          : (await productService.list({ sort: 'recent', limit: 6 })).items
       items.value = src.map((p) => ({ key: p._id, url: mainImage(p), to: `/producto/${p.slug}` }))
     }
   } catch {
@@ -53,7 +58,13 @@ onUnmounted(() => window.removeEventListener('mousemove', onMove))
 <template>
   <div class="collage" aria-hidden="true">
     <template v-if="loading">
-      <SkeletonBox v-for="n in 4" :key="n" class="collage__item collage__item--sk" :class="`collage__item--${n}`" :style="{ '--i': n - 1 }" />
+      <SkeletonBox
+        v-for="n in 4"
+        :key="n"
+        class="collage__item collage__item--sk"
+        :class="`collage__item--${n}`"
+        :style="{ '--i': n - 1 }"
+      />
     </template>
     <RouterLink
       v-else
@@ -62,7 +73,11 @@ onUnmounted(() => window.removeEventListener('mousemove', onMove))
       :to="p.to"
       class="collage__item"
       :class="`collage__item--${i + 1}`"
-      :style="{ '--i': i, '--tx': `${tilt.x * (6 + i * 3)}px`, '--ty': `${tilt.y * (4 + i * 2)}px` }"
+      :style="{
+        '--i': i,
+        '--tx': `${tilt.x * (6 + i * 3)}px`,
+        '--ty': `${tilt.y * (4 + i * 2)}px`,
+      }"
       tabindex="-1"
     >
       <img :src="p.url" :alt="''" loading="eager" />
@@ -121,35 +136,108 @@ onUnmounted(() => window.removeEventListener('mousemove', onMove))
     }
 
     // Móvil: cuatro fotos en abanico, todas dentro de la pantalla.
-    &--1 { left: 0; top: 18%; width: 27vw; rotate: -9deg; }
-    &--2 { left: 24%; top: 0; width: 34vw; rotate: 2deg; z-index: 2; }
-    &--3 { right: 14%; top: 30%; width: 26vw; rotate: 7deg; z-index: 1; }
-    &--4 { right: -2%; top: 2%; width: 22vw; rotate: 12deg; }
-    &--5, &--6 { display: none; }
+    &--1 {
+      left: 0;
+      top: 18%;
+      width: 27vw;
+      rotate: -9deg;
+    }
+    &--2 {
+      left: 24%;
+      top: 0;
+      width: 34vw;
+      rotate: 2deg;
+      z-index: 2;
+    }
+    &--3 {
+      right: 14%;
+      top: 30%;
+      width: 26vw;
+      rotate: 7deg;
+      z-index: 1;
+    }
+    &--4 {
+      right: -2%;
+      top: 2%;
+      width: 22vw;
+      rotate: 12deg;
+    }
+    &--5,
+    &--6 {
+      display: none;
+    }
 
     // Tablet: mismas cuatro fotos, más chicas y centradas.
     @include from('md') {
-      &--1 { left: 12%; width: 150px; }
-      &--2 { left: 30%; width: 190px; }
-      &--3 { right: 26%; width: 150px; }
-      &--4 { right: 10%; width: 130px; }
+      &--1 {
+        left: 12%;
+        width: 150px;
+      }
+      &--2 {
+        left: 30%;
+        width: 190px;
+      }
+      &--3 {
+        right: 26%;
+        width: 150px;
+      }
+      &--4 {
+        right: 10%;
+        width: 130px;
+      }
     }
 
     // Escritorio: en los márgenes, nunca sobre el texto.
     @include from('lg') {
-      width: 11vw;
-      max-width: 170px;
+      width: 15vw;
+      max-width: 250px;
       z-index: auto;
 
-      &--1 { top: 8%; right: 1.5%; left: auto; width: 11vw; rotate: 8deg; }
-      &--2 { bottom: 8%; left: 1.5%; top: auto; width: 11vw; rotate: -10deg; }
-      &--3 { bottom: 6%; right: 3%; top: auto; width: 8vw; rotate: -5deg; }
-      &--4 { top: 34%; left: 2.5%; right: auto; width: 8vw; rotate: 5deg; }
+      &--1 {
+        top: 6%;
+        right: 1.5%;
+        left: auto;
+        width: 15vw;
+        rotate: 8deg;
+      }
+      &--2 {
+        bottom: 6%;
+        left: 1.5%;
+        top: auto;
+        width: 15vw;
+        rotate: -10deg;
+      }
+      &--3 {
+        bottom: 4%;
+        right: 3%;
+        top: auto;
+        width: 11vw;
+        rotate: -5deg;
+      }
+      &--4 {
+        top: 30%;
+        left: 2.5%;
+        right: auto;
+        width: 11vw;
+        rotate: 5deg;
+      }
     }
 
     @include from('xl') {
-      &--5 { display: block; top: 8%; left: 14%; width: 6vw; rotate: -6deg; }
-      &--6 { display: block; top: 40%; right: 8%; width: 6vw; rotate: 4deg; }
+      &--5 {
+        display: block;
+        top: 6%;
+        left: 15%;
+        width: 8vw;
+        rotate: -6deg;
+      }
+      &--6 {
+        display: block;
+        top: 42%;
+        right: 9%;
+        width: 8vw;
+        rotate: 4deg;
+      }
     }
   }
 }
@@ -166,7 +254,12 @@ onUnmounted(() => window.removeEventListener('mousemove', onMove))
 }
 
 @keyframes float {
-  0%, 100% { margin-top: 0; }
-  50% { margin-top: -12px; }
+  0%,
+  100% {
+    margin-top: 0;
+  }
+  50% {
+    margin-top: -12px;
+  }
 }
 </style>
