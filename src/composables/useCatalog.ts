@@ -2,6 +2,7 @@ import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { productService } from '@/services/product.service'
 import { PAGE_SIZE } from '@/config/catalog'
+import { track, waitForImages } from '@/composables/usePreloader'
 import type { ApiError, Category, Product, ProductFacets, ProductQuery, ProductSort } from '@/types'
 
 /**
@@ -50,6 +51,8 @@ export function useCatalog() {
       items.value = result.items
       total.value = result.total
       pages.value = result.pages
+      // Si es la primera pintura, el preloader espera las fotos visibles.
+      void track(waitForImages(items.value.slice(0, 8).map((p) => p.images[0]?.url ?? '')))
     } catch (e) {
       error.value = (e as ApiError).message
     } finally {
