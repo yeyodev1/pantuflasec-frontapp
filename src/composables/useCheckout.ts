@@ -14,6 +14,7 @@ import type {
 import { rememberCustomer, savedCustomer } from '@/utils/customer'
 import { rememberOrder } from '@/utils/myOrders'
 import { useToastStore } from '@/stores/toast'
+import { useDeliveryQuote } from '@/composables/useDeliveryQuote'
 
 /**
  * Dos fases: formulario → pedido creado. Al crear el pedido el backend fija
@@ -58,6 +59,7 @@ export function useCheckout() {
       city: saved.city ?? '',
       reference: saved.reference ?? '',
       notes: '',
+      location: saved.location ?? '',
     },
     payment: { method: 'payphone' },
     items: [],
@@ -74,6 +76,7 @@ export function useCheckout() {
         address: form.shipping.address,
         city: form.shipping.city,
         reference: form.shipping.reference,
+        location: form.shipping.location,
       }),
     { deep: true },
   )
@@ -90,9 +93,14 @@ export function useCheckout() {
     .catch((e: ApiError) => (error.value = e.message))
     .finally(() => (loadingConfig.value = false))
 
-  const shippingCost = computed(
-    () => config.value?.shippingMethods.find((m) => m.key === form.shipping.method)?.cost ?? 0,
+  const shippingMethod = computed(() => config.value?.shippingMethods.find((m) => m.key === form.shipping.method))
+  const byDistance = computed(() => shippingMethod.value?.kind === 'distance')
+  // Moto: el precio sale de la cotización del backend según la ubicación marcada.
+  const { quote, resolving: quoting } = useDeliveryQuote(
+    computed(() => form.shipping.location),
+    byDistance,
   )
+  const shippingCost = computed(() => (byDistance.value ? (quote.value?.cost ?? 0) : (shippingMethod.value?.cost ?? 0)))
   const taxIncluded = computed(() => config.value?.taxIncluded ?? true)
   // Los precios ya traen IVA: se desglosa para mostrarlo, no se suma al total.
   const tax = computed(() => {
@@ -105,6 +113,8 @@ export function useCheckout() {
     round2(cart.subtotal + shippingCost.value + (taxIncluded.value ? 0 : tax.value)),
   )
   const needsAddress = computed(() => !form.shipping.method.startsWith('pickup'))
+  /** Con moto no se puede confirmar hasta tener una ubicación cotizada dentro del radio. */
+  const locationReady = computed(() => !byDistance.value || (!quoting.value && quote.value?.cost != null))
 
   /** Métodos que aplican a este pedido: efectivo solo con retiro; el resto según el admin. */
   const availableMethods = computed(() => {
@@ -194,6 +204,10 @@ export function useCheckout() {
     proof,
     proofNote,
     shippingCost,
+    byDistance,
+    quote,
+    quoting,
+    locationReady,
     tax,
     taxIncluded,
     total,
