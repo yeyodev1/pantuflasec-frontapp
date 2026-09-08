@@ -139,6 +139,7 @@ export interface Order {
     message: string
   }
   stockIssue: boolean
+  events?: Array<{ at: string; kind: string; detail: string; by: string }>
   createdAt: string
   updatedAt: string
 }
