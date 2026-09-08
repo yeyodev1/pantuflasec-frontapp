@@ -42,7 +42,7 @@ onMounted(() => start())
       width: 40%;
       height: 100%;
       border-radius: $radius-pill;
-      background: $ink;
+      background: $brand-blue-deep;
       animation: slide 1.1s $ease infinite;
     }
   }
