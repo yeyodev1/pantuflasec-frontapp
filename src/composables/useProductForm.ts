@@ -18,6 +18,7 @@ export interface ProductDraft {
   tags: string
   isActive: boolean
   featured: boolean
+  newArrival: boolean
   sortOrder: number
 }
 
@@ -34,6 +35,7 @@ function empty(): ProductDraft {
     tags: '',
     isActive: true,
     featured: false,
+    newArrival: false,
     sortOrder: 0,
   }
 }
@@ -75,7 +77,10 @@ export function useProductForm() {
       ...draft,
       price: Number(draft.price),
       compareAtPrice: draft.compareAtPrice ? Number(draft.compareAtPrice) : null,
-      tags: draft.tags.split(',').map((t) => t.trim()).filter(Boolean),
+      tags: draft.tags
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean),
       variants: draft.variants.map((v) => ({
         ...v,
         stock: Number(v.stock),
