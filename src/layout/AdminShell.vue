@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user'
+import { logo } from '@/config/site'
 
 defineProps<{ title: string }>()
 const userStore = useUserStore()
@@ -7,7 +8,6 @@ const userStore = useUserStore()
 const links = [
   { to: '/admin/productos', label: 'Productos', icon: 'fa-solid fa-box' },
   { to: '/admin/pedidos', label: 'Pedidos', icon: 'fa-solid fa-receipt' },
-  { to: '/admin/usuarios', label: 'Usuarios', icon: 'fa-solid fa-users' },
   { to: '/admin/galeria', label: 'Galería', icon: 'fa-solid fa-panorama' },
   { to: '/admin/archivos', label: 'Archivos', icon: 'fa-solid fa-images' },
 ]
@@ -18,7 +18,7 @@ const links = [
     <!-- Sidebar en escritorio; barra inferior fija en móvil. -->
     <aside class="sidebar">
       <RouterLink to="/admin" class="sidebar__brand">
-        <i class="fa-solid fa-gauge"></i> <span>Panel</span>
+        <img :src="logo.icon(64)" alt="" width="28" height="28" /> <span>Panel</span>
       </RouterLink>
       <nav class="sidebar__nav" aria-label="Administración">
         <RouterLink v-for="l in links" :key="l.to" :to="l.to" class="sidebar__link">
