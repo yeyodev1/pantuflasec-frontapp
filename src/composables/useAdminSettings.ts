@@ -1,7 +1,7 @@
 import { reactive, ref } from 'vue'
 import { settingService } from '@/services/setting.service'
 import { useToastStore } from '@/stores/toast'
-import type { ApiError, BankAccount, HeroSettings, PaymentSettings } from '@/types'
+import type { ApiError, BankAccount, HeroSettings, PaymentSettings, ShippingMethodSetting } from '@/types'
 
 /** Portada del home: cargar, editar y guardar. */
 export function useHeroSettings() {
@@ -95,4 +95,60 @@ export function usePaymentSettings() {
   }
 
   return { payments, loading, saving, addAccount, removeAccount, save }
+}
+
+const emptyMethod = (): ShippingMethodSetting => ({
+  key: '',
+  label: '',
+  description: '',
+  cost: 0,
+  kind: 'delivery',
+  address: '',
+  city: '',
+  enabled: true,
+})
+
+/** Métodos de entrega: tarifas por zona, couriers y puntos de retiro. El orden de la lista es el del checkout. */
+export function useShippingSettings() {
+  const toast = useToastStore()
+  const methods = ref<ShippingMethodSetting[]>([])
+  const loading = ref(true)
+  const saving = ref(false)
+
+  settingService
+    .shipping()
+    .then((m) => (methods.value = m))
+    .catch((e: ApiError) => toast.error(e.message))
+    .finally(() => (loading.value = false))
+
+  function add(kind: ShippingMethodSetting['kind'] = 'delivery') {
+    methods.value.push({ ...emptyMethod(), kind })
+  }
+
+  function remove(i: number) {
+    methods.value.splice(i, 1)
+  }
+
+  function move(i: number, dir: -1 | 1) {
+    const j = i + dir
+    if (j < 0 || j >= methods.value.length) return
+    const next = [...methods.value]
+    const [it] = next.splice(i, 1)
+    next.splice(j, 0, it!)
+    methods.value = next
+  }
+
+  async function save() {
+    saving.value = true
+    try {
+      methods.value = await settingService.updateShipping(methods.value.map((m) => ({ ...m, cost: Number(m.cost) })))
+      toast.success('Métodos de entrega guardados')
+    } catch (e) {
+      toast.error((e as ApiError).message)
+    } finally {
+      saving.value = false
+    }
+  }
+
+  return { methods, loading, saving, add, remove, move, save }
 }
