@@ -101,7 +101,7 @@ export interface ShippingMethodSetting {
   label: string
   description: string
   cost: number
-  kind: 'pickup' | 'delivery'
+  kind: 'pickup' | 'delivery' | 'distance'
   address: string
   city: string
   enabled: boolean
@@ -145,6 +145,9 @@ export interface Order {
     city: string
     reference: string
     notes: string
+    location?: string
+    coords?: { lat: number; lng: number } | null
+    km?: number | null
   }
   items: OrderItem[]
   subtotal: number
@@ -202,7 +205,9 @@ export interface HeroSettings {
 }
 
 export interface ShopConfig {
-  shippingMethods: Array<{ key: ShippingMethod; label: string; description: string; cost: number; kind: 'pickup' | 'delivery' }>
+  shippingMethods: Array<{ key: ShippingMethod; label: string; description: string; cost: number; kind: 'pickup' | 'delivery' | 'distance' }>
+  /** Entrega en moto: radio máximo y tienda de salida, para el mapa. */
+  delivery: { maxKm: number; origin: { lat: number; lng: number } }
   taxRate: number
   taxIncluded: boolean
   payphone: { token: string; storeId: string } | null
@@ -217,6 +222,8 @@ export interface CheckoutInput {
     city: string
     reference: string
     notes: string
+    /** Entrega en moto: "lat,lng" del mapa o link de Google Maps. */
+    location: string
   }
   billing?: {
     wanted: boolean
@@ -228,6 +235,16 @@ export interface CheckoutInput {
   }
   payment: { method: PaymentMethod }
   items: Array<{ productId: string; variantId: string | null; qty: number }>
+}
+
+/** Lo que responde /orders/quote: coordenadas, km por carretera y precio del tarifario. */
+export interface DeliveryQuote {
+  resolvedUrl: string
+  coords: { lat: number; lng: number } | null
+  km: number | null
+  /** null con coordenadas = fuera del radio de la moto. */
+  cost: number | null
+  kmSource: 'driving' | 'straight' | null
 }
 
 /** Parámetros que el backapp calcula para PPaymentButtonBox (montos en centavos). */
