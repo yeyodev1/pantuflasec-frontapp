@@ -2,6 +2,21 @@
  * El copy es configuración: todos los textos y datos de la marca viven acá.
  * Los componentes solo consumen y pintan.
  */
+const CLOUD = 'https://res.cloudinary.com/afwyrt75/image/upload'
+const LOGO_ID = 'pantuflasec/marca/kdiwg79agtwcurg3136v'
+
+/** Logo desde Cloudinary en las variantes que usa la web. Nunca hay imágenes locales. */
+export const logo = {
+  /** Cuadrado original, fondo amarillo. */
+  square: `${CLOUD}/c_fill,w_512,h_512/f_auto,q_auto/${LOGO_ID}.jpg`,
+  /** Solo el letrero, recortado. */
+  wordmark: `${CLOUD}/c_crop,w_360,h_130,x_44,y_158/e_make_transparent:35/f_png/${LOGO_ID}.jpg`,
+  /** Ícono redondeado para header, favicon y apple-touch. */
+  icon: (px: number) => `${CLOUD}/c_fill,w_${px},h_${px},r_max/f_png/${LOGO_ID}.jpg`,
+  /** Imagen para compartir (WhatsApp, Instagram, Facebook). */
+  og: `${CLOUD}/c_pad,w_1200,h_630,b_rgb:ffcc00/f_jpg,q_auto/${LOGO_ID}.jpg`,
+}
+
 export const site = {
   name: 'Pantuflasec',
   tagline: 'Pantuflas, peluches y regalos con tus personajes favoritos.',
@@ -10,8 +25,10 @@ export const site = {
   email: 'hola@pantuflas.ec',
   // Solo dígitos con código de país, ej: 593984934039
   whatsapp: '593982401562',
+  whatsappDisplay: '+593 98 240 1562',
   social: {
     instagram: 'https://instagram.com/pantuflasec',
+    instagramHandle: '@pantuflasec',
     facebook: '',
     tiktok: '',
   },
@@ -22,7 +39,7 @@ export const site = {
   nav: [
     { label: 'Inicio', to: '/' },
     { label: 'Tienda', to: '/tienda' },
-    { label: 'Contacto', to: '/#contacto' },
+    { label: 'Mis pedidos', to: '/mis-pedidos' },
   ],
 } as const
 
