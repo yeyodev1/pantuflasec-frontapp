@@ -163,7 +163,7 @@ watch(() => route.fullPath, () => (menuOpen.value = false))
     height: 1.1rem;
     padding-inline: 0.25rem;
     border-radius: $radius-pill;
-    background: $accent;
+    background: $price;
     color: $surface;
     font-size: 0.62rem;
     font-weight: 700;
