@@ -2,6 +2,7 @@
 import { toRef } from 'vue'
 import { useBodyScroll } from '@/composables/useBodyScroll'
 import type { UserInput } from '@/services/user.service'
+import PhoneField from '@/components/ui/PhoneField.vue'
 
 const props = defineProps<{ open: boolean; editing: boolean; form: UserInput; saving: boolean }>()
 const emit = defineEmits<{ save: []; close: [] }>()
@@ -17,12 +18,13 @@ useBodyScroll(toRef(props, 'open'))
           <h3 class="modal__title">{{ editing ? 'Editar usuario' : 'Nuevo usuario' }}</h3>
           <label>Correo <input v-model="form.email" type="email" required :disabled="editing" autocomplete="off" /></label>
           <label>Nombre <input v-model="form.name" autocomplete="off" /></label>
-          <label>Celular <input v-model="form.phone" type="tel" autocomplete="off" /></label>
+          <label>Celular <PhoneField :model-value="form.phone ?? ''" @update:model-value="form.phone = $event" /></label>
           <label>
             Tipo de cuenta
             <select v-model="form.accountType">
               <option value="customer">Cliente</option>
-              <option value="admin">Administrador</option>
+              <option value="staff">Vendedor (solo pedidos)</option>
+              <option value="admin">Administrador (todo)</option>
             </select>
           </label>
           <label>
