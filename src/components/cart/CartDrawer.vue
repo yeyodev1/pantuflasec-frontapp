@@ -63,7 +63,7 @@ function checkout() {
               <span>Subtotal</span>
               <strong>{{ formatMoney(cart.subtotal) }}</strong>
             </div>
-            <p class="cart__note">Envío e IVA se calculan en el siguiente paso. Retiro en tienda gratis.</p>
+            <p class="cart__note">Precios con IVA incluido. El envío se calcula en el siguiente paso; retiro en tienda gratis.</p>
             <button class="btn btn--primary cart__cta" @click="checkout">
               <i class="fa-solid fa-lock"></i> Finalizar compra
             </button>
