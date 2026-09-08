@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { site, whatsappLink } from '@/config/site'
+import { site } from '@/config/site'
+import { useWhatsApp } from '@/composables/useWhatsApp'
 import CategoryTiles from '@/components/home/CategoryTiles.vue'
 import FeaturedProducts from '@/components/home/FeaturedProducts.vue'
 import HeroCollage from '@/components/home/HeroCollage.vue'
 import CollectionMarquee from '@/components/home/CollectionMarquee.vue'
 import HomeGallery from '@/components/home/HomeGallery.vue'
+
+const { ask } = useWhatsApp()
 
 const perks = [
   { icon: 'fa-solid fa-truck-fast', title: 'Envíos a todo Ecuador', text: 'Por Servientrega, de 24 a 72 horas a provincias.' },
@@ -25,9 +28,9 @@ const perks = [
           <RouterLink to="/tienda" class="btn btn--primary">
             <i class="fa-solid fa-bag-shopping"></i> Ver la tienda
           </RouterLink>
-          <a v-if="site.whatsapp" :href="whatsappLink()" class="btn btn--ghost" target="_blank" rel="noopener">
+          <button v-if="site.whatsapp" type="button" class="btn btn--ghost" @click="ask()">
             <i class="fa-brands fa-whatsapp"></i> Escríbenos
-          </a>
+          </button>
         </div>
       </div>
     </section>
