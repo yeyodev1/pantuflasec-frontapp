@@ -17,6 +17,7 @@ const hasVariants = computed(() => props.product.variants.length > 0)
     <div class="card__media">
       <img :src="mainImage(product)" :alt="product.name" loading="lazy" width="400" height="400" />
       <span v-if="!available" class="card__badge card__badge--out">Agotado</span>
+      <span v-else-if="product.newArrival" class="card__badge card__badge--new">Nuevo</span>
       <span v-else-if="product.featured" class="card__badge">Destacado</span>
       <QuickAdd v-if="available" :product="product" />
     </div>
@@ -85,6 +86,11 @@ const hasVariants = computed(() => props.product.variants.length > 0)
 
     &--out {
       background: $ink;
+    }
+
+    &--new {
+      background: $price;
+      color: $surface;
     }
   }
 
