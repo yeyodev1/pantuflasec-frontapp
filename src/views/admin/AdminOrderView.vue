@@ -3,11 +3,12 @@ import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import AdminShell from '@/layout/AdminShell.vue'
 import { orderService } from '@/services/order.service'
-import { orderStatuses, orderStatusLabel } from '@/config/orders'
+import { orderStatusLabel } from '@/config/orders'
 import { formatDate, formatMoney } from '@/utils/format'
 import { useToastStore } from '@/stores/toast'
 import type { ApiError, Order, OrderStatus } from '@/types'
 import OrderTimeline from '@/components/admin/OrderTimeline.vue'
+import OrderStatusPicker from '@/components/admin/OrderStatusPicker.vue'
 
 const route = useRoute()
 const toast = useToastStore()
@@ -59,12 +60,9 @@ function waLink(o: Order) {
     </template>
 
     <template v-if="order">
-      <div class="grid">
-        <section class="panel">
-          <h2 class="panel__title">Estado</h2>
-          <select :value="order.status" :disabled="saving" @change="setStatus(($event.target as HTMLSelectElement).value as OrderStatus)">
-            <option v-for="s in orderStatuses" :key="s.key" :value="s.key">{{ s.label }}</option>
-          </select>
+      <section class="panel panel--wide">
+        <h2 class="panel__title">Estado</h2>
+          <OrderStatusPicker :status="order.status" :saving="saving" @change="setStatus" />
           <p class="panel__meta">Creado {{ formatDate(order.createdAt) }}</p>
           <p v-if="order.payment.status === 'paid'" class="panel__meta">
             Pagado con PayPhone · {{ order.payment.cardBrand }} · aut. {{ order.payment.authorizationCode }} · id {{ order.payment.payphoneId }}
@@ -73,8 +71,9 @@ function waLink(o: Order) {
           <p v-if="order.stockIssue" class="panel__warn">
             <i class="fa-solid fa-triangle-exclamation"></i> No se pudo descontar stock de algún ítem. Revisa el inventario.
           </p>
-        </section>
+      </section>
 
+      <div class="grid">
         <section class="panel">
           <h2 class="panel__title">Cliente</h2>
           <p><strong>{{ order.customer.name }}</strong></p>
@@ -150,6 +149,7 @@ function waLink(o: Order) {
     margin-bottom: 0.3rem;
   }
 
+  &--wide { width: 100%; }
   &__meta { font-size: $text-xs; color: $ink-muted; }
   &__warn { color: $warning; font-weight: 600; }
   &__notes { color: $ink-soft; font-style: italic; }
