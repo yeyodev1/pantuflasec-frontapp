@@ -11,6 +11,7 @@ import HeroCollage from '@/components/home/HeroCollage.vue'
 import CollectionMarquee from '@/components/home/CollectionMarquee.vue'
 import HomeGallery from '@/components/home/HomeGallery.vue'
 import HomePerks from '@/components/home/HomePerks.vue'
+import HomeCollections from '@/components/home/HomeCollections.vue'
 import type { HeroSettings } from '@/types'
 
 const { ask } = useWhatsApp()
@@ -54,6 +55,7 @@ track(
 
     <CollectionMarquee />
     <HomeGallery />
+    <HomeCollections />
     <div v-reveal><CategoryTiles /></div>
     <div v-reveal>
       <FeaturedProducts eyebrow="Favoritos" title="Los más pedidos" :query="{ featured: true }" />
