@@ -4,9 +4,11 @@ import { orderService } from '@/services/order.service'
 import { orderStatusLabel } from '@/config/orders'
 import { formatDate, formatMoney } from '@/utils/format'
 import { savedOrders, type SavedOrder } from '@/utils/myOrders'
-import { site, whatsappLink } from '@/config/site'
+import { site } from '@/config/site'
+import { useWhatsApp } from '@/composables/useWhatsApp'
 import type { ApiError, Order } from '@/types'
 
+const { ask } = useWhatsApp()
 const local = ref<SavedOrder[]>([])
 const orders = ref<Order[]>([])
 const loading = ref(true)
@@ -77,9 +79,9 @@ async function lookup() {
       <p v-if="error" class="lookup__error">{{ error }}</p>
     </form>
 
-    <a v-if="site.whatsapp" :href="whatsappLink('Hola, quiero consultar por mi pedido')" class="mine__wa" target="_blank" rel="noopener">
+    <button v-if="site.whatsapp" type="button" class="mine__wa" @click="ask('👋 Hola Pantuflas Ecuador, quiero consultar por mi pedido 📦')">
       <i class="fa-brands fa-whatsapp"></i> ¿Dudas? Escríbenos al {{ site.whatsappDisplay }}
-    </a>
+    </button>
   </section>
 </template>
 
