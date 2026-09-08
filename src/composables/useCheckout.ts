@@ -13,6 +13,7 @@ import type {
 } from '@/types'
 import { rememberCustomer, savedCustomer } from '@/utils/customer'
 import { rememberOrder } from '@/utils/myOrders'
+import { useToastStore } from '@/stores/toast'
 
 /**
  * Dos fases: formulario → pedido creado. Al crear el pedido el backend fija
@@ -23,6 +24,7 @@ import { rememberOrder } from '@/utils/myOrders'
 export function useCheckout() {
   const cart = useCartStore()
   const router = useRouter()
+  const toast = useToastStore()
 
   const config = ref<ShopConfig | null>(null)
   const loadingConfig = ref(true)
@@ -30,6 +32,9 @@ export function useCheckout() {
   const error = ref('')
   const payphone = ref<PayphoneBoxParams | null>(null)
   const orderNumber = ref('')
+  /** Comprobante elegido en el checkout con transferencia; sube apenas existe el pedido. */
+  const proof = ref<File | null>(null)
+  const proofNote = ref('')
 
   const saved = savedCustomer()
   const form = reactive<CheckoutInput>({
@@ -117,7 +122,7 @@ export function useCheckout() {
   })
 
   const submitLabel = computed(() => {
-    if (form.payment.method === 'transfer') return 'Confirmar y ver cuentas'
+    if (form.payment.method === 'transfer') return proof.value ? 'Confirmar y enviar comprobante' : 'Confirmar pedido'
     if (form.payment.method === 'cash') return 'Reservar y pagar en tienda'
     return 'Continuar al pago'
   })
@@ -159,7 +164,15 @@ export function useCheckout() {
         }
         return
       }
-      // Transferencia o efectivo: el pedido ya quedó reservado.
+      // Transferencia o efectivo: el pedido ya quedó reservado. El comprobante
+      // va a Cloudinary amarrado al pedido; si falla, se puede subir después.
+      if (form.payment.method === 'transfer' && proof.value) {
+        try {
+          await orderService.uploadProof(token, proof.value, proofNote.value)
+        } catch (e) {
+          toast.error(`El pedido quedó creado, pero el comprobante no subió: ${(e as ApiError).message}`)
+        }
+      }
       cart.clear()
       router.push({ name: 'Order', params: { code: token }, query: { nuevo: '1' } })
     } catch (e) {
@@ -178,6 +191,8 @@ export function useCheckout() {
     form,
     payphone,
     orderNumber,
+    proof,
+    proofNote,
     shippingCost,
     tax,
     taxIncluded,
