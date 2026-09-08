@@ -68,9 +68,11 @@ function waLink(o: Order) {
           <p><strong>{{ order.customer.name }}</strong></p>
           <p>{{ order.customer.email }}</p>
           <p>{{ order.customer.phone }} <span v-if="order.customer.documentId">· CI {{ order.customer.documentId }}</span></p>
-          <a :href="waLink(order)" target="_blank" rel="noopener" class="btn btn--ghost panel__wa">
-            <i class="fa-brands fa-whatsapp"></i> Escribir por WhatsApp
-          </a>
+          <div class="panel__contact">
+            <a :href="waLink(order)" target="_blank" rel="noopener" class="btn btn--ghost"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+            <a :href="`tel:${order.customer.phone}`" class="btn btn--ghost"><i class="fa-solid fa-phone"></i> Llamar</a>
+            <a :href="`mailto:${order.customer.email}?subject=Tu pedido ${order.number} en Pantuflas Ecuador`" class="btn btn--ghost"><i class="fa-solid fa-envelope"></i> Correo</a>
+          </div>
         </section>
 
         <section class="panel">
@@ -126,7 +128,13 @@ function waLink(o: Order) {
   &__meta { font-size: $text-xs; color: $ink-muted; }
   &__warn { color: $warning; font-weight: 600; }
   &__notes { color: $ink-soft; font-style: italic; }
-  &__wa { align-self: flex-start; margin-top: 0.4rem; padding: 0.55rem 1rem; }
+  &__contact {
+    @include flex(row, center, flex-start, 0.4rem);
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+
+    .btn { padding: 0.5rem 0.85rem; font-size: $text-xs; }
+  }
 }
 
 .items { list-style: none; }
