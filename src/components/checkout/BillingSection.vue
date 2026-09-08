@@ -9,13 +9,23 @@ defineProps<{ billing: NonNullable<CheckoutInput['billing']>; customerDocument: 
 
 <template>
   <section class="card" style="--i: 2">
-    <h2 class="card__title"><span>3</span> Factura</h2>
+    <h2 class="card__title"><span>4</span> Factura</h2>
 
     <div class="toggle" role="group" aria-label="¿Quieres factura?">
-      <button type="button" class="toggle__opt" :class="{ 'toggle__opt--on': !billing.wanted }" @click="billing.wanted = false">
+      <button
+        type="button"
+        class="toggle__opt"
+        :class="{ 'toggle__opt--on': !billing.wanted }"
+        @click="billing.wanted = false"
+      >
         <i class="fa-solid fa-receipt"></i> Sin factura
       </button>
-      <button type="button" class="toggle__opt" :class="{ 'toggle__opt--on': billing.wanted }" @click="billing.wanted = true">
+      <button
+        type="button"
+        class="toggle__opt"
+        :class="{ 'toggle__opt--on': billing.wanted }"
+        @click="billing.wanted = true"
+      >
         <i class="fa-solid fa-file-invoice"></i> Quiero factura
       </button>
     </div>
@@ -28,19 +38,35 @@ defineProps<{ billing: NonNullable<CheckoutInput['billing']>; customerDocument: 
         </label>
 
         <p v-if="billing.sameAsCustomer && !customerDocument" class="billing__warn">
-          <i class="fa-solid fa-circle-info"></i> Escribe tu cédula arriba, en tus datos, para poder facturar.
+          <i class="fa-solid fa-circle-info"></i> Escribe tu cédula arriba, en tus datos, para poder
+          facturar.
         </p>
 
         <div v-if="!billing.sameAsCustomer" class="billing__fields">
-          <FormField label="RUC o cédula" icon="fa-solid fa-id-card" hint="10 dígitos para cédula, 13 para RUC.">
-            <input v-model="billing.documentId" inputmode="numeric" required maxlength="13" placeholder="0992345678001" />
+          <FormField
+            label="RUC o cédula"
+            icon="fa-solid fa-id-card"
+            hint="10 dígitos para cédula, 13 para RUC."
+          >
+            <input
+              v-model="billing.documentId"
+              inputmode="numeric"
+              required
+              maxlength="13"
+              placeholder="0992345678001"
+            />
           </FormField>
           <FormField label="Nombre y apellido o razón social" icon="fa-solid fa-user">
             <input v-model="billing.name" required placeholder="Como debe salir en la factura" />
           </FormField>
           <div class="billing__row">
             <FormField label="Correo" icon="fa-solid fa-envelope">
-              <input v-model="billing.email" type="email" required placeholder="facturas@empresa.com" />
+              <input
+                v-model="billing.email"
+                type="email"
+                required
+                placeholder="facturas@empresa.com"
+              />
             </FormField>
             <FormField label="Celular" icon="fa-solid fa-mobile-screen" optional>
               <PhoneField v-model="billing.phone" />
