@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Qué es esto
 
 Frontend de Pantuflasec. Vue 3 + Vite + TypeScript, SCSS propio, Pinia, vue-router.
-Desplegado en Vercel: `https://dev-project-front.bakano.ec` (proyecto `pantuflasec-frontapp`).
+Desplegado en Vercel: `https://pantuflas.ec` (alias `https://dev-project-front.bakano.ec`) (proyecto `pantuflasec-frontapp`).
 El backend vive en el repo hermano `*-backapp` (Express 5 + Mongoose).
 
 ## Comandos
