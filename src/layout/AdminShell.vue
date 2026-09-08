@@ -87,7 +87,9 @@ $sidebar: 236px;
     padding: $space-sm 1.25rem calc(5rem + env(safe-area-inset-bottom));
 
     @include from('md') {
-      padding: $space-md 2rem $space-section;
+      margin-left: $sidebar;
+      min-height: calc(100vh - 61px);
+      padding: $space-md 2rem $space-lg;
     }
   }
 
@@ -160,14 +162,17 @@ $sidebar: 236px;
     text-align: center;
   }
 
-  // Escritorio: columna clara a la izquierda.
+  // Escritorio: columna fija a la izquierda, siempre a toda la altura.
   @include from('md') {
-    position: sticky;
+    position: fixed;
     top: 61px;
-    inset: auto;
-    align-self: flex-start;
-    height: calc(100vh - 61px);
+    bottom: 0;
+    left: 0;
+    right: auto;
+    height: auto;
+    width: $sidebar;
     flex: 0 0 $sidebar;
+    overflow-y: auto;
     @include flex(column, stretch, flex-start, 0.25rem);
     padding: 1.2rem 0.9rem;
     background: $surface;
