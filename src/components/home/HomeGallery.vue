@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { galleryService } from '@/services/gallery.service'
 import { productService } from '@/services/product.service'
 import { mainImage } from '@/utils/product'
+import { track, waitForImages } from '@/composables/usePreloader'
 
 /**
  * Tira de fotos en dos filas que corren en sentidos opuestos, con parallax
@@ -34,7 +35,9 @@ function loop(row: Slide[]): Slide[] {
   return [...half, ...half]
 }
 
-onMounted(async () => {
+onMounted(() => track(load()))
+
+async function load() {
   try {
     const g = await galleryService.list()
     if (g.length >= 4) {
@@ -52,7 +55,9 @@ onMounted(async () => {
   } catch {
     slides.value = []
   }
-})
+  // Las primeras de cada fila son las que se ven al abrir.
+  await waitForImages(slides.value.slice(0, 6).map((s) => s.url))
+}
 </script>
 
 <template>
