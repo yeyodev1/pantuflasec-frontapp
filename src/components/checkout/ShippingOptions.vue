@@ -7,7 +7,7 @@ const emit = defineEmits<{ change: [method: ShippingMethod] }>()
 
 // Los textos vienen del admin (/admin/envios); aquí solo el icono según retiro o envío.
 const icon = (m: { kind: string; cost: number }) =>
-  m.kind === 'pickup' ? 'fa-solid fa-store' : m.cost < 5 ? 'fa-solid fa-motorcycle' : 'fa-solid fa-truck-fast'
+  m.kind === 'pickup' ? 'fa-solid fa-store' : m.kind === 'distance' ? 'fa-solid fa-motorcycle' : 'fa-solid fa-truck-fast'
 </script>
 
 <template>
@@ -29,8 +29,8 @@ const icon = (m: { kind: string; cost: number }) =>
         <strong>{{ m.label.replace(/\s*\(.*\)$/, '') }}</strong>
         <small>{{ m.description }}</small>
       </span>
-      <span class="opt__price" :class="{ 'opt__price--free': !m.cost }">
-        {{ m.cost ? formatMoney(m.cost) : 'Gratis' }}
+      <span class="opt__price" :class="{ 'opt__price--free': !m.cost && m.kind !== 'distance' }">
+        {{ m.kind === 'distance' ? 'Según distancia' : m.cost ? formatMoney(m.cost) : 'Gratis' }}
       </span>
       <span class="opt__check"><i class="fa-solid fa-check"></i></span>
     </button>
