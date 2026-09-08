@@ -62,6 +62,7 @@ onMounted(async () => {
           <template v-else>{{ order.shipping.address }}, {{ order.shipping.city }}<span v-if="order.shipping.reference"> · {{ order.shipping.reference }}</span></template>
         </p>
         <p><strong>Contacto:</strong> {{ order.customer.email }} · {{ order.customer.phone }}</p>
+        <p v-if="order.billing?.wanted"><strong>Factura:</strong> {{ order.billing.name }} · {{ order.billing.documentId }} · {{ order.billing.email }}</p>
         <p v-if="order.payment.authorizationCode"><strong>Pago:</strong> PayPhone · {{ order.payment.cardBrand }} · aut. {{ order.payment.authorizationCode }}</p>
       </div>
 
