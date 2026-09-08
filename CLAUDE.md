@@ -110,6 +110,11 @@ En componentes: `$ink`, `$accent`, `@include from('md')`, `@include container` �
 - **Métodos de entrega** vienen del backend (`/orders/config`, editables en `/admin/envios`):
   `ShippingMethod` es un string y los retiros se reconocen por el prefijo `pickup-`.
   `ShippingOptions` pinta `description` tal cual; no hay textos de envío en el front.
+- **Entrega en moto por distancia** (`kind: distance`): `DeliveryLocation` en el checkout abre
+  `LocationPicker` (Leaflet + OpenStreetMap, pin fijo al centro como en apps de delivery, portado de
+  Teque Cruncheese) o acepta un link de Google Maps; `useDeliveryQuote` cotiza contra
+  `/orders/quote` y `useCheckout` usa ese costo. El botón de confirmar se bloquea hasta tener una
+  ubicación cotizada dentro del radio. Leaflet se carga solo al abrir el mapa.
 - **Precios con IVA incluido.** `taxIncluded` viene del backend: el resumen muestra "Incluye IVA"
   en gris y no lo suma. Nunca volver a sumar IVA en el front.
 - **Página del pedido** (`OrderView`): `OrderPaymentPanel` (cuentas con botón de copiar, subir
