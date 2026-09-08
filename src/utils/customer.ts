@@ -10,6 +10,8 @@ export interface SavedCustomer {
   address: string
   city: string
   reference: string
+  /** Punto del mapa o link de Maps de la última entrega en moto. */
+  location: string
 }
 
 export function savedCustomer(): Partial<SavedCustomer> {
