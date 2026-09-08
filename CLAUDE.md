@@ -130,6 +130,9 @@ En componentes: `$ink`, `$accent`, `@include from('md')`, `@include container` �
   productos con `newArrival`.
 - **Sección "Nuevo":** `newArrival` en el producto (checkbox en el editor), badge rojo en la
   tarjeta, chip amarillo en los filtros, `/tienda?nuevo=1` en header, menú y "Ver todo".
+- **"Mostrar en el inicio"** (`showOnHome`, check en el editor): `HomeCollections` lista esos
+  productos agrupados por colección, cada grupo con su título y "Ver todo" a la colección. Es la
+  forma fácil de poner una campaña (flores amarillas) en el home sin tocar la portada.
 - **Redes:** `socialLinks` en `config/site.ts` (Instagram, TikTok, Facebook) alimenta menú y pie.
 - **Meta Pixel:** `utils/pixel.ts`. Sin `VITE_META_PIXEL_ID` es un no-op. Eventos: PageView por
   ruta, ViewContent, AddToCart, InitiateCheckout, Purchase (con `order_id`).
