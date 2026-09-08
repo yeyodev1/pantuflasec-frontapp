@@ -3,6 +3,7 @@ import { useRoute } from 'vue-router'
 import { productService } from '@/services/product.service'
 import type { ApiError, Product, ProductVariant } from '@/types'
 import { variantPrice } from '@/utils/product'
+import { track, waitForImages } from '@/composables/usePreloader'
 
 /** Carga del producto por slug y selección de variante/imagen. */
 export function useProductPage() {
@@ -23,6 +24,7 @@ export function useProductPage() {
     qty.value = 1
     try {
       product.value = await productService.bySlug(slug)
+      void track(waitForImages([product.value.images[0]?.url ?? '']))
       // Se preselecciona la primera variante con stock para que el botón de
       // compra sirva de una, sin obligar a elegir cuando solo hay una opción.
       variant.value = product.value.variants.find((v) => v.stock > 0) ?? null
