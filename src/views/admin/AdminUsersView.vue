@@ -10,6 +10,7 @@ import type { AdminUser } from '@/types'
 const { items, total, pages, page, q, role, loading, saving, editing, showForm, form, openNew, openEdit, save, toggleActive, remove, isMe } =
   useAdminUsers()
 const toDelete = ref<AdminUser | null>(null)
+const roleLabel = (r: string) => (r === 'admin' ? 'Administrador' : r === 'staff' ? 'Vendedor' : 'Cliente')
 </script>
 
 <template>
@@ -25,14 +26,15 @@ const toDelete = ref<AdminUser | null>(null)
     <div class="chips">
       <button class="chip" :class="{ 'chip--on': !role }" @click="role = ''">Todos</button>
       <button class="chip" :class="{ 'chip--on': role === 'admin' }" @click="role = 'admin'">Administradores</button>
+      <button class="chip" :class="{ 'chip--on': role === 'staff' }" @click="role = 'staff'">Vendedores</button>
       <button class="chip" :class="{ 'chip--on': role === 'customer' }" @click="role = 'customer'">Clientes</button>
     </div>
     <p class="count">{{ total }} usuarios</p>
 
     <ul class="list" :class="{ 'list--dim': loading }">
       <li v-for="(u, i) in items" :key="u.id" class="row" :class="{ 'row--off': !u.isActive }" :style="{ '--i': i % 10 }">
-        <span class="row__avatar" :class="{ 'row__avatar--admin': u.accountType === 'admin' }">
-          <i :class="u.accountType === 'admin' ? 'fa-solid fa-user-shield' : 'fa-solid fa-user'"></i>
+        <span class="row__avatar" :class="{ 'row__avatar--admin': u.accountType === 'admin', 'row__avatar--staff': u.accountType === 'staff' }">
+          <i :class="u.accountType === 'admin' ? 'fa-solid fa-user-shield' : u.accountType === 'staff' ? 'fa-solid fa-user-tie' : 'fa-solid fa-user'"></i>
         </span>
         <div class="row__main">
           <p class="row__title">
@@ -41,7 +43,7 @@ const toDelete = ref<AdminUser | null>(null)
           </p>
           <p class="row__meta">
             {{ u.email }}<span v-if="u.phone"> · {{ u.phone }}</span>
-            · {{ u.accountType === 'admin' ? 'Administrador' : 'Cliente' }}
+            · {{ roleLabel(u.accountType) }}
             · alta {{ formatDate(u.createdAt) }}
           </p>
         </div>
@@ -125,6 +127,7 @@ const toDelete = ref<AdminUser | null>(null)
     color: $ink-soft;
     @include flex(row, center, center);
     &--admin { background: $accent-soft; color: $accent-deep; }
+    &--staff { background: $highlight-soft; color: $ink; }
   }
 
   &__main { flex: 1; min-width: 0; }
