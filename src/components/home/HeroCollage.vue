@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import { productService } from '@/services/product.service'
 import { galleryService } from '@/services/gallery.service'
 import { track, waitForImages } from '@/composables/usePreloader'
+import SkeletonBox from '@/components/ui/SkeletonBox.vue'
 import { mainImage } from '@/utils/product'
 import type { Product } from '@/types'
 
@@ -16,6 +17,7 @@ interface Card {
   to: string
 }
 const items = ref<Card[]>([])
+const loading = ref(true)
 const tilt = ref({ x: 0, y: 0 })
 
 function onMove(e: MouseEvent) {
@@ -39,6 +41,7 @@ async function load() {
   } catch {
     items.value = []
   }
+  loading.value = false
   await waitForImages(items.value.map((i) => i.url))
   if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
     window.addEventListener('mousemove', onMove, { passive: true })
@@ -49,7 +52,11 @@ onUnmounted(() => window.removeEventListener('mousemove', onMove))
 
 <template>
   <div class="collage" aria-hidden="true">
+    <template v-if="loading">
+      <SkeletonBox v-for="n in 4" :key="n" class="collage__item collage__item--sk" :class="`collage__item--${n}`" :style="{ '--i': n - 1 }" />
+    </template>
     <RouterLink
+      v-else
       v-for="(p, i) in items.slice(0, 6)"
       :key="p.key"
       :to="p.to"
@@ -100,6 +107,12 @@ onUnmounted(() => window.removeEventListener('mousemove', onMove))
     animation-delay: calc(0.25s + var(--i) * 0.12s), calc(var(--i) * -1.1s);
     translate: var(--tx, 0) var(--ty, 0);
     transition: translate 0.4s ease-out;
+
+    &--sk {
+      opacity: 1;
+      animation: none;
+      box-shadow: none;
+    }
 
     img {
       width: 100%;
