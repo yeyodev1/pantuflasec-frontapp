@@ -7,7 +7,10 @@ const props = defineProps<{ query: ProductQuery; facets: ProductFacets | null; t
 const emit = defineEmits<{ change: [patch: Partial<ProductQuery>] }>()
 
 const search = ref(props.query.q ?? '')
-watch(() => props.query.q, (v) => (search.value = v ?? ''))
+watch(
+  () => props.query.q,
+  (v) => (search.value = v ?? ''),
+)
 
 // La búsqueda se envía al soltar el teclado, no en cada tecla.
 let timer: ReturnType<typeof setTimeout> | undefined
@@ -33,10 +36,17 @@ function count(key: string): number {
     <div class="filters__chips">
       <button
         class="chip"
-        :class="{ 'chip--on': !query.category }"
-        @click="emit('change', { category: '' })"
+        :class="{ 'chip--on': !query.category && !query.newArrival }"
+        @click="emit('change', { category: '', newArrival: false })"
       >
         Todo
+      </button>
+      <button
+        class="chip chip--new"
+        :class="{ 'chip--on': query.newArrival }"
+        @click="emit('change', { newArrival: !query.newArrival })"
+      >
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Nuevo
       </button>
       <button
         v-for="c in categories"
@@ -64,7 +74,9 @@ function count(key: string): number {
       <select
         :value="query.sort || 'featured'"
         aria-label="Ordenar"
-        @change="emit('change', { sort: ($event.target as HTMLSelectElement).value as ProductSort })"
+        @change="
+          emit('change', { sort: ($event.target as HTMLSelectElement).value as ProductSort })
+        "
       >
         <option v-for="s in sorts" :key="s.key" :value="s.key">{{ s.label }}</option>
       </select>
@@ -156,6 +168,20 @@ function count(key: string): number {
     border-color: $accent;
     color: $accent-deep;
     background: $accent-soft;
+  }
+
+  // "Nuevo" resalta en amarillo de marca para que se distinga de las categorías.
+  &--new {
+    border-color: $highlight;
+    background: $highlight-soft;
+    color: $ink;
+
+    &.chip--on,
+    &:hover {
+      background: $highlight;
+      border-color: $highlight;
+      color: $ink;
+    }
   }
 }
 </style>
