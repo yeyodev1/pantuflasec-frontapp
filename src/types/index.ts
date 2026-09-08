@@ -18,7 +18,7 @@ export interface SessionUser {
   email: string
   name: string
   phone: string
-  accountType: 'customer' | 'admin' | string
+  accountType: 'customer' | 'staff' | 'admin' | string
 }
 
 /** Espejo de CATEGORIES en el backapp (product.model.ts). */
