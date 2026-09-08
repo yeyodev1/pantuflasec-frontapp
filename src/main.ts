@@ -24,6 +24,10 @@ window.addEventListener('auth:token-expired', () => {
   }
 })
 
+// Con token guardado se restaura la sesión al abrir cualquier página (el admin ve
+// su acceso a pedidos desde la portada, no solo en rutas protegidas).
+if (userStore.hasToken) userStore.restore()
+
 initPixel()
 router.afterEach(() => pixel.pageView())
 
