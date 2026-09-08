@@ -113,6 +113,7 @@ export interface Order {
   number: string
   clientTransactionId: string
   customer: { name: string; email: string; phone: string; documentId: string }
+  billing?: { wanted: boolean; documentId: string; name: string; email: string; phone: string }
   shipping: {
     method: ShippingMethod
     label: string
@@ -156,6 +157,14 @@ export interface CheckoutInput {
     city: string
     reference: string
     notes: string
+  }
+  billing?: {
+    wanted: boolean
+    sameAsCustomer: boolean
+    documentId: string
+    name: string
+    email: string
+    phone: string
   }
   items: Array<{ productId: string; variantId: string | null; qty: number }>
 }
