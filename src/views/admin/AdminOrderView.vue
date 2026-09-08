@@ -7,6 +7,7 @@ import { orderStatuses, orderStatusLabel } from '@/config/orders'
 import { formatDate, formatMoney } from '@/utils/format'
 import { useToastStore } from '@/stores/toast'
 import type { ApiError, Order, OrderStatus } from '@/types'
+import OrderTimeline from '@/components/admin/OrderTimeline.vue'
 
 const route = useRoute()
 const toast = useToastStore()
@@ -32,6 +33,17 @@ async function setStatus(status: OrderStatus) {
   } finally {
     saving.value = false
   }
+}
+
+/** Se anota el contacto en el historial y luego se abre el enlace. */
+async function contact(kind: 'contact-whatsapp' | 'contact-call' | 'contact-email', href: string) {
+  if (!order.value) return
+  try {
+    order.value = await orderService.addEvent(order.value._id, kind)
+  } catch {
+    /* si no se pudo anotar, igual se contacta */
+  }
+  window.open(href, kind === 'contact-whatsapp' ? '_blank' : '_self', 'noopener')
 }
 
 function waLink(o: Order) {
@@ -69,10 +81,11 @@ function waLink(o: Order) {
           <p>{{ order.customer.email }}</p>
           <p>{{ order.customer.phone }} <span v-if="order.customer.documentId">· CI {{ order.customer.documentId }}</span></p>
           <div class="panel__contact">
-            <a :href="waLink(order)" target="_blank" rel="noopener" class="btn btn--ghost"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
-            <a :href="`tel:${order.customer.phone}`" class="btn btn--ghost"><i class="fa-solid fa-phone"></i> Llamar</a>
-            <a :href="`mailto:${order.customer.email}?subject=Tu pedido ${order.number} en Pantuflas Ecuador`" class="btn btn--ghost"><i class="fa-solid fa-envelope"></i> Correo</a>
+            <button type="button" class="btn btn--ghost" @click="contact('contact-whatsapp', waLink(order))"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+            <button type="button" class="btn btn--ghost" @click="contact('contact-call', `tel:${order.customer.phone}`)"><i class="fa-solid fa-phone"></i> Llamar</button>
+            <button type="button" class="btn btn--ghost" @click="contact('contact-email', `mailto:${order.customer.email}?subject=Tu pedido ${order.number} en Pantuflas Ecuador`)"><i class="fa-solid fa-envelope"></i> Correo</button>
           </div>
+          <p class="panel__meta">Cada contacto queda anotado en el historial.</p>
         </section>
 
         <section class="panel">
@@ -93,6 +106,8 @@ function waLink(o: Order) {
           <p v-else class="panel__meta">El cliente no pidió factura.</p>
         </section>
       </div>
+
+      <OrderTimeline :order="order" />
 
       <section class="panel">
         <h2 class="panel__title">Ítems</h2>
