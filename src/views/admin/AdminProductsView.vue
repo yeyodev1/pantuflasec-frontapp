@@ -39,6 +39,12 @@ function stockLabel(p: Product) {
           <p class="row__meta">
             {{ categoryLabel(p.category) }}<span v-if="p.collection"> · {{ p.collection }}</span>
             · {{ formatMoney(p.price) }} · stock {{ stockLabel(p) }}
+            · <i class="fa-regular fa-image"></i> {{ p.images.length }}/5
+          </p>
+          <p v-if="p.variants.length" class="row__variants">
+            <span v-for="v in p.variants" :key="v._id" :class="['row__variant', { 'row__variant--out': v.stock <= 0 }]">
+              {{ v.label }} <b>{{ v.stock }}</b>
+            </span>
           </p>
         </div>
         <div class="row__actions">
@@ -123,6 +129,30 @@ function stockLabel(p: Product) {
   }
 
   &__meta { font-size: $text-xs; color: $ink-muted; }
+
+  &__variants {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: 0.3rem;
+  }
+
+  &__variant {
+    font-size: 0.62rem;
+    font-weight: 600;
+    padding: 0.1rem 0.45rem;
+    border-radius: $radius-pill;
+    background: $sand;
+    color: $ink-soft;
+
+    b { color: $accent-deep; }
+
+    &--out {
+      background: $danger-bg;
+      color: $danger;
+      b { color: $danger; }
+    }
+  }
 
   &__actions { @include flex(row, center, flex-end, 0.3rem); }
 }
