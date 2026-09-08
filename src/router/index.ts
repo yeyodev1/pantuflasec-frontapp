@@ -92,6 +92,18 @@ const routes: Array<RouteRecordRaw> = [
     meta: { title: 'Galería', requiresAuth: true, roles: ['admin'] },
   },
   {
+    path: '/admin/portada',
+    name: 'AdminHero',
+    component: () => import('@/views/admin/AdminHeroView.vue'),
+    meta: { title: 'Portada', requiresAuth: true, roles: ['admin'] },
+  },
+  {
+    path: '/admin/pagos',
+    name: 'AdminPayments',
+    component: () => import('@/views/admin/AdminPaymentsView.vue'),
+    meta: { title: 'Métodos de pago', requiresAuth: true, roles: ['admin'] },
+  },
+  {
     path: '/admin/archivos',
     name: 'AdminMedia',
     component: () => import('@/views/admin/AdminMediaView.vue'),
