@@ -11,7 +11,7 @@ export function useOrdersSummary() {
   const userStore = useUserStore()
 
   async function refresh() {
-    if (!userStore.isAdmin) return (pending.value = 0)
+    if (!userStore.canManageOrders) return (pending.value = 0)
     try {
       pending.value = (await orderService.summary()).pending
     } catch {
@@ -31,7 +31,7 @@ export function useOrdersSummary() {
       timer = undefined
     }
   })
-  watch(() => userStore.isAdmin, refresh)
+  watch(() => userStore.canManageOrders, refresh)
 
   return { pending, refresh }
 }
