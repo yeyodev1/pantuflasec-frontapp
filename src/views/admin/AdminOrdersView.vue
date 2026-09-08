@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue'
 import AdminShell from '@/layout/AdminShell.vue'
 import { orderService } from '@/services/order.service'
-import { orderStatuses, orderStatusLabel } from '@/config/orders'
+import { orderStatuses, orderStatusLabel, paymentMethodLabel, paymentStatuses } from '@/config/orders'
 import { formatDate, formatMoney } from '@/utils/format'
 import { useToastStore } from '@/stores/toast'
 import type { ApiError, Order } from '@/types'
@@ -13,13 +13,15 @@ const total = ref(0)
 const pages = ref(1)
 const page = ref(1)
 const status = ref('')
+/** "review" lista solo los comprobantes de transferencia por aprobar. */
+const pay = ref('')
 const q = ref('')
 const loading = ref(false)
 
 async function load() {
   loading.value = true
   try {
-    const r = await orderService.listAll({ status: status.value, page: page.value, q: q.value })
+    const r = await orderService.listAll({ status: status.value, pay: pay.value, page: page.value, q: q.value })
     items.value = r.items
     total.value = r.total
     pages.value = r.pages
@@ -30,12 +32,18 @@ async function load() {
   }
 }
 
+/** Estado y "por revisar" son excluyentes: un solo filtro a la vez. */
+function filterBy(nextStatus: string, nextPay: string) {
+  status.value = nextStatus
+  pay.value = nextPay
+}
+
 let timer: ReturnType<typeof setTimeout> | undefined
 watch(q, () => {
   clearTimeout(timer)
   timer = setTimeout(() => ((page.value = 1), load()), 350)
 })
-watch(status, () => ((page.value = 1), load()))
+watch([status, pay], () => ((page.value = 1), load()))
 watch(page, load, { immediate: true })
 </script>
 
@@ -47,8 +55,11 @@ watch(page, load, { immediate: true })
     </label>
 
     <div class="chips">
-      <button class="chip" :class="{ 'chip--on': !status }" @click="status = ''">Todos</button>
-      <button v-for="s in orderStatuses" :key="s.key" class="chip" :class="{ 'chip--on': status === s.key }" @click="status = s.key">
+      <button class="chip" :class="{ 'chip--on': !status && !pay }" @click="filterBy('', '')">Todos</button>
+      <button class="chip chip--hot" :class="{ 'chip--on': pay === 'review' }" @click="filterBy('', pay === 'review' ? '' : 'review')">
+        <i class="fa-solid fa-receipt"></i> Comprobantes por revisar
+      </button>
+      <button v-for="s in orderStatuses" :key="s.key" class="chip" :class="{ 'chip--on': status === s.key }" @click="filterBy(s.key, '')">
         {{ s.label }}
       </button>
     </div>
@@ -66,9 +77,9 @@ watch(page, load, { immediate: true })
               {{ formatDate(o.createdAt) }} · {{ o.items.reduce((n, i) => n + i.qty, 0) }} ítems
             </p>
             <p class="row__tags">
-              <span class="tag" :class="o.payment.status === 'paid' ? 'tag--ok' : 'tag--warn'">
-                <i :class="o.payment.status === 'paid' ? 'fa-solid fa-circle-check' : 'fa-solid fa-clock'"></i>
-                {{ o.payment.status === 'paid' ? 'Pagado' : 'Sin pagar' }}
+              <span class="tag" :class="`tag--${paymentStatuses[o.payment.status]?.tone ?? 'warn'}`">
+                <i :class="o.payment.status === 'paid' ? 'fa-solid fa-circle-check' : o.payment.status === 'review' ? 'fa-solid fa-receipt' : 'fa-solid fa-clock'"></i>
+                {{ paymentStatuses[o.payment.status]?.label ?? o.payment.status }} · {{ paymentMethodLabel(o.payment.method) }}
               </span>
               <span class="tag"><i :class="o.shipping.method.startsWith('pickup') ? 'fa-solid fa-store' : 'fa-solid fa-truck-fast'"></i> {{ o.shipping.label.replace(/\s*\(.*\)$/, '') }}</span>
               <span v-if="o.billing?.wanted" class="tag"><i class="fa-solid fa-file-invoice"></i> Factura</span>
@@ -122,6 +133,7 @@ watch(page, load, { immediate: true })
   white-space: nowrap;
 
   &--on { border-color: $accent; color: $accent-deep; background: $accent-soft; }
+  &--hot { border-color: $highlight; background: $highlight-soft; color: $ink; }
 }
 
 .count { font-size: $text-xs; color: $ink-muted; }
@@ -171,6 +183,8 @@ watch(page, load, { immediate: true })
 
   &--ok { background: $success-bg; color: $success; }
   &--warn { background: $warning-bg; color: $warning; }
+  &--bad { background: $danger-bg; color: $danger; }
+  &--info { background: $highlight-soft; color: $ink; }
   &--muted { background: $sand; color: $ink-soft; }
 }
 
