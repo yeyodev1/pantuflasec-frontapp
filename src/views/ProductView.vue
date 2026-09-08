@@ -9,6 +9,7 @@ import ProductRail from '@/components/product/ProductRail.vue'
 import StickyBuyBar from '@/components/product/StickyBuyBar.vue'
 import ProductZoom from '@/components/product/ProductZoom.vue'
 import ImageLightbox from '@/components/product/ImageLightbox.vue'
+import SkeletonBox from '@/components/ui/SkeletonBox.vue'
 import { onMounted, onUnmounted, ref, watchEffect } from 'vue'
 import { useWhatsApp } from '@/composables/useWhatsApp'
 import { useCartStore } from '@/stores/cart'
@@ -48,7 +49,20 @@ function addToCart() {
 
 <template>
   <section class="product">
-    <p v-if="loading" class="product__state">Cargando…</p>
+    <div v-if="loading" class="product__layout product__skeleton" aria-busy="true">
+      <div>
+        <SkeletonBox class="sk-main" />
+        <div class="sk-thumbs"><SkeletonBox v-for="n in 5" :key="n" radius="10px" /></div>
+      </div>
+      <div class="sk-info">
+        <SkeletonBox style="width: 30%; height: 0.8rem" radius="6px" />
+        <SkeletonBox style="width: 80%; height: 2.2rem" radius="8px" />
+        <SkeletonBox style="width: 25%; height: 1.6rem" radius="8px" />
+        <div class="sk-opts"><SkeletonBox v-for="n in 4" :key="n" radius="10px" /></div>
+        <SkeletonBox style="height: 3rem" radius="999px" />
+        <SkeletonBox style="height: 5rem" />
+      </div>
+    </div>
     <p v-else-if="error" class="product__state product__state--error">
       {{ error }} <RouterLink to="/tienda" class="btn btn--ghost">Volver a la tienda</RouterLink>
     </p>
@@ -155,6 +169,13 @@ function addToCart() {
     &--error {
       color: $danger;
     }
+  }
+
+  &__skeleton {
+    .sk-main { aspect-ratio: 1; }
+    .sk-thumbs { display: flex; gap: 0.5rem; margin-top: 0.6rem; > * { flex: 0 0 4rem; aspect-ratio: 1; } }
+    .sk-info { @include flex(column, stretch, flex-start, 0.9rem); }
+    .sk-opts { display: flex; gap: 0.5rem; > * { flex: 0 0 4.2rem; height: 2.8rem; } }
   }
 
   &__crumbs {
