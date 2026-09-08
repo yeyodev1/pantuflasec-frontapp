@@ -51,6 +51,12 @@ class OrderService extends APIBase {
     return data
   }
 
+  /** Registra un contacto o nota del equipo en el historial del pedido. */
+  async addEvent(id: string, kind: string, detail = ''): Promise<Order> {
+    const { data } = await this.post<Order>(`orders/admin/${id}/events`, { kind, detail })
+    return data
+  }
+
   async setStatus(id: string, status: Order['status']): Promise<Order> {
     const { data } = await this.put<Order>(`orders/admin/${id}/status`, { status })
     return data
