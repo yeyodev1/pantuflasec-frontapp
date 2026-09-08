@@ -30,6 +30,15 @@ Si vite sirve código viejo tras un cambio grande: `rm -rf node_modules/.vite &&
 - **Layout con flexbox.** Para "grillas" usar el mixin `flex-cards($basis, $gap)`.
 - **Nada de librerías UI ni Tailwind.** SCSS propio con los tokens de `src/styles/`.
 - **Iconos con Font Awesome por CDN** (`<i class="fa-solid fa-…">`). Sin emojis en la UI.
+- **Logo y favicon vienen de Cloudinary** (`config/site.ts` → `logo.*`, transformaciones en la URL).
+  No hay imágenes en `public/`.
+- **Sin cuentas de cliente.** El login (`/login`, enlace discreto "Admin" en el footer) es solo para
+  el admin. Los clientes siguen sus compras en `/mis-pedidos`: tokens guardados en localStorage
+  (`utils/myOrders.ts`) al pagar o al abrir un enlace, más un formulario que pide los enlaces por correo.
+- **Menú a pantalla completa** (`layout/TheMenu.vue`) abierto desde el header; el admin ve un
+  botón "Pedidos" con contador (`useOrdersSummary`) en el header y en el menú. La sección de
+  usuarios existe en `/admin/usuarios` pero no está en el sidebar por decisión del cliente.
+- **WhatsApp e Instagram globales** desde `config/site.ts`; botón flotante `TheWhatsApp.vue`.
 - **El copy vive en `src/config/site.ts`**, no dentro de los componentes.
 - Todo `VITE_*` queda expuesto en el navegador: nunca un secreto con ese prefijo.
 
