@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import type { Order } from '@/types'
 import { formatDate } from '@/utils/format'
+import { orderStatusLabel } from '@/config/orders'
 
 /** Historial del pedido: qué pasó, cuándo, quién, y qué correos salieron. */
 const props = defineProps<{ order: Order }>()
@@ -17,6 +18,12 @@ const meta: Record<string, { icon: string; label: string; tone: string }> = {
   'contact-call': { icon: 'fa-solid fa-phone', label: 'Llamada', tone: 'info' },
   'contact-email': { icon: 'fa-solid fa-paper-plane', label: 'Correo manual', tone: 'info' },
   note: { icon: 'fa-solid fa-note-sticky', label: 'Nota', tone: 'muted' },
+}
+
+/** "pending_payment → paid" se muestra con las etiquetas de la tienda. */
+function pretty(e: { kind: string; detail: string }) {
+  if (e.kind !== 'status') return e.detail
+  return e.detail.replace(/[a-z_]+/g, (k) => orderStatusLabel(k))
 }
 
 const events = computed(() =>
@@ -37,7 +44,7 @@ const emailsSent = computed(() => events.value.filter((e) => e.kind === 'email')
         <span class="ev__icon"><i :class="meta[e.kind]?.icon ?? 'fa-solid fa-circle'"></i></span>
         <div class="ev__body">
           <p class="ev__label">{{ meta[e.kind]?.label ?? e.kind }}</p>
-          <p v-if="e.detail" class="ev__detail">{{ e.detail }}</p>
+          <p v-if="e.detail" class="ev__detail">{{ pretty(e) }}</p>
           <p class="ev__meta">{{ formatDate(e.at) }} · {{ e.by }}</p>
         </div>
       </li>
