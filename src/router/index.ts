@@ -34,6 +34,12 @@ const routes: Array<RouteRecordRaw> = [
     meta: { title: 'Confirmando pago' },
   },
   {
+    path: '/mis-pedidos',
+    name: 'MyOrders',
+    component: () => import('@/views/MyOrdersView.vue'),
+    meta: { title: 'Mis pedidos' },
+  },
+  {
     path: '/pedido/:code',
     name: 'Order',
     component: () => import('@/views/OrderView.vue'),
