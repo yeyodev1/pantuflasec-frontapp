@@ -69,7 +69,7 @@ export interface Product {
 }
 
 export interface ProductFacets {
-  categories: Array<{ key: Category; count: number }>
+  categories: Array<{ key: Category; count: number; cover: string | null }>
   collections: Array<{ name: string; count: number }>
 }
 
