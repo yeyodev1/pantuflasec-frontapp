@@ -4,12 +4,18 @@ import { productService } from '@/services/product.service'
 import ProductCard from '@/components/product/ProductCard.vue'
 import type { Product } from '@/types'
 
-const props = defineProps<{ title: string; eyebrow: string; query: Record<string, string | boolean> }>()
+const props = defineProps<{
+  title: string
+  eyebrow: string
+  query: Record<string, string | boolean>
+}>()
 const items = ref<Product[]>([])
 
 onMounted(async () => {
   try {
-    items.value = (await productService.list({ ...props.query, limit: 8 })).items
+    // `nuevo` es solo para la URL de "Ver todo"; el API entiende `newArrival`.
+    const { nuevo: _nuevo, ...query } = props.query
+    items.value = (await productService.list({ ...query, limit: 8 })).items
   } catch {
     items.value = []
   }
@@ -23,7 +29,13 @@ onMounted(async () => {
         <p class="featured__eyebrow">{{ eyebrow }}</p>
         <h2 class="featured__title">{{ title }}</h2>
       </div>
-      <RouterLink :to="{ path: '/tienda', query: query as Record<string, string> }" class="featured__more">
+      <RouterLink
+        :to="{
+          path: '/tienda',
+          query: query.nuevo ? { nuevo: '1' } : (query as Record<string, string>),
+        }"
+        class="featured__more"
+      >
         Ver todo <i class="fa-solid fa-arrow-right"></i>
       </RouterLink>
     </header>
