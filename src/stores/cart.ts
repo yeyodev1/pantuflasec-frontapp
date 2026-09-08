@@ -35,6 +35,8 @@ export const useCartStore = defineStore('cart', {
   state: () => ({
     lines: load(),
     open: false,
+    /** Última línea agregada: el drawer la resalta un instante en vez de mostrar un aviso. */
+    lastAdded: '' as string,
   }),
 
   getters: {
@@ -73,7 +75,9 @@ export const useCartStore = defineStore('cart', {
         })
       }
       this.persist()
+      this.lastAdded = key
       this.open = true
+      setTimeout(() => (this.lastAdded === key ? (this.lastAdded = '') : null), 2500)
     },
 
     setQty(key: string, qty: number) {
