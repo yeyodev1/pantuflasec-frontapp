@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { logo, site, whatsappLink } from '@/config/site'
+import { logo, site } from '@/config/site'
+import { useWhatsApp } from '@/composables/useWhatsApp'
 
 const year = new Date().getFullYear()
+const { ask } = useWhatsApp()
 </script>
 
 <template>
@@ -11,7 +13,7 @@ const year = new Date().getFullYear()
         <img :src="logo.wordmark" alt="Pantuflas Ecuador" class="footer__logo" width="180" height="65" />
         <p class="footer__tagline">{{ site.tagline }}</p>
         <div class="footer__social">
-          <a :href="whatsappLink()" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          <button type="button" aria-label="WhatsApp" @click="ask()"><i class="fa-brands fa-whatsapp"></i></button>
           <a :href="site.social.instagram" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
         </div>
       </div>
@@ -31,7 +33,7 @@ const year = new Date().getFullYear()
 
       <div class="footer__col">
         <h4 class="footer__heading">Contacto</h4>
-        <a :href="whatsappLink()" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> {{ site.whatsappDisplay }}</a>
+        <button type="button" class="footer__link" @click="ask()"><i class="fa-brands fa-whatsapp"></i> {{ site.whatsappDisplay }}</button>
         <a :href="site.social.instagram" target="_blank" rel="noopener"><i class="fa-brands fa-instagram"></i> {{ site.social.instagramHandle }}</a>
         <a :href="`mailto:${site.email}`"><i class="fa-solid fa-envelope"></i> {{ site.email }}</a>
       </div>
@@ -78,7 +80,8 @@ const year = new Date().getFullYear()
     @include flex(row, center, flex-start, 0.5rem);
     margin-top: 0.9rem;
 
-    a {
+    a,
+    button {
       width: 2.4rem;
       height: 2.4rem;
       border-radius: $radius-pill;
@@ -98,7 +101,8 @@ const year = new Date().getFullYear()
   &__col {
     @include flex(column, flex-start, flex-start, 0.5rem);
 
-    a {
+    a,
+    .footer__link {
       font-size: $text-sm;
       @include flex(row, center, flex-start, 0.5rem);
       @include transition(color);
