@@ -32,13 +32,13 @@ watch(() => route.fullPath, () => (menuOpen.value = false))
 
       <div class="header__actions">
         <!-- Pedidos: el acceso clave del admin, siempre a la vista con su contador. -->
-        <RouterLink v-if="userStore.isAdmin" to="/admin/pedidos" class="header__orders" title="Pedidos">
+        <RouterLink v-if="userStore.canManageOrders" to="/admin/pedidos" class="header__orders" title="Pedidos">
           <i class="fa-solid fa-receipt"></i>
           <span class="header__orders-label">Pedidos</span>
           <span v-if="pending" class="header__count header__count--hot">{{ pending }}</span>
         </RouterLink>
 
-        <RouterLink v-if="!userStore.isAdmin" to="/mis-pedidos" class="header__icon" aria-label="Mis pedidos" title="Mis pedidos">
+        <RouterLink v-if="!userStore.canManageOrders" to="/mis-pedidos" class="header__icon" aria-label="Mis pedidos" title="Mis pedidos">
           <i class="fa-solid fa-receipt"></i>
         </RouterLink>
 
