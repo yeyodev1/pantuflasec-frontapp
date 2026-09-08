@@ -17,7 +17,7 @@ export function useAdminUsers() {
   const saving = ref(false)
   const editing = ref<AdminUser | null>(null)
   const showForm = ref(false)
-  const form = reactive<UserInput>({ email: '', password: '', name: '', phone: '', accountType: 'customer' })
+  const form = reactive<UserInput>({ email: '', password: '', name: '', phone: '', accountType: 'staff' })
 
   async function load() {
     loading.value = true
@@ -43,7 +43,7 @@ export function useAdminUsers() {
 
   function openNew() {
     editing.value = null
-    Object.assign(form, { email: '', password: '', name: '', phone: '', accountType: 'customer' })
+    Object.assign(form, { email: '', password: '', name: '', phone: '', accountType: 'staff' })
     showForm.value = true
   }
 
@@ -54,7 +54,7 @@ export function useAdminUsers() {
       password: '',
       name: u.name,
       phone: u.phone,
-      accountType: u.accountType as 'admin' | 'customer',
+      accountType: u.accountType as 'admin' | 'staff' | 'customer',
     })
     showForm.value = true
   }
