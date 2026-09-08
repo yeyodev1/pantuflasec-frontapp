@@ -19,6 +19,11 @@ class OrderService extends APIBase {
     return data
   }
 
+  /** Pide por correo los enlaces de los pedidos hechos con ese email. */
+  async lookup(email: string): Promise<void> {
+    await this.post<{ ok: boolean }>('orders/lookup', { email })
+  }
+
   async track(token: string): Promise<Order> {
     const { data } = await this.get<Order>(`orders/track/${encodeURIComponent(token)}`)
     return data
@@ -33,6 +38,11 @@ class OrderService extends APIBase {
     if (query.q) params.set('q', query.q)
     const qs = params.toString()
     const { data } = await this.get<Paginated<Order>>(`orders/admin/all${qs ? `?${qs}` : ''}`)
+    return data
+  }
+
+  async summary(): Promise<{ pending: number; paid: number; preparing: number; today: number }> {
+    const { data } = await this.get<{ pending: number; paid: number; preparing: number; today: number }>('orders/admin/summary')
     return data
   }
 
