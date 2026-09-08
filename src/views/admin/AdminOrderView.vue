@@ -82,6 +82,16 @@ function waLink(o: Order) {
           <p v-if="order.shipping.reference">Ref.: {{ order.shipping.reference }}</p>
           <p v-if="order.shipping.notes" class="panel__notes">“{{ order.shipping.notes }}”</p>
         </section>
+
+        <section class="panel">
+          <h2 class="panel__title">Factura</h2>
+          <template v-if="order.billing?.wanted">
+            <p><strong>{{ order.billing.name }}</strong></p>
+            <p>{{ order.billing.documentId.length === 13 ? 'RUC' : 'Cédula' }} {{ order.billing.documentId }}</p>
+            <p>{{ order.billing.email }}<span v-if="order.billing.phone"> · {{ order.billing.phone }}</span></p>
+          </template>
+          <p v-else class="panel__meta">El cliente no pidió factura.</p>
+        </section>
       </div>
 
       <section class="panel">
