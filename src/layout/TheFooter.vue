@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { logo, site } from '@/config/site'
+import { logo, site, socialLinks } from '@/config/site'
 import { useWhatsApp } from '@/composables/useWhatsApp'
 
 const year = new Date().getFullYear()
@@ -10,31 +10,57 @@ const { ask } = useWhatsApp()
   <footer class="footer">
     <div class="footer__inner">
       <div class="footer__brand">
-        <img :src="logo.wordmark" alt="Pantuflas Ecuador" class="footer__logo" width="180" height="65" />
+        <img
+          :src="logo.wordmark"
+          alt="Pantuflas Ecuador"
+          class="footer__logo"
+          width="180"
+          height="65"
+        />
         <p class="footer__tagline">{{ site.tagline }}</p>
         <div class="footer__social">
-          <button type="button" aria-label="WhatsApp" @click="ask()"><i class="fa-brands fa-whatsapp"></i></button>
-          <a :href="site.social.instagram" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <button type="button" aria-label="WhatsApp" @click="ask()">
+            <i class="fa-brands fa-whatsapp"></i>
+          </button>
+          <a
+            v-for="s in socialLinks"
+            :key="s.href"
+            :href="s.href"
+            target="_blank"
+            rel="noopener"
+            :aria-label="s.name"
+            ><i :class="s.icon"></i
+          ></a>
         </div>
       </div>
 
       <div class="footer__col">
         <h4 class="footer__heading">Navegación</h4>
-        <RouterLink v-for="link in site.nav" :key="link.to" :to="link.to">{{ link.label }}</RouterLink>
+        <RouterLink v-for="link in site.nav" :key="link.to" :to="link.to">{{
+          link.label
+        }}</RouterLink>
         <RouterLink to="/tienda?categoria=arreglos">Regalos y box</RouterLink>
       </div>
 
       <div class="footer__col">
         <h4 class="footer__heading">Tiendas</h4>
         <span v-for="s in site.stores" :key="s.name" class="footer__store">
-          <i class="fa-solid fa-location-dot"></i> <span><strong>{{ s.name }}</strong><br />{{ s.address }}, {{ s.city }}</span>
+          <i class="fa-solid fa-location-dot"></i>
+          <span
+            ><strong>{{ s.name }}</strong
+            ><br />{{ s.address }}, {{ s.city }}</span
+          >
         </span>
       </div>
 
       <div class="footer__col">
         <h4 class="footer__heading">Contacto</h4>
-        <button type="button" class="footer__link" @click="ask()"><i class="fa-brands fa-whatsapp"></i> {{ site.whatsappDisplay }}</button>
-        <a :href="site.social.instagram" target="_blank" rel="noopener"><i class="fa-brands fa-instagram"></i> {{ site.social.instagramHandle }}</a>
+        <button type="button" class="footer__link" @click="ask()">
+          <i class="fa-brands fa-whatsapp"></i> {{ site.whatsappDisplay }}
+        </button>
+        <a v-for="s in socialLinks" :key="s.href" :href="s.href" target="_blank" rel="noopener"
+          ><i :class="s.icon"></i> {{ s.label }}</a
+        >
         <a :href="`mailto:${site.email}`"><i class="fa-solid fa-envelope"></i> {{ site.email }}</a>
       </div>
     </div>
@@ -42,7 +68,9 @@ const { ask } = useWhatsApp()
     <div class="footer__bar">
       <span>© {{ year }} Pantuflas Ecuador</span>
       <span class="footer__credit">
-        <RouterLink to="/login" class="footer__admin"><i class="fa-solid fa-lock"></i> Admin</RouterLink>
+        <RouterLink to="/login" class="footer__admin"
+          ><i class="fa-solid fa-lock"></i> Admin</RouterLink
+        >
         · Hecho por <a href="https://bakano.ec" target="_blank" rel="noopener">Bakano</a>
       </span>
     </div>
