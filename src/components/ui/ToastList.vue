@@ -40,9 +40,7 @@ const icons: Record<string, string> = {
   z-index: 300;
 
   @include from('md') {
-    top: auto;
     left: auto;
-    bottom: 1.4rem;
     right: 1.4rem;
     max-width: 360px;
   }
