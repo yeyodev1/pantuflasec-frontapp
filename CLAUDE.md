@@ -135,10 +135,11 @@ En componentes: `$ink`, `$accent`, `@include from('md')`, `@include container` �
   productos con `newArrival`.
 - **Sección "Nuevo":** `newArrival` en el producto (checkbox en el editor), badge rojo en la
   tarjeta, chip amarillo en los filtros, `/tienda?nuevo=1` en header, menú y "Ver todo".
-- **Precios en el editor** (`PriceFields`, `utils/pricing.ts`): dos campos ligados, "lo que recibes"
-  y "precio que ve el cliente" (con la comisión de PayPhone, 5,75 %, redondeado a $0,05). Se guarda
-  el del cliente. Las variantes muestran "recibes $X" bajo su precio. Misma fórmula que
-  `scripts/adjust-prices.ts` del backapp.
+- **Precio = precio de tienda.** El editor guarda el precio tal cual (con IVA). La comisión de
+  PayPhone se cobra como **recargo solo con tarjeta** en el checkout (`cardFeeFor` en
+  `utils/pricing.ts`, misma fórmula que el backapp; `cardFeeRate` viene de `/orders/config`):
+  `PaymentOptions` muestra el recargo en la opción de tarjeta y "Sin recargo" en las otras, y el
+  resumen, la página del pedido y el panel pintan la fila "Recargo por pago con tarjeta".
 - **"Mostrar en el inicio"** (`showOnHome`, check en el editor): `HomeCollections` lista esos
   productos agrupados por colección, cada grupo con su título y "Ver todo" a la colección. Es la
   forma fácil de poner una campaña (flores amarillas) en el home sin tocar la portada.
