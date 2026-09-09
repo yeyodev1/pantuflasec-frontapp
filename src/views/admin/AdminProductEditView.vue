@@ -4,7 +4,6 @@ import VariantsEditor from '@/components/admin/VariantsEditor.vue'
 import ImagesEditor from '@/components/admin/ImagesEditor.vue'
 import { useProductForm } from '@/composables/useProductForm'
 import { categories } from '@/config/catalog'
-import PriceFields from '@/components/admin/PriceFields.vue'
 
 const { draft, id, loading, saving, error, save, addVariant, removeVariant } = useProductForm()
 </script>
@@ -32,11 +31,11 @@ const { draft, id, loading, saving, error, save, addVariant, removeVariant } = u
             <input v-model="draft.collection" placeholder="Stitch, Snoopy, Sanrio…"
           /></label>
         </div>
-        <PriceFields v-model="draft.price" required />
-        <label
-          >Precio anterior (tachado, opcional)
-          <input v-model="draft.compareAtPrice" type="number" step="0.01" min="0" placeholder="Precio que veía el cliente antes de la oferta"
-        /></label>
+        <div class="form__row">
+          <label>Precio (el mismo de la tienda, con IVA) <input v-model="draft.price" type="number" step="0.01" min="0" required /></label>
+          <label>Precio anterior (tachado) <input v-model="draft.compareAtPrice" type="number" step="0.01" min="0" placeholder="Opcional" /></label>
+        </div>
+        <p class="form__note"><i class="fa-solid fa-circle-info"></i> Con transferencia o efectivo el cliente paga este precio. Si paga con tarjeta, el checkout le suma el recargo de PayPhone (5,75 %) por su cuenta.</p>
         <label>Descripción <textarea v-model="draft.description" rows="4"></textarea></label>
         <label
           >Etiquetas (separadas por coma)
@@ -119,6 +118,13 @@ const { draft, id, loading, saving, error, save, addVariant, removeVariant } = u
   &__error {
     color: $danger;
     font-size: $text-sm;
+  }
+
+  &__note {
+    font-size: $text-xs;
+    color: $ink-muted;
+
+    i { color: $accent; margin-right: 0.25rem; }
   }
 
   &__actions {
