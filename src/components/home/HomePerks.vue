@@ -14,7 +14,7 @@ const perks = [
   {
     icon: 'fa-solid fa-credit-card',
     title: 'Paga como prefieras',
-    text: 'Tarjeta con PayPhone, transferencia bancaria o efectivo al retirar en tienda. Precios con IVA incluido.',
+    text: 'Transferencia o efectivo al retirar sin recargo; con tarjeta se suma la comisión de PayPhone. Precios con IVA incluido.',
   },
   {
     icon: 'fa-solid fa-store',
