@@ -48,6 +48,8 @@ const emptyAccount = (): BankAccount => ({
   holder: '',
   documentId: '',
   email: '',
+  logo: { url: '', publicId: '' },
+  showLogo: true,
 })
 
 /** Transferencia y efectivo: cuentas, instrucciones y si están activos. */
