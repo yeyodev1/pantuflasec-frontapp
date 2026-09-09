@@ -162,6 +162,7 @@ function waLink(o: Order) {
           <dt>Subtotal</dt><dd>{{ formatMoney(order.subtotal) }}</dd>
           <dt>Envío</dt><dd>{{ formatMoney(order.shippingCost) }}</dd>
           <dt>{{ order.taxIncluded ? 'IVA incluido' : 'IVA' }}</dt><dd>{{ formatMoney(order.tax) }}</dd>
+          <template v-if="order.cardFee"><dt>Recargo por tarjeta</dt><dd>{{ formatMoney(order.cardFee) }}</dd></template>
           <dt class="totals__total">Total</dt><dd class="totals__total">{{ formatMoney(order.total) }}</dd>
         </dl>
       </section>
