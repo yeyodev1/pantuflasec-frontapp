@@ -187,6 +187,16 @@ export interface BankAccount {
   holder: string
   documentId: string
   email: string
+  /** Logo del banco en Cloudinary; el admin decide si se muestra. */
+  logo: { url: string; publicId: string }
+  showLogo: boolean
+}
+
+/** Candidato de Brandfetch al buscar un banco por nombre. */
+export interface BrandCandidate {
+  name: string
+  domain: string
+  icon: string
 }
 
 /** Métodos que aprueba el equipo; el admin los edita en /admin/pagos. */
