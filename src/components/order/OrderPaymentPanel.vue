@@ -106,7 +106,8 @@ async function copy(value: string) {
           </a>
           <ul v-else class="accounts">
             <li v-for="(a, i) in accounts" :key="i" class="account">
-              <span class="account__bank">{{ a.bank }}<small v-if="a.type"> · {{ a.type }}</small></span>
+              <img v-if="a.showLogo && a.logo?.url" :src="a.logo.url" alt="" class="account__logo" />
+        <span class="account__bank">{{ a.bank }}<small v-if="a.type"> · {{ a.type }}</small></span>
               <button type="button" class="account__number" :title="'Copiar número'" @click="copy(a.number)">
                 {{ a.number }} <i class="fa-regular fa-copy"></i>
               </button>
@@ -168,16 +169,8 @@ async function copy(value: string) {
     color: $ink-soft;
   }
 
-  &__text,
-  &__hint {
-    font-size: $text-sm;
-    color: $ink-soft;
-  }
-
-  &__hint {
-    font-size: $text-xs;
-    color: $ink-muted;
-  }
+  &__text { font-size: $text-sm; color: $ink-soft; }
+  &__hint { font-size: $text-xs; color: $ink-muted; }
 
   &__alert,
   &__ok {
@@ -245,6 +238,8 @@ async function copy(value: string) {
   padding: 0.7rem 0.9rem;
   border-radius: $radius-sm;
   background: $sand;
+
+  &__logo { width: 2.2rem; height: 2.2rem; object-fit: contain; border-radius: 6px; background: $surface; margin-bottom: 0.2rem; }
 
   &__bank {
     font-size: $text-sm;
