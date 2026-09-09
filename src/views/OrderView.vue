@@ -75,6 +75,7 @@ async function send(text: string) {
         <dt>Subtotal</dt><dd>{{ formatMoney(order.subtotal) }}</dd>
         <dt>{{ order.shipping.label }}</dt><dd>{{ formatMoney(order.shippingCost) }}</dd>
         <dt :class="{ order__muted: order.taxIncluded }">{{ order.taxIncluded ? 'Incluye IVA' : 'IVA' }}</dt><dd :class="{ order__muted: order.taxIncluded }">{{ formatMoney(order.tax) }}</dd>
+        <template v-if="order.cardFee"><dt>Recargo por pago con tarjeta</dt><dd>{{ formatMoney(order.cardFee) }}</dd></template>
         <dt class="order__total">Total</dt><dd class="order__total">{{ formatMoney(order.total) }}</dd>
       </dl>
 
