@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { PaymentMethod } from '@/types'
 import { paymentMethods } from '@/config/orders'
+import { formatMoney } from '@/utils/format'
 
 /** Método de pago como tarjetas-radio, igual que las opciones de entrega. */
-defineProps<{ methods: typeof paymentMethods; value: PaymentMethod; loading?: boolean }>()
+defineProps<{ methods: typeof paymentMethods; value: PaymentMethod; loading?: boolean; cardFee?: number }>()
 const emit = defineEmits<{ change: [method: PaymentMethod] }>()
 </script>
 
@@ -29,6 +30,8 @@ const emit = defineEmits<{ change: [method: PaymentMethod] }>()
       <span class="opt__body">
         <strong>{{ m.label }}</strong>
         <small>{{ m.text }}</small>
+        <small v-if="m.key === 'payphone' && cardFee" class="opt__fee">+ {{ formatMoney(cardFee) }} de recargo (comisión de PayPhone)</small>
+        <small v-else-if="m.key !== 'payphone'" class="opt__fee opt__fee--ok">Sin recargo</small>
       </span>
       <span class="opt__check"><i class="fa-solid fa-check"></i></span>
     </button>
@@ -88,6 +91,15 @@ const emit = defineEmits<{ change: [method: PaymentMethod] }>()
       font-size: $text-xs;
       color: $ink-muted;
       line-height: 1.3;
+    }
+  }
+
+  &__fee {
+    font-weight: 700;
+    color: $price !important;
+
+    &--ok {
+      color: $success !important;
     }
   }
 
