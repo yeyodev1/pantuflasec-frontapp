@@ -1,9 +1,23 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import AdminShell from '@/layout/AdminShell.vue'
+import BankLogoPicker from '@/components/admin/BankLogoPicker.vue'
 import { usePaymentSettings } from '@/composables/useAdminSettings'
 
 /** Cuentas para transferencias y pago en efectivo al retirar. La tarjeta (PayPhone) se configura en el servidor. */
 const { payments, loading, saving, addAccount, removeAccount, save } = usePaymentSettings()
+
+/** Índice de la cuenta cuyo logo se está eligiendo; null = cerrado. */
+const logoFor = ref<number | null>(null)
+
+function setLogo(logo: { url: string; publicId: string }) {
+  const a = logoFor.value === null ? null : payments.transfer.accounts[logoFor.value]
+  if (a) {
+    a.logo = logo
+    a.showLogo = true
+  }
+  logoFor.value = null
+}
 </script>
 
 <template>
@@ -29,6 +43,15 @@ const { payments, loading, saving, addAccount, removeAccount, save } = usePaymen
         >
 
         <div v-for="(a, i) in payments.transfer.accounts" :key="i" class="account">
+          <div class="account__logo">
+            <img v-if="a.logo?.url" :src="a.logo.url" alt="" :class="{ 'account__img--off': !a.showLogo }" />
+            <span v-else class="account__noimg"><i class="fa-solid fa-building-columns"></i></span>
+            <div class="account__logo-actions">
+              <button type="button" class="btn btn--ghost" @click="logoFor = i"><i class="fa-solid fa-magnifying-glass"></i> {{ a.logo?.url ? 'Cambiar logo' : 'Buscar logo' }}</button>
+              <label v-if="a.logo?.url" class="check"><input v-model="a.showLogo" type="checkbox" /> Mostrar al cliente</label>
+              <button v-if="a.logo?.url" type="button" class="account__remove" @click="a.logo = { url: '', publicId: '' }"><i class="fa-solid fa-xmark"></i> Quitar logo</button>
+            </div>
+          </div>
           <div class="account__row">
             <label>Banco <input v-model="a.bank" required placeholder="Banco Pichincha" /></label>
             <label>
@@ -82,6 +105,13 @@ const { payments, loading, saving, addAccount, removeAccount, save } = usePaymen
       </button>
     </form>
     <p v-else class="hint">Cargando…</p>
+
+    <BankLogoPicker
+      :open="logoFor !== null"
+      :bank="logoFor === null ? '' : (payments.transfer.accounts[logoFor]?.bank ?? '')"
+      @pick="setLogo"
+      @close="logoFor = null"
+    />
   </AdminShell>
 </template>
 
@@ -138,6 +168,36 @@ const { payments, loading, saving, addAccount, removeAccount, save } = usePaymen
         flex: 1;
       }
     }
+  }
+
+  &__logo {
+    @include flex(row, center, flex-start, 0.8rem);
+    flex-wrap: wrap;
+
+    img,
+    .account__noimg {
+      width: 3rem;
+      height: 3rem;
+      border-radius: $radius-sm;
+      object-fit: contain;
+      background: $sand;
+      border: 1px solid $line;
+    }
+
+    .account__noimg {
+      @include flex(row, center, center);
+      color: $ink-muted;
+    }
+
+    .account__img--off { opacity: 0.4; }
+  }
+
+  &__logo-actions {
+    @include flex(row, center, flex-start, 0.6rem);
+    flex-wrap: wrap;
+
+    .btn { padding: 0.45rem 0.9rem; font-size: $text-xs; }
+    .check { margin: 0; }
   }
 
   &__remove {
