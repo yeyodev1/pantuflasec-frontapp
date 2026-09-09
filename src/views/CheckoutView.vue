@@ -13,12 +13,13 @@ import CheckoutSteps from '@/components/checkout/CheckoutSteps.vue'
 import PhoneField from '@/components/ui/PhoneField.vue'
 import BillingSection from '@/components/checkout/BillingSection.vue'
 import { formatMoney } from '@/utils/format'
+import { cardFeeFor } from '@/utils/pricing'
 import { pixel } from '@/utils/pixel'
 import { useWhatsApp } from '@/composables/useWhatsApp'
 
 const {
   cart, config, loadingConfig, submitting, error, form, payphone, orderNumber, proof, proofNote,
-  shippingCost, byDistance, quote, quoting, locationReady, tax, taxIncluded, total, needsAddress, availableMethods, submitLabel,
+  shippingCost, byDistance, quote, quoting, locationReady, tax, taxIncluded, cardFee, total, needsAddress, availableMethods, submitLabel,
   setMethod, setPayment, submit,
 } = useCheckout()
 const wa = useWhatsApp()
@@ -53,6 +54,7 @@ onMounted(() => {
         :tax="tax"
         :tax-rate="config?.taxRate ?? 0"
         :tax-included="taxIncluded"
+        :card-fee="cardFee"
         :total="total"
       />
 
@@ -122,7 +124,7 @@ onMounted(() => {
           </CheckoutCard>
 
           <CheckoutCard :number="3" title="Pago">
-            <PaymentOptions :methods="availableMethods" :value="form.payment.method" :loading="loadingConfig" @change="setPayment" />
+            <PaymentOptions :methods="availableMethods" :value="form.payment.method" :loading="loadingConfig" :card-fee="cardFeeFor(cart.subtotal + shippingCost, config?.cardFeeRate)" @change="setPayment" />
             <Transition name="rise">
               <TransferProofField
                 v-if="form.payment.method === 'transfer' && config"
