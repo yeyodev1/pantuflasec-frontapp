@@ -135,6 +135,9 @@ En componentes: `$ink`, `$accent`, `@include from('md')`, `@include container` �
   productos con `newArrival`.
 - **Sección "Nuevo":** `newArrival` en el producto (checkbox en el editor), badge rojo en la
   tarjeta, chip amarillo en los filtros, `/tienda?nuevo=1` en header, menú y "Ver todo".
+- **Logos de bancos** (`BankLogoPicker`, en `/admin/pagos`): busca en Brandfetch por nombre,
+  importa a Cloudinary o sube a mano; por cuenta hay "Mostrar al cliente" y "Quitar logo". El
+  checkout, el pedido y el correo pintan el logo solo si `showLogo` y hay URL.
 - **Precio = precio de tienda.** El editor guarda el precio tal cual (con IVA). La comisión de
   PayPhone se cobra como **recargo solo con tarjeta** en el checkout (`cardFeeFor` en
   `utils/pricing.ts`, misma fórmula que el backapp; `cardFeeRate` viene de `/orders/config`):
