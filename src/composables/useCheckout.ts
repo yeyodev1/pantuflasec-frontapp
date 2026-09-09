@@ -15,6 +15,7 @@ import { rememberCustomer, savedCustomer } from '@/utils/customer'
 import { rememberOrder } from '@/utils/myOrders'
 import { useToastStore } from '@/stores/toast'
 import { useDeliveryQuote } from '@/composables/useDeliveryQuote'
+import { cardFeeFor } from '@/utils/pricing'
 
 /**
  * Dos fases: formulario → pedido creado. Al crear el pedido el backend fija
@@ -109,8 +110,12 @@ export function useCheckout() {
       taxIncluded.value ? cart.subtotal - cart.subtotal / (1 + rate) : cart.subtotal * rate,
     )
   })
+  // Comisión de PayPhone solo con tarjeta; con transferencia o efectivo el precio es el de tienda.
+  const cardFee = computed(() =>
+    form.payment.method === 'payphone' ? cardFeeFor(cart.subtotal + shippingCost.value, config.value?.cardFeeRate) : 0,
+  )
   const total = computed(() =>
-    round2(cart.subtotal + shippingCost.value + (taxIncluded.value ? 0 : tax.value)),
+    round2(cart.subtotal + shippingCost.value + (taxIncluded.value ? 0 : tax.value) + cardFee.value),
   )
   const needsAddress = computed(() => !form.shipping.method.startsWith('pickup'))
   /** Con moto no se puede confirmar hasta tener una ubicación cotizada dentro del radio. */
@@ -210,6 +215,7 @@ export function useCheckout() {
     locationReady,
     tax,
     taxIncluded,
+    cardFee,
     total,
     needsAddress,
     availableMethods,
