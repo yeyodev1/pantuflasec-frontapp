@@ -1,5 +1,5 @@
 import APIBase from './httpBase'
-import type { HeroSettings, PaymentSettings, ShippingMethodSetting } from '@/types'
+import type { BrandCandidate, HeroSettings, PaymentSettings, ShippingMethodSetting } from '@/types'
 
 /** Ajustes editables desde el panel: portada del home y métodos de pago manuales. */
 class SettingService extends APIBase {
@@ -26,6 +26,18 @@ class SettingService extends APIBase {
   async updateShipping(methods: ShippingMethodSetting[]): Promise<ShippingMethodSetting[]> {
     const { data } = await this.put<{ methods: ShippingMethodSetting[] }>('settings/shipping', { methods })
     return data.methods
+  }
+
+  /** Candidatos de Brandfetch para el nombre de un banco. */
+  async searchBankLogo(q: string): Promise<{ configured: boolean; items: BrandCandidate[] }> {
+    const { data } = await this.get<{ configured: boolean; items: BrandCandidate[] }>(`settings/bank-logo/search?q=${encodeURIComponent(q)}`)
+    return data
+  }
+
+  /** Copia el logo elegido a Cloudinary y devuelve la URL definitiva. */
+  async importBankLogo(candidate: BrandCandidate): Promise<{ url: string; publicId: string }> {
+    const { data } = await this.post<{ url: string; publicId: string }>('settings/bank-logo/import', candidate)
+    return data
   }
 
   async updatePayments(input: Partial<PaymentSettings>): Promise<PaymentSettings> {
