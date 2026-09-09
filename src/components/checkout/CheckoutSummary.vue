@@ -12,6 +12,8 @@ defineProps<{
   taxRate: number
   /** Los precios ya traen IVA: la fila es informativa y no suma al total. */
   taxIncluded?: boolean
+  /** Recargo por tarjeta; solo se pinta cuando aplica. */
+  cardFee?: number
   total: number
 }>()
 
@@ -55,6 +57,10 @@ const open = ref(false)
           {{ taxIncluded ? 'Incluye IVA' : 'IVA' }} ({{ Math.round(taxRate * 100) }}%)
         </dt>
         <dd :class="{ summary__muted: taxIncluded }">{{ formatMoney(tax) }}</dd>
+        <template v-if="cardFee">
+          <dt>Recargo por pago con tarjeta</dt>
+          <dd>{{ formatMoney(cardFee) }}</dd>
+        </template>
         <dt class="summary__total">Total</dt>
         <dd class="summary__total">{{ formatMoney(total) }}</dd>
       </dl>
