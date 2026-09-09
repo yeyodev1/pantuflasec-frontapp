@@ -52,6 +52,7 @@ async function copy(value: string) {
     <p class="transfer__step"><span>1</span> Transfiere <strong>{{ formatMoney(total) }}</strong>{{ accounts.length ? ' a una de estas cuentas' : '' }}</p>
     <ul v-if="accounts.length" class="accounts">
       <li v-for="(a, i) in accounts" :key="i" class="account">
+        <img v-if="a.showLogo && a.logo?.url" :src="a.logo.url" alt="" class="account__logo" />
         <span class="account__bank">{{ a.bank }}<small v-if="a.type"> · {{ a.type }}</small></span>
         <button type="button" class="account__number" title="Copiar número" @click="copy(a.number)">
           {{ a.number }} <i class="fa-regular fa-copy"></i>
@@ -138,6 +139,15 @@ async function copy(value: string) {
   padding: 0.7rem 0.9rem;
   border-radius: $radius-sm;
   background: $surface;
+
+  &__logo {
+    width: 2.2rem;
+    height: 2.2rem;
+    object-fit: contain;
+    border-radius: 6px;
+    background: $surface;
+    margin-bottom: 0.2rem;
+  }
 
   &__bank {
     font-size: $text-sm;
