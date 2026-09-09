@@ -156,6 +156,8 @@ export interface Order {
   /** Con `taxIncluded` el IVA ya está dentro del subtotal: se muestra, no se suma. */
   tax: number
   taxIncluded?: boolean
+  /** Recargo por pagar con tarjeta (comisión de PayPhone); 0 con transferencia o efectivo. */
+  cardFee?: number
   total: number
   status: OrderStatus
   payment: {
@@ -210,6 +212,8 @@ export interface ShopConfig {
   delivery: { maxKm: number; origin: { lat: number; lng: number } }
   taxRate: number
   taxIncluded: boolean
+  /** Tasa de la comisión de PayPhone; el recargo se calcula con gross-up (base / (1 - tasa) - base). */
+  cardFeeRate: number
   payphone: { token: string; storeId: string } | null
   payments: PaymentSettings
 }
