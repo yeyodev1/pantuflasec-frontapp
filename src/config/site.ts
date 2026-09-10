@@ -73,3 +73,10 @@ export function whatsappLink(message = 'Hola, quiero más información'): string
   if (!site.whatsapp) return '#'
   return `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(message)}`
 }
+
+/** Aviso de que hay un deploy nuevo y la pestaña abierta quedó vieja. */
+export const updateBanner = {
+  title: 'Hay una versión nueva de la tienda',
+  body: 'Actualiza para ver los últimos cambios.',
+  action: 'Actualizar',
+}
