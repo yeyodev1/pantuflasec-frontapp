@@ -63,6 +63,11 @@ Si vite sirve código viejo tras un cambio grande: `rm -rf node_modules/.vite &&
   `track()` (collage, tira de galería, portadas de categorías, primeras fotos del catálogo, foto
   principal del producto, vía `waitForImages`). Mínimo 0,7 s, máximo 6 s. Un bloque nuevo con
   imágenes de primera pintura debe registrar su carga con `track()`.
+- **Versión nueva** (`useAppVersion` + `UpdateBanner`): cada build lleva su commit en
+  `__APP_VERSION__` (vite.config.ts, `VERCEL_GIT_COMMIT_SHA` o HEAD local) y publica
+  `/version.json` con el mismo valor (`no-store` en vercel.json). Si difieren, sale el aviso con
+  el botón "Actualizar" (se comprueba al volver a la pestaña y cada 3 min). Si un chunk viejo
+  ya no existe tras un deploy (`vite:preloadError`) la app se recarga sola una vez.
 - **El copy vive en `src/config/site.ts`**, no dentro de los componentes.
 - Todo `VITE_*` queda expuesto en el navegador: nunca un secreto con ese prefijo.
 
