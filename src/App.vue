@@ -7,6 +7,7 @@ import TheWhatsApp from '@/components/ui/TheWhatsApp.vue'
 import WhatsAppModal from '@/components/ui/WhatsAppModal.vue'
 import ThePreloader from '@/components/ui/ThePreloader.vue'
 import TheRouteBar from '@/components/ui/TheRouteBar.vue'
+import UpdateBanner from '@/components/ui/UpdateBanner.vue'
 import { useRoute } from 'vue-router'
 
 // El panel es una app aparte: sin el pie de la tienda.
@@ -30,6 +31,7 @@ const route = useRoute()
     <WhatsAppModal />
     <ThePreloader />
     <TheRouteBar />
+    <UpdateBanner />
   </div>
 </template>
 
